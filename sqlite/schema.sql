@@ -6,7 +6,9 @@ CREATE TABLE workout_template (
   id INTEGER PRIMARY KEY NOT NULL,
   name TEXT,
   description TEXT,
-  notes TEXT
+  notes TEXT,
+  createdAt INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+  updatedAt INTEGER NOT NULL DEFAULT (strftime('%s', 'now'))
 );
 
 -- 2. exercise - No dependencies
@@ -16,7 +18,9 @@ CREATE TABLE exercise (
   description TEXT,
   notes TEXT,
   category TEXT,
-  bodyPart TEXT
+  bodyPart TEXT,
+  createdAt INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+  updatedAt INTEGER NOT NULL DEFAULT (strftime('%s', 'now'))
 );
 
 -- 3. workout_session - Depends on: workout_template
@@ -25,6 +29,8 @@ CREATE TABLE workout (
   templateId INTEGER,
   startTime INTEGER,
   stopTime INTEGER,
+  createdAt INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+  updatedAt INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
   FOREIGN KEY(templateId) REFERENCES workout_template(id)
 );
 
@@ -36,6 +42,8 @@ CREATE TABLE exercise_for_workout_template (
   notes TEXT,
   ordering INTEGER,
   exerciseIndex INTEGER DEFAULT 0 NOT NULL,
+  createdAt INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+  updatedAt INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
   FOREIGN KEY(workoutTemplateId) REFERENCES workout_template(id),
   FOREIGN KEY(exerciseId) REFERENCES exercise(id)
 );
@@ -50,8 +58,11 @@ CREATE TABLE exercise_set_template (
   unit TEXT,
   ordering INTEGER NOT NULL,
   setType TEXT,
+  restTime INTEGER DEFAULT 0 NOT NULL,
   exerciseId INTEGER NOT NULL,
   exerciseForWorkoutTemplateId INTEGER NOT NULL,
+  createdAt INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+  updatedAt INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
   FOREIGN KEY(exerciseId) REFERENCES exercise(id),
   FOREIGN KEY(exerciseForWorkoutTemplateId) REFERENCES exercise_for_workout_template(id)
 );
@@ -66,11 +77,24 @@ CREATE TABLE exercise_set (
   unit TEXT,
   ordering INTEGER,
   notes TEXT,
+  restTime INTEGER DEFAULT 0 NOT NULL,
   workoutId INTEGER NOT NULL,
   exerciseId INTEGER NOT NULL,
   exerciseForWorkoutTemplateId INTEGER NOT NULL,
   isCompleted INTEGER DEFAULT 0 NOT NULL,
+  createdAt INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+  updatedAt INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
   FOREIGN KEY(workoutId) REFERENCES workout(id),
   FOREIGN KEY(exerciseId) REFERENCES exercise(id),
   FOREIGN KEY(exerciseForWorkoutTemplateId) REFERENCES exercise_for_workout_template(id)
 );
+
+-- Indexes for foreign keys to improve query performance
+CREATE INDEX idx_workout_templateId ON workout(templateId);
+CREATE INDEX idx_exercise_for_workout_template_workoutTemplateId ON exercise_for_workout_template(workoutTemplateId);
+CREATE INDEX idx_exercise_for_workout_template_exerciseId ON exercise_for_workout_template(exerciseId);
+CREATE INDEX idx_exercise_set_template_exerciseId ON exercise_set_template(exerciseId);
+CREATE INDEX idx_exercise_set_template_exerciseForWorkoutTemplateId ON exercise_set_template(exerciseForWorkoutTemplateId);
+CREATE INDEX idx_exercise_set_workoutId ON exercise_set(workoutId);
+CREATE INDEX idx_exercise_set_exerciseId ON exercise_set(exerciseId);
+CREATE INDEX idx_exercise_set_exerciseForWorkoutTemplateId ON exercise_set(exerciseForWorkoutTemplateId);
