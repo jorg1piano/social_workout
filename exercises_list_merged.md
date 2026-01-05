@@ -1,0 +1,415 @@
+# Complete Exercise List (Merged, No Loss)
+
+## All Exercises
+
+- Ab Wheel
+- Ab Wheel - Core
+- Aerobics - Cardio
+- Arnold Press (Dumbbell)
+- Arnold Press (Dumbbell) - Shoulders
+- Around the World - Chest
+- Back Extension
+- Back Extension (Machine)
+- Back Extension (Machine) - Back
+- Back Extension - Back
+- Ball Slams - Full Body
+- Band Pull Apart
+- Band Pull Apart - Back
+- Battle Ropes - Cardio
+- Bayesian Curl (Cable)
+- Bench Dip - Arms
+- Bench Press (Barbell)
+- Bench Press (Barbell) - Chest
+- Bench Press (Cable) - Chest
+- Bench Press (Dumbbell)
+- Bench Press (Dumbbell) - Chest
+- Bench Press (Smith Machine) - Chest
+- Bench Press - Close Grip (Barbell) - Arms
+- Bench Press - Wide Grip (Barbell) - Chest
+- Bent Over One Arm Row (Dumbbell) - Back
+- Bent Over Row (Band) - Back
+- Bent Over Row (Barbell)
+- Bent Over Row (Barbell) - Back
+- Bent Over Row (Dumbbell)
+- Bent Over Row (Dumbbell) - Back
+- Bent Over Row - Underhand (Barbell) - Back
+- Bicep Curl (Barbell)
+- Bicep Curl (Barbell) - Arms
+- Bicep Curl (Cable) - Arms
+- Bicep Curl (Dumbbell) - Arms
+- Bicep Curl (Machine) - Arms
+- Bicycle Crunch
+- Bicycle Crunch - Core
+- Bird Dog
+- Box Jump
+- Box Jump - Legs
+- Box Squat (Barbell)
+- Box Squat (Barbell) - Legs
+- Bulgarian Split Squat
+- Bulgarian Split Squat - Legs
+- Burpee
+- Burpee - Full Body
+- Cable Crossover
+- Cable Crossover - Chest
+- Cable Crunch
+- Cable Crunch - Core
+- Cable Kickback - Arms
+- Cable Pull Through - Legs
+- Cable Twist
+- Cable Twist - Core
+- Calf Press on Leg Press
+- Calf Press on Leg Press - Legs
+- Calf Press on Seated Leg Press
+- Calf Press on Seated Leg Press - Legs
+- Cat Cow
+- Chest Dip
+- Chest Dip (Assisted) - Chest
+- Chest Dip - Chest
+- Chest Fly (Band) - Chest
+- Chest Fly (Dumbbell)
+- Chest Fly (Dumbbell) - Chest
+- Chest Fly - Chest
+- Chest Press (Band) - Chest
+- Chest Press (Machine) - Chest
+- Chest Supported Row (Dumbbell)
+- Chin Up
+- Chin Up (Assisted) - Back
+- Chin Up - Back
+- Clean (Barbell) - Olympic
+- Clean and Jerk (Barbell) - Olympic
+- Climbing - Cardio
+- Cobra Stretch
+- Concentration Curl (Dumbbell)
+- Concentration Curl (Dumbbell) - Arms
+- Cossack Squat
+- Cross Body Crunch
+- Cross Body Crunch - Core
+- Cross Body Hammer Curl
+- Crunch
+- Crunch (Machine)
+- Crunch (Machine) - Core
+- Crunch (Stability Ball)
+- Crunch (Stability Ball) - Core
+- Crunch - Core
+- Cuban Press
+- Curtsy Lunge
+- Cycling
+- Cycling (Indoor) - Cardio
+- Cycling - Cardio
+- Dead Bug
+- Deadlift (Band)
+- Deadlift (Band) - Legs
+- Deadlift (Barbell)
+- Deadlift (Barbell) - Back
+- Deadlift (Dumbbell)
+- Deadlift (Dumbbell) - Legs
+- Deadlift (Smith Machine)
+- Deadlift (Smith Machine) - Legs
+- Deadlift High Pull (Barbell) - Olympic
+- Decline Bench Press (Barbell)
+- Decline Bench Press (Barbell) - Chest
+- Decline Bench Press (Dumbbell) - Chest
+- Decline Bench Press (Smith Machine) - Chest
+- Decline Crunch
+- Decline Crunch - Core
+- Deficit Deadlift (Barbell)
+- Deficit Deadlift (Barbell) - Legs
+- Drag Curl (Barbell)
+- Elliptical Machine
+- Elliptical Machine - Cardio
+- Face Pull (Cable)
+- Face Pull (Cable) - Shoulders
+- Farmer’s Carry
+- Flat Knee Raise
+- Flat Knee Raise - Core
+- Flat Leg Raise
+- Flat Leg Raise - Core
+- Floor Press (Barbell)
+- Floor Press (Barbell) - Chest
+- Front Raise (Band) - Shoulders
+- Front Raise (Barbell) - Shoulders
+- Front Raise (Cable) - Shoulders
+- Front Raise (Dumbbell)
+- Front Raise (Dumbbell) - Shoulders
+- Front Raise (Plate) - Shoulders
+- Front Squat (Barbell)
+- Front Squat (Barbell) - Legs
+- Glute Bridge (Barbell)
+- Glute Bridge (Bodyweight)
+- Glute Ham Raise
+- Glute Ham Raise - Legs
+- Glute Kickback (Machine) - Legs
+- Goblet Squat (Kettlebell)
+- Goblet Squat (Kettlebell) - Legs
+- Good Morning (Barbell) - Back
+- Hack Squat
+- Hack Squat (Barbell) - Legs
+- Hack Squat - Legs
+- Hammer Curl (Band) - Arms
+- Hammer Curl (Cable) - Arms
+- Hammer Curl (Dumbbell)
+- Hammer Curl (Dumbbell) - Arms
+- Handstand Push Up
+- Handstand Push Up - Legs
+- Hang Clean (Barbell) - Olympic
+- Hang Snatch (Barbell) - Olympic
+- Hanging Knee Raise
+- Hanging Knee Raise - Core
+- Hanging Leg Raise
+- Hanging Leg Raise - Core
+- High Knee Skips - Legs
+- Hiking - Cardio
+- Hip Abductor (Machine)
+- Hip Abductor (Machine) - Legs
+- Hip Adductor (Machine)
+- Hip Adductor (Machine) - Legs
+- Hip Flexor Stretch (Half Kneeling)
+- Hip Thrust (Barbell)
+- Hip Thrust (Barbell) - Legs
+- Hip Thrust (Bodyweight)
+- Hip Thrust (Bodyweight) - Legs
+- Hip Thrust (Dumbbell)
+- Hollow Body Hold
+- Incline Bench Press (Barbell)
+- Incline Bench Press (Barbell) - Chest
+- Incline Bench Press (Cable) - Chest
+- Incline Bench Press (Dumbbell) - Chest
+- Incline Bench Press (Smith Machine) - Chest
+- Incline Chest Fly (Dumbbell) - Chest
+- Incline Chest Press (Machine) - Chest
+- Incline Curl (Dumbbell) - Arms
+- Incline Row (Dumbbell) - Back
+- Inverted Row (Bodyweight)
+- Inverted Row (Bodyweight) - Back
+- Iso-Lateral Chest Press (Machine) - Chest
+- Iso-Lateral Row (Machine)
+- Iso-Lateral Row (Machine) - Back
+- Jackknife Sit Up
+- Jackknife Sit Up - Core
+- Jump Rope
+- Jump Rope - Cardio
+- Jump Shrug (Barbell) - Olympic
+- Jump Squat - Legs
+- Jumping Jack - Full Body
+- Kettlebell Swing
+- Kettlebell Swing - Full Body
+- Kettlebell Turkish Get Up - Full Body
+- Kipping Pull Up - Back
+- Knee Raise (Captain's Chair)
+- Knee Raise (Captain's Chair) - Core
+- Kneeling Pulldown (Band) - Back
+- Knees to Elbows
+- Knees to Elbows - Core
+- Landmine Press (Single Arm)
+- Lat Pulldown (Cable)
+- Lat Pulldown (Cable) - Back
+- Lat Pulldown (Machine) - Back
+- Lat Pulldown (Single Arm) - Back
+- Lat Pulldown - Underhand (Band) - Back
+- Lat Pulldown - Underhand (Cable) - Back
+- Lat Pulldown - Wide Grip (Cable) - Back
+- Lateral Box Jump
+- Lateral Box Jump - Legs
+- Lateral Raise (Band) - Shoulders
+- Lateral Raise (Cable) - Shoulders
+- Lateral Raise (Dumbbell)
+- Lateral Raise (Dumbbell) - Shoulders
+- Lateral Raise (Machine) - Shoulders
+- Leg Extension (Machine)
+- Leg Extension (Machine) - Legs
+- Leg Press
+- Leg Press - Legs
+- Lunge (Barbell)
+- Lunge (Barbell) - Legs
+- Lunge (Bodyweight)
+- Lunge (Bodyweight) - Legs
+- Lunge (Dumbbell)
+- Lunge (Dumbbell) - Legs
+- Lying Leg Curl (Machine) - Legs
+- Machine Chest Press - Chest
+- Machine Overhead Press - Arms
+- Meadows Row
+- Mountain Climber - Legs
+- Muscle Up - Full Body
+- Nordic Hamstring Curl
+- Oblique Crunch
+- Oblique Crunch - Core
+- Overhead Press (Barbell)
+- Overhead Press (Barbell) - Shoulders
+- Overhead Press (Cable) - Shoulders
+- Overhead Press (Dumbbell) - Shoulders
+- Overhead Press (Smith Machine) - Shoulders
+- Overhead Squat (Barbell) - Olympic
+- Overhead Triceps Extension (Cable)
+- Pallof Press (Band)
+- Pallof Press (Cable)
+- Pec Deck (Machine)
+- Pec Deck (Machine) - Chest
+- Pendlay Row (Barbell)
+- Pendlay Row (Barbell) - Back
+- Pistol Squat
+- Pistol Squat - Legs
+- Plank
+- Plank - Core
+- Power Clean - Olympic
+- Power Snatch (Barbell) - Olympic
+- Preacher Curl (Barbell)
+- Preacher Curl (Barbell) - Arms
+- Preacher Curl (Dumbbell) - Arms
+- Preacher Curl (Machine) - Arms
+- Press Under (Barbell) - Olympic
+- Pull Up
+- Pull Up (Assisted) - Back
+- Pull Up (Band) - Back
+- Pull Up - Back
+- Pullover (Dumbbell) - Chest
+- Pullover (Machine) - Chest
+- Push Press - Shoulders
+- Push Up
+- Push Up (Band) - Chest
+- Push Up (Decline)
+- Push Up (Diamond)
+- Push Up (Knees) - Chest
+- Push Up - Chest
+- Rack Pull (Barbell)
+- Rack Pull (Barbell) - Back
+- Rear Delt Row
+- Reverse Crunch
+- Reverse Crunch - Core
+- Reverse Curl (Band) - Arms
+- Reverse Curl (Barbell) - Arms
+- Reverse Curl (Dumbbell) - Arms
+- Reverse Fly (Cable) - Shoulders
+- Reverse Fly (Dumbbell)
+- Reverse Fly (Dumbbell) - Shoulders
+- Reverse Fly (Machine) - Shoulders
+- Reverse Grip Concentration Curl (Dumbbell) - Arms
+- Reverse Lunge (Dumbbell)
+- Reverse Plank
+- Reverse Plank - Core
+- Romanian Deadlift (Barbell)
+- Romanian Deadlift (Barbell) - Back
+- Romanian Deadlift (Dumbbell) - Legs
+- Rowing (Machine)
+- Rowing (Machine) - Cardio
+- Running
+- Running (Treadmill) - Cardio
+- Running - Cardio
+- Russian Twist
+- Russian Twist - Core
+- Scapular Push Up
+- Seated Calf Raise (Machine)
+- Seated Calf Raise (Machine) - Legs
+- Seated Calf Raise (Plate Loaded) - Legs
+- Seated Leg Curl (Machine)
+- Seated Leg Curl (Machine) - Legs
+- Seated Leg Press (Machine) - Legs
+- Seated Overhead Press (Barbell) - Shoulders
+- Seated Overhead Press (Dumbbell) - Shoulders
+- Seated Palms Up Wrist Curl (Dumbbell) - Arms
+- Seated Row (Cable)
+- Seated Row (Cable) - Back
+- Seated Row (Machine) - Back
+- Seated Wide-Grip Row (Cable) - Back
+- Shoulder Press (Machine)
+- Shoulder Press (Machine) - Shoulders
+- Shoulder Press (Plate Loaded) - Shoulders
+- Shoulderpress - Chest
+- Shrug (Barbell) - Shoulders
+- Shrug (Dumbbell) - Shoulders
+- Shrug (Machine) - Back
+- Shrug (Smith Machine) - Back
+- Side Bend (Band)
+- Side Bend (Band) - Core
+- Side Bend (Cable)
+- Side Bend (Cable) - Core
+- Side Bend (Dumbbell)
+- Side Bend (Dumbbell) - Core
+- Side Plank
+- Side Plank - Core
+- Single Leg Bridge - Legs
+- Single-Leg Romanian Deadlift (Dumbbell)
+- Sissy Squat
+- Sit Up
+- Sit Up - Core
+- Skating - Cardio
+- Skiing - Cardio
+- Skullcrusher (Barbell)
+- Skullcrusher (Barbell) - Arms
+- Skullcrusher (Dumbbell) - Arms
+- Snatch (Barbell) - Olympic
+- Snatch Pull (Barbell) - Olympic
+- Snowboarding - Cardio
+- Split Jerk (Barbell) - Olympic
+- Squat (Band) - Legs
+- Squat (Barbell)
+- Squat (Barbell) - Legs
+- Squat (Bodyweight)
+- Squat (Bodyweight) - Legs
+- Squat (Dumbbell) - Legs
+- Squat (Machine) - Legs
+- Squat (Smith Machine) - Legs
+- Squat Row (Band) - Full Body
+- Squeeze Press (Dumbbell)
+- Standing Calf Raise (Barbell) - Legs
+- Standing Calf Raise (Bodyweight) - Legs
+- Standing Calf Raise (Dumbbell) - Legs
+- Standing Calf Raise (Machine) - Legs
+- Standing Calf Raise (Smith Machine) - Legs
+- Step-up
+- Step-up - Legs
+- Stiff Leg Deadlift (Barbell) - Back
+- Stiff Leg Deadlift (Dumbbell) - Legs
+- Straight Arm Pulldown (Cable)
+- Straight Leg Deadlift (Band) - Legs
+- Stretching
+- Stretching - Other
+- Strict Military Press (Barbell)
+- Strict Military Press (Barbell) - Shoulders
+- Sumo Deadlift (Barbell) - Back
+- Sumo Deadlift High Pull (Barbell) - Full Body
+- Superman
+- Superman - Core
+- Swimming
+- Swimming - Cardio
+- T Bar Row
+- T Bar Row - Back
+- Thruster (Barbell)
+- Thruster (Barbell) - Full Body
+- Thruster (Kettlebell) - Full Body
+- Toes To Bar
+- Toes To Bar - Core
+- Torso Rotation (Machine)
+- Torso Rotation (Machine) - Core
+- Trap Bar Deadlift
+- Trap Bar Deadlift - Legs
+- Triceps Dip (Assisted) - Arms
+- Triceps Dip - Arms
+- Triceps Extension (Barbell) - Arms
+- Triceps Extension (Cable) - Arms
+- Triceps Extension (Dumbbell) - Arms
+- Triceps Extension (Machine) - Arms
+- Triceps Extension - Arms
+- Triceps Pressdown (Cable, Rope)
+- Triceps Pushdown (Cable - Straight Bar) - Arms
+- Upright Row (Barbell) - Back
+- Upright Row (Cable) - Arms
+- Upright Row (Dumbbell) - Shoulders
+- V Up
+- V Up - Core
+- Walking - Cardio
+- Walking Lunge (Dumbbell)
+- Wall Sit
+- Wide Pull Up
+- Wide Pull Up - Back
+- Windshield Wiper (Hanging)
+- World’s Greatest Stretch
+- Wrist Curl (Barbell)
+- Wrist Roller - Arms
+- Yoga
+- Yoga - Cardio
+- Zercher Squat (Barbell)
+- Zercher Squat (Barbell) - Legs
+- Zottman Curl
+- Zottman Curl - Arms
+- tricep Flat Bar - Arms
