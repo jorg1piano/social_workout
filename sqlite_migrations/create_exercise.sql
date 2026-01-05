@@ -5,5 +5,5 @@ CREATE TABLE exercise (
   description TEXT,
   notes TEXT,
   category TEXT,
-  bodyPart TEXT
+  body_part TEXT
 );

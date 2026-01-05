@@ -131,11 +131,12 @@ See `database_schema_review.md` for detailed schema analysis and `sqlite/schema.
 
 ### Schema Enhancements
 
-- ✅ Added timestamps (`createdAt`, `updatedAt`) to all tables
-- ✅ Added `restTime` field to set templates and actual sets
+- ✅ Added timestamps (`created_at`, `updated_at`) to all tables
+- ✅ Added `rest_time` field to set templates and actual sets
 - ✅ Added indexes on all foreign keys
 - ✅ Fixed typos (INTENGER → INTEGER)
 - ✅ Added missing fields (weight, ordering, notes)
+- ✅ Converted all column names to snake_case (industry standard)
 
 ## Next Steps
 

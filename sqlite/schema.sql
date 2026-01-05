@@ -12,8 +12,8 @@ CREATE TABLE workout_template (
   name TEXT NOT NULL,
   description TEXT,
   notes TEXT,
-  createdAt INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
-  updatedAt INTEGER NOT NULL DEFAULT (strftime('%s', 'now'))
+  created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+  updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now'))
 );
 
 -- 2. exercise - No dependencies
@@ -25,9 +25,9 @@ CREATE TABLE exercise (
   description TEXT,
   notes TEXT,
   category TEXT,
-  bodyPart TEXT,
-  createdAt INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
-  updatedAt INTEGER NOT NULL DEFAULT (strftime('%s', 'now'))
+  body_part TEXT,
+  created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+  updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now'))
 );
 
 -- 3. workout - Depends on: workout_template
@@ -36,12 +36,12 @@ CREATE TABLE exercise (
 -- Records start/stop times for the session
 CREATE TABLE workout (
   id TEXT PRIMARY KEY NOT NULL CHECK((id LIKE 'app-%' OR id LIKE 'usr-%') AND length(id) = 30),
-  templateId TEXT,
-  startTime INTEGER,
-  stopTime INTEGER,
-  createdAt INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
-  updatedAt INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
-  FOREIGN KEY(templateId) REFERENCES workout_template(id) ON DELETE SET NULL
+  template_id TEXT,
+  start_time INTEGER,
+  stop_time INTEGER,
+  created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+  updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+  FOREIGN KEY(template_id) REFERENCES workout_template(id) ON DELETE SET NULL
 );
 
 -- 4. exercise_for_workout_template - Depends on: workout_template, exercise
@@ -49,33 +49,33 @@ CREATE TABLE workout (
 --
 -- Key concepts:
 --   ordering: The sequence of exercise slots in the workout (1st exercise, 2nd exercise, etc.)
---   exerciseIndex: Variant number within the same slot (0=default, 1=alternate 1, 2=alternate 2, etc.)
+--   exercise_index: Variant number within the same slot (0=default, 1=alternate 1, 2=alternate 2, etc.)
 --
--- IMPORTANT: Multiple exercises can share the same exerciseIndex as long as they have different ordering values
---            The exerciseIndex is scoped to each ordering slot, not globally
+-- IMPORTANT: Multiple exercises can share the same exercise_index as long as they have different ordering values
+--            The exercise_index is scoped to each ordering slot, not globally
 --
 -- Example: A "Push Day" template might have:
 --   - Slot 1 (ordering=1): Bench Press variants
---     - exerciseIndex=0: Barbell Bench Press (default)
---     - exerciseIndex=1: Dumbbell Bench Press (equipment substitution)
---     - exerciseIndex=2: Machine Chest Press (injury modification)
+--     - exercise_index=0: Barbell Bench Press (default)
+--     - exercise_index=1: Dumbbell Bench Press (equipment substitution)
+--     - exercise_index=2: Machine Chest Press (injury modification)
 --   - Slot 2 (ordering=2): Overhead Press variants
---     - exerciseIndex=0: Standing Barbell OHP (same index as Barbell Bench, different slot)
---     - exerciseIndex=1: Seated Dumbbell OHP (same index as Dumbbell Bench, different slot)
+--     - exercise_index=0: Standing Barbell OHP (same index as Barbell Bench, different slot)
+--     - exercise_index=1: Seated Dumbbell OHP (same index as Dumbbell Bench, different slot)
 --
--- When starting a workout, the user selects one exerciseIndex per ordering slot
--- The composite (workoutTemplateId, ordering, exerciseIndex) must be unique
+-- When starting a workout, the user selects one exercise_index per ordering slot
+-- The composite (workout_template_id, ordering, exercise_index) must be unique
 CREATE TABLE exercise_for_workout_template (
   id TEXT PRIMARY KEY NOT NULL CHECK((id LIKE 'app-%' OR id LIKE 'usr-%') AND length(id) = 30),
-  workoutTemplateId TEXT NOT NULL,
-  exerciseId TEXT NOT NULL,
+  workout_template_id TEXT NOT NULL,
+  exercise_id TEXT NOT NULL,
   notes TEXT,
   ordering INTEGER NOT NULL,
-  exerciseIndex INTEGER DEFAULT 0 NOT NULL,
-  createdAt INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
-  updatedAt INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
-  FOREIGN KEY(workoutTemplateId) REFERENCES workout_template(id) ON DELETE CASCADE,
-  FOREIGN KEY(exerciseId) REFERENCES exercise(id) ON DELETE RESTRICT
+  exercise_index INTEGER DEFAULT 0 NOT NULL,
+  created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+  updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+  FOREIGN KEY(workout_template_id) REFERENCES workout_template(id) ON DELETE CASCADE,
+  FOREIGN KEY(exercise_id) REFERENCES exercise(id) ON DELETE RESTRICT
 );
 
 -- 5. exercise_set_template - Depends on: exercise, exercise_for_workout_template
@@ -83,68 +83,68 @@ CREATE TABLE exercise_for_workout_template (
 -- Example: "Barbell Bench Press should have 3 sets of 8-10 reps at 80kg"
 --
 -- Fields:
---   RIR: Reps In Reserve (how many more reps could be done)
---   RPE: Rate of Perceived Exertion (1-10 scale)
---   setType: warmup, regularSet, dropSet, failure, etc.
---   restTime: Recommended rest between sets (in seconds)
+--   rir: Reps In Reserve (how many more reps could be done)
+--   rpe: Rate of Perceived Exertion (1-10 scale)
+--   set_type: warmup, regularSet, dropSet, failure, etc.
+--   rest_time: Recommended rest between sets (in seconds)
 CREATE TABLE exercise_set_template (
   id TEXT PRIMARY KEY NOT NULL CHECK((id LIKE 'app-%' OR id LIKE 'usr-%') AND length(id) = 30),
-  repCount INTEGER,
+  rep_count INTEGER,
   weight DECIMAL(5,2),
-  RIR DECIMAL(5,2),
-  RPE DECIMAL(5,2),
+  rir DECIMAL(5,2),
+  rpe DECIMAL(5,2),
   unit TEXT,
   ordering INTEGER NOT NULL,
-  setType TEXT,
-  restTime INTEGER DEFAULT 0 NOT NULL,
-  exerciseId TEXT NOT NULL,
-  exerciseForWorkoutTemplateId TEXT NOT NULL,
-  createdAt INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
-  updatedAt INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
-  FOREIGN KEY(exerciseId) REFERENCES exercise(id) ON DELETE RESTRICT,
-  FOREIGN KEY(exerciseForWorkoutTemplateId) REFERENCES exercise_for_workout_template(id) ON DELETE CASCADE
+  set_type TEXT,
+  rest_time INTEGER DEFAULT 0 NOT NULL,
+  exercise_id TEXT NOT NULL,
+  exercise_for_workout_template_id TEXT NOT NULL,
+  created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+  updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+  FOREIGN KEY(exercise_id) REFERENCES exercise(id) ON DELETE RESTRICT,
+  FOREIGN KEY(exercise_for_workout_template_id) REFERENCES exercise_for_workout_template(id) ON DELETE CASCADE
 );
 
 -- 6. exercise_set - Depends on: workout, exercise, exercise_for_workout_template
 -- Records the actual sets performed during a workout session
--- Links to exerciseForWorkoutTemplateId to track which variant was used
+-- Links to exercise_for_workout_template_id to track which variant was used
 --
 -- Example: "User did 10 reps at 100kg for Set 1 of Barbell Bench Press"
 --
 -- This allows progression tracking by querying all sets for the same
--- exerciseForWorkoutTemplateId across multiple workout sessions
+-- exercise_for_workout_template_id across multiple workout sessions
 CREATE TABLE exercise_set (
   id TEXT PRIMARY KEY NOT NULL CHECK((id LIKE 'app-%' OR id LIKE 'usr-%') AND length(id) = 30),
-  repCount INTEGER,
+  rep_count INTEGER,
   weight DECIMAL(5,2),
-  RIR DECIMAL(5,2),
-  RPE DECIMAL(5,2),
+  rir DECIMAL(5,2),
+  rpe DECIMAL(5,2),
   unit TEXT,
   ordering INTEGER,
   notes TEXT,
-  restTime INTEGER DEFAULT 0 NOT NULL,
-  workoutId TEXT NOT NULL,
-  exerciseId TEXT NOT NULL,
-  exerciseForWorkoutTemplateId TEXT NOT NULL,
-  isCompleted INTEGER DEFAULT 0 NOT NULL,
-  createdAt INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
-  updatedAt INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
-  FOREIGN KEY(workoutId) REFERENCES workout(id) ON DELETE CASCADE,
-  FOREIGN KEY(exerciseId) REFERENCES exercise(id) ON DELETE RESTRICT,
-  FOREIGN KEY(exerciseForWorkoutTemplateId) REFERENCES exercise_for_workout_template(id) ON DELETE RESTRICT
+  rest_time INTEGER DEFAULT 0 NOT NULL,
+  workout_id TEXT NOT NULL,
+  exercise_id TEXT NOT NULL,
+  exercise_for_workout_template_id TEXT NOT NULL,
+  is_completed INTEGER DEFAULT 0 NOT NULL,
+  created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+  updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+  FOREIGN KEY(workout_id) REFERENCES workout(id) ON DELETE CASCADE,
+  FOREIGN KEY(exercise_id) REFERENCES exercise(id) ON DELETE RESTRICT,
+  FOREIGN KEY(exercise_for_workout_template_id) REFERENCES exercise_for_workout_template(id) ON DELETE RESTRICT
 );
 
 -- Indexes for foreign keys to improve query performance
-CREATE INDEX idx_workout_templateId ON workout(templateId);
-CREATE INDEX idx_exercise_for_workout_template_workoutTemplateId ON exercise_for_workout_template(workoutTemplateId);
-CREATE INDEX idx_exercise_for_workout_template_exerciseId ON exercise_for_workout_template(exerciseId);
-CREATE INDEX idx_exercise_set_template_exerciseId ON exercise_set_template(exerciseId);
-CREATE INDEX idx_exercise_set_template_exerciseForWorkoutTemplateId ON exercise_set_template(exerciseForWorkoutTemplateId);
-CREATE INDEX idx_exercise_set_workoutId ON exercise_set(workoutId);
-CREATE INDEX idx_exercise_set_exerciseId ON exercise_set(exerciseId);
-CREATE INDEX idx_exercise_set_exerciseForWorkoutTemplateId ON exercise_set(exerciseForWorkoutTemplateId);
+CREATE INDEX idx_workout_template_id ON workout(template_id);
+CREATE INDEX idx_exercise_for_workout_template_workout_template_id ON exercise_for_workout_template(workout_template_id);
+CREATE INDEX idx_exercise_for_workout_template_exercise_id ON exercise_for_workout_template(exercise_id);
+CREATE INDEX idx_exercise_set_template_exercise_id ON exercise_set_template(exercise_id);
+CREATE INDEX idx_exercise_set_template_exercise_for_workout_template_id ON exercise_set_template(exercise_for_workout_template_id);
+CREATE INDEX idx_exercise_set_workout_id ON exercise_set(workout_id);
+CREATE INDEX idx_exercise_set_exercise_id ON exercise_set(exercise_id);
+CREATE INDEX idx_exercise_set_exercise_for_workout_template_id ON exercise_set(exercise_for_workout_template_id);
 
 -- Unique constraint to enforce the exercise variant pattern
 -- Ensures each (template, ordering, index) combination is unique
 -- This prevents duplicate variants and enforces proper exercise slot structure
-CREATE UNIQUE INDEX idx_exercise_variant ON exercise_for_workout_template(workoutTemplateId, ordering, exerciseIndex);
+CREATE UNIQUE INDEX idx_exercise_variant ON exercise_for_workout_template(workout_template_id, ordering, exercise_index);
