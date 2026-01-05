@@ -156,6 +156,17 @@ CREATE TABLE exercise_set_template (
 --
 -- This allows progression tracking by querying all sets for the same
 -- exercise_for_workout_template_id across multiple workout sessions
+--
+-- Fields:
+--   ordering: References the set number from the template (1st set, 2nd set, etc.)
+--             Can have gaps (user skips sets) or duplicates (multiple attempts)
+--             Not enforced to be sequential - user has full flexibility
+--   attempt_number: Tracks multiple attempts at the same set slot
+--             Examples:
+--             - Muscle-ups: failed 5 times before succeeding (6 rows, same ordering, attempt 1-6)
+--             - Heavy deadlift: missed lockout twice, succeeded third try (3 rows)
+--             - Rest-pause sets: 7 reps, rest 30s, 3 more reps (2 rows, same ordering)
+--             Default is 1 for single-attempt sets
 CREATE TABLE exercise_set (
   id TEXT PRIMARY KEY NOT NULL CHECK((id LIKE 'app-%' OR id LIKE 'usr-%') AND length(id) = 30),
   rep_count INTEGER,
@@ -165,6 +176,7 @@ CREATE TABLE exercise_set (
   rpe DECIMAL(5,2),
   unit TEXT,
   ordering INTEGER,
+  attempt_number INTEGER DEFAULT 1 NOT NULL,
   notes TEXT,
   rest_time INTEGER DEFAULT 0 NOT NULL,
   workout_id TEXT NOT NULL,
@@ -200,3 +212,8 @@ CREATE UNIQUE INDEX idx_exercise_equipment_unique ON exercise_equipment(exercise
 -- Ensures each (template, ordering, index) combination is unique
 -- This prevents duplicate variants and enforces proper exercise slot structure
 CREATE UNIQUE INDEX idx_exercise_variant ON exercise_for_workout_template(workout_template_id, ordering, exercise_index);
+
+-- Unique constraint to prevent accidental duplicate attempts
+-- Ensures each (workout, exercise variant, set number, attempt) combination is unique
+-- Allows multiple attempts at the same set but prevents logging the same attempt twice
+CREATE UNIQUE INDEX idx_exercise_set_attempt ON exercise_set(workout_id, exercise_for_workout_template_id, ordering, attempt_number);
