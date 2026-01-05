@@ -11,6 +11,9 @@ if [ ! -f "$DB_NAME" ]; then
   exit 1
 fi
 
+echo "Deleting existing data..."
+sqlite3 "$DB_NAME" < "$SCRIPT_DIR/delete.sql"
+
 echo "Inserting test data into test-db.db..."
 ERROR_OUTPUT=$(sqlite3 "$DB_NAME" < "$SCRIPT_DIR/exercises_complete.sql" 2>&1)
 
