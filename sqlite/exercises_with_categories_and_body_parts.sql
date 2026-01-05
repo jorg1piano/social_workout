@@ -34,6 +34,7 @@ INSERT INTO equipment_category (id, name) VALUES
 ('app-01KE649RMPAAT5P16FX1QV8XP4', 'Full Body'),
 ('app-01KE649RNCJR2284KE5PCTHJ28', 'Mobility'),
 ('app-01KE649RN0K1A81K9NHZPV3FKY', 'Indoor'),
+('app-01KE65FK2PNWWWEZCRZX31H9Y0', 'Outdoor'),
 ('app-01KE649RP9A89041RJGVG1PSHM', 'Treadmill'),
 ('app-01KE649RNS2QA6PEN3QCH8P7ZM', 'Rope'),
 ('app-01KE649RM5QMQB31J5HVR5KR7B', 'Captain''s Chair'),
@@ -89,7 +90,7 @@ INSERT INTO exercise (id, name) VALUES
 ('app-01KE649R6JRPGKF4Y7687NEM4Y', 'Cat Cow'),
 ('app-01KE649R6NYXXRDABVR23T1735', 'Chest Dip'), -- Bodyweight
 ('app-01KE649R6R5ZHEKHTVMAY9R7BS', 'Chest Dip'), -- Assisted
-('app-01KE649R6VBRR6YY73PPBJD2SH', 'Chest Fly'), -- Bodyweight/Machine
+('app-01KE649R6VBRR6YY73PPBJD2SH', 'Chest Fly'), -- Machine
 ('app-01KE649R6YW66Q38T415HD6ECM', 'Chest Fly'), -- Band
 ('app-01KE649R71GSZG5BS5M600SD3V', 'Chest Fly'), -- Dumbbell
 ('app-01KE649R74GCR98S8P73ESSADA', 'Chest Press'), -- Band
@@ -107,7 +108,7 @@ INSERT INTO exercise (id, name) VALUES
 ('app-01KE649R842J418C3ZH4PWTBJC', 'Cross Body Hammer Curl'),
 ('app-01KE649R87Y50ZNCPBW4PKPHRG', 'Crunch'), -- Bodyweight
 ('app-01KE649R8AME388XCKFSVHP029', 'Crunch'), -- Machine
-('app-01KE649R8DDZPPC0QZ0X1PWM0W', 'Crunch ( Ball)'), -- Stability
+('app-01KE649R8DDZPPC0QZ0X1PWM0W', 'Crunch'), -- Stability Ball
 ('app-01KE649R8GVG7F67NTFQBFA9RP', 'Cuban Press'),
 ('app-01KE649R8K1GQJ174A0QEJBZFE', 'Curtsy Lunge'),
 ('app-01KE649R8P6B82MY1AYZFVFMRH', 'Cycling'), -- Outdoor
@@ -186,7 +187,7 @@ INSERT INTO exercise (id, name) VALUES
 ('app-01KE649RW2GXTRGGG2ZJEV6NH8', 'Landmine Press'),
 ('app-01KE649RWNZ4T450G3R2V89NZZ', 'Lat Pulldown'), -- Cable
 ('app-01KE649RWRQN9YVY3SZ2FE3Z5Z', 'Lat Pulldown'), -- Machine
-('app-01KE649RWVB6FB8E3Z2RMBGXPJ', 'Lat Pulldown ( Arm)'), -- Single
+('app-01KE649RWVB6FB8E3Z2RMBGXPJ', 'Lat Pulldown'), -- Single Arm
 ('app-01KE649RWYM19J2WV67TTSWC46', 'Lat Pulldown - Underhand'), -- Band
 ('app-01KE649RX23PEN2Z3VXYNSMMMZ', 'Lat Pulldown - Underhand'), -- Cable
 ('app-01KE649RX5NJJ18Y3M5J7AEJ6T', 'Lat Pulldown - Wide Grip'),
