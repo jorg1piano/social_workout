@@ -1,0 +1,275 @@
+#!/usr/bin/env ts-node
+
+import * as fs from 'fs';
+import * as path from 'path';
+import { ulid } from 'ulid';
+
+interface Exercise {
+  id: string;
+  name: string;
+  equipment: string[];
+  categories: string[];
+  bodyParts: string[];
+}
+
+interface Category {
+  id: string;
+  name: string;
+}
+
+// Parse the markdown file to extract exercise data
+function parseMarkdownFile(filePath: string): Exercise[] {
+  const content = fs.readFileSync(filePath, 'utf-8');
+  const lines = content.split('\n');
+  const exercises: Exercise[] = [];
+
+  // Regex to parse: - Name (Equipment[, Equipment], Category[, Category]) - Bodypart[, Bodypart]
+  const exerciseRegex = /^- (.+?) \((.+?)\) - (.+)$/;
+
+  for (const line of lines) {
+    const match = line.match(exerciseRegex);
+    if (match) {
+      const name = match[1].trim();
+      const parensContent = match[2].trim();
+      const bodyPartsStr = match[3].trim();
+
+      // Split the parentheses content by comma
+      const items = parensContent.split(',').map(s => s.trim());
+
+      // Separate equipment from categories
+      // Known equipment types
+      const equipmentTypes = [
+        'Barbell', 'Dumbbell', 'Cable', 'Machine', 'Band', 'Kettlebell',
+        'Bodyweight', 'Assisted', 'Plate', 'Smith Machine', 'Stability Ball',
+        'Treadmill', 'Rope', 'Captain\'s Chair', 'Hanging', 'Half Kneeling',
+        'Decline', 'Diamond', 'Knees', 'Single Arm', 'Plate Loaded', 'Indoor', 'Outdoor'
+      ];
+
+      // Known categories
+      const categoryTypes = [
+        'Strength', 'Cardio', 'Olympic', 'Full Body', 'Mobility'
+      ];
+
+      const equipment: string[] = [];
+      const categories: string[] = [];
+
+      for (const item of items) {
+        if (equipmentTypes.includes(item)) {
+          equipment.push(item);
+        } else if (categoryTypes.includes(item)) {
+          categories.push(item);
+        }
+      }
+
+      // Parse body parts
+      const bodyParts = bodyPartsStr.split(',').map(s => s.trim());
+
+      exercises.push({
+        id: '', // Will be filled from SQL
+        name,
+        equipment,
+        categories,
+        bodyParts
+      });
+    }
+  }
+
+  return exercises;
+}
+
+// Extract IDs from existing SQL file
+function extractCategoriesFromSQL(sqlContent: string, tableName: string): Map<string, string> {
+  const map = new Map<string, string>();
+
+  // Match INSERT INTO table_name (id, name) VALUES
+  const insertRegex = new RegExp(`INSERT INTO ${tableName} \\(id, name\\) VALUES\\s*\\(([^)]+)\\)`, 'g');
+  const matches = sqlContent.matchAll(insertRegex);
+
+  for (const match of matches) {
+    const valuesStr = match[1];
+    // Parse the VALUES - format: 'id', 'name'
+    const valueMatch = valuesStr.match(/'([^']+)',\s*'([^']+)'/);
+    if (valueMatch) {
+      const id = valueMatch[1];
+      const name = valueMatch[2].replace(/''/g, "'"); // Handle escaped quotes
+      map.set(name, id);
+    }
+  }
+
+  // Also match multi-line INSERT statements
+  const multiLineRegex = new RegExp(`INSERT INTO ${tableName} \\(id, name\\) VALUES\\s*([\\s\\S]*?);`, 'g');
+  const multiMatches = sqlContent.matchAll(multiLineRegex);
+
+  for (const match of multiMatches) {
+    const valuesBlock = match[1];
+    // Match each ('id', 'name') pair
+    const pairRegex = /\('([^']+)',\s*'([^']+)'\)/g;
+    const pairs = valuesBlock.matchAll(pairRegex);
+
+    for (const pair of pairs) {
+      const id = pair[1];
+      const name = pair[2].replace(/''/g, "'"); // Handle escaped quotes
+      map.set(name, id);
+    }
+  }
+
+  return map;
+}
+
+function extractExercisesFromSQL(sqlContent: string): Map<string, string> {
+  const map = new Map<string, string>();
+
+  // Match INSERT INTO exercise (id, name) VALUES
+  const multiLineRegex = /INSERT INTO exercise \(id, name\) VALUES\s*([\s\S]*?);/g;
+  const multiMatches = sqlContent.matchAll(multiLineRegex);
+
+  for (const match of multiMatches) {
+    const valuesBlock = match[1];
+    // Match each ('id', 'name') pair - handle comments
+    const pairRegex = /\('([^']+)',\s*'([^']+)'\)(?:\s*--[^\n]*)?/g;
+    const pairs = valuesBlock.matchAll(pairRegex);
+
+    for (const pair of pairs) {
+      const id = pair[1];
+      const name = pair[2].replace(/''/g, "'"); // Handle escaped quotes
+      map.set(name, id);
+    }
+  }
+
+  return map;
+}
+
+// Generate the complete SQL file
+function generateSQL(
+  exercises: Exercise[],
+  exerciseIdMap: Map<string, string>,
+  equipmentIdMap: Map<string, string>,
+  bodyPartIdMap: Map<string, string>,
+  originalSqlPath: string,
+  outputPath: string
+): void {
+  const originalContent = fs.readFileSync(originalSqlPath, 'utf-8');
+
+  // Find where to insert the mappings (after exercise inserts)
+  const exerciseInsertEnd = originalContent.indexOf('-- Step 4:');
+  const headerPart = originalContent.substring(0, exerciseInsertEnd);
+
+  let sqlOutput = headerPart;
+  sqlOutput += '-- Step 4: Link exercises to body parts (exercise_body_part)\n';
+  sqlOutput += '-- Generated by generate-exercise-mappings.ts\n\n';
+
+  // Generate exercise_body_part mappings
+  const bodyPartMappings: string[] = [];
+
+  for (const exercise of exercises) {
+    const exerciseId = exerciseIdMap.get(exercise.name);
+    if (!exerciseId) {
+      console.warn(`Warning: No ID found for exercise: ${exercise.name}`);
+      continue;
+    }
+
+    for (const bodyPart of exercise.bodyParts) {
+      const bodyPartId = bodyPartIdMap.get(bodyPart);
+      if (!bodyPartId) {
+        console.warn(`Warning: No ID found for body part: ${bodyPart}`);
+        continue;
+      }
+
+      const mappingId = 'app-' + ulid();
+      bodyPartMappings.push(
+        `('${mappingId}', '${exerciseId}', '${bodyPartId}')`
+      );
+    }
+  }
+
+  // Write body part mappings in batches
+  const batchSize = 50;
+  for (let i = 0; i < bodyPartMappings.length; i += batchSize) {
+    const batch = bodyPartMappings.slice(i, i + batchSize);
+    sqlOutput += `INSERT INTO exercise_body_part (id, exercise_id, body_part_category_id) VALUES\n`;
+    sqlOutput += batch.join(',\n');
+    sqlOutput += ';\n\n';
+  }
+
+  sqlOutput += '-- Step 5: Link exercises to equipment (exercise_equipment)\n';
+  sqlOutput += '-- Generated by generate-exercise-mappings.ts\n\n';
+
+  // Generate exercise_equipment mappings
+  const equipmentMappings: string[] = [];
+
+  for (const exercise of exercises) {
+    const exerciseId = exerciseIdMap.get(exercise.name);
+    if (!exerciseId) {
+      continue;
+    }
+
+    // Map equipment
+    for (const equipment of exercise.equipment) {
+      const equipmentId = equipmentIdMap.get(equipment);
+      if (!equipmentId) {
+        console.warn(`Warning: No ID found for equipment: ${equipment}`);
+        continue;
+      }
+
+      const mappingId = 'app-' + ulid();
+      equipmentMappings.push(
+        `('${mappingId}', '${exerciseId}', '${equipmentId}')`
+      );
+    }
+
+    // Map categories as equipment
+    for (const category of exercise.categories) {
+      const categoryId = equipmentIdMap.get(category);
+      if (!categoryId) {
+        console.warn(`Warning: No ID found for category: ${category}`);
+        continue;
+      }
+
+      const mappingId = 'app-' + ulid();
+      equipmentMappings.push(
+        `('${mappingId}', '${exerciseId}', '${categoryId}')`
+      );
+    }
+  }
+
+  // Write equipment mappings in batches
+  for (let i = 0; i < equipmentMappings.length; i += batchSize) {
+    const batch = equipmentMappings.slice(i, i + batchSize);
+    sqlOutput += `INSERT INTO exercise_equipment (id, exercise_id, equipment_category_id) VALUES\n`;
+    sqlOutput += batch.join(',\n');
+    sqlOutput += ';\n\n';
+  }
+
+  fs.writeFileSync(outputPath, sqlOutput, 'utf-8');
+  console.log(`✅ Generated SQL file: ${outputPath}`);
+  console.log(`   - ${bodyPartMappings.length} body part mappings`);
+  console.log(`   - ${equipmentMappings.length} equipment mappings`);
+}
+
+// Main execution
+function main() {
+  const markdownPath = path.join(__dirname, 'all_exercises_with_categories.md');
+  const sqlPath = path.join(__dirname, 'sqlite', 'exercises_with_categories_and_body_parts.sql');
+  const outputPath = path.join(__dirname, 'sqlite', 'exercises_complete.sql');
+
+  console.log('📖 Parsing markdown file...');
+  const exercises = parseMarkdownFile(markdownPath);
+  console.log(`   Found ${exercises.length} exercises`);
+
+  console.log('📖 Reading SQL file...');
+  const sqlContent = fs.readFileSync(sqlPath, 'utf-8');
+
+  console.log('🔍 Extracting IDs from SQL...');
+  const exerciseIdMap = extractExercisesFromSQL(sqlContent);
+  const equipmentIdMap = extractCategoriesFromSQL(sqlContent, 'equipment_category');
+  const bodyPartIdMap = extractCategoriesFromSQL(sqlContent, 'body_part_category');
+
+  console.log(`   - ${exerciseIdMap.size} exercise IDs`);
+  console.log(`   - ${equipmentIdMap.size} equipment IDs`);
+  console.log(`   - ${bodyPartIdMap.size} body part IDs`);
+
+  console.log('🔨 Generating SQL...');
+  generateSQL(exercises, exerciseIdMap, equipmentIdMap, bodyPartIdMap, sqlPath, outputPath);
+}
+
+main();
