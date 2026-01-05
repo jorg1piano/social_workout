@@ -4,7 +4,25 @@
 -- Format: app-01HJGT8MNTV3X9P0A6Y7Z8C9D (26 chars ULID + 4 char prefix = 30 total)
 -- Prefixes: app- (system/app generated), usr- (user created)
 
--- 1. workout_template - No dependencies
+-- 1. body_part_category - No dependencies
+-- Predefined body part categories for exercises
+CREATE TABLE body_part_category (
+  id TEXT PRIMARY KEY NOT NULL CHECK((id LIKE 'app-%' OR id LIKE 'usr-%') AND length(id) = 30),
+  name TEXT NOT NULL UNIQUE,
+  created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+  updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now'))
+);
+
+-- 2. equipment_category - No dependencies
+-- Predefined equipment categories for exercises
+CREATE TABLE equipment_category (
+  id TEXT PRIMARY KEY NOT NULL CHECK((id LIKE 'app-%' OR id LIKE 'usr-%') AND length(id) = 30),
+  name TEXT NOT NULL UNIQUE,
+  created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+  updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now'))
+);
+
+-- 3. workout_template - No dependencies
 -- Represents a workout plan (e.g., "Push Day", "Pull Day", "Leg Day")
 -- This is the top-level container for a structured workout
 CREATE TABLE workout_template (
@@ -16,7 +34,7 @@ CREATE TABLE workout_template (
   updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now'))
 );
 
--- 2. exercise - No dependencies
+-- 4. exercise - No dependencies
 -- Individual exercises (e.g., "Barbell Bench Press", "Dumbbell Curl", "Squat")
 -- These are the building blocks used in workout templates
 CREATE TABLE exercise (
@@ -24,13 +42,35 @@ CREATE TABLE exercise (
   name TEXT NOT NULL,
   description TEXT,
   notes TEXT,
-  category TEXT,
-  body_part TEXT,
   created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
   updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now'))
 );
 
--- 3. workout - Depends on: workout_template
+-- 5. exercise_body_part - Depends on: exercise, body_part_category
+-- Junction table linking exercises to their body parts (many-to-many)
+CREATE TABLE exercise_body_part (
+  id TEXT PRIMARY KEY NOT NULL CHECK((id LIKE 'app-%' OR id LIKE 'usr-%') AND length(id) = 30),
+  exercise_id TEXT NOT NULL,
+  body_part_category_id TEXT NOT NULL,
+  created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+  updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+  FOREIGN KEY(exercise_id) REFERENCES exercise(id) ON DELETE CASCADE,
+  FOREIGN KEY(body_part_category_id) REFERENCES body_part_category(id) ON DELETE RESTRICT
+);
+
+-- 6. exercise_equipment - Depends on: exercise, equipment_category
+-- Junction table linking exercises to their equipment types (many-to-many)
+CREATE TABLE exercise_equipment (
+  id TEXT PRIMARY KEY NOT NULL CHECK((id LIKE 'app-%' OR id LIKE 'usr-%') AND length(id) = 30),
+  exercise_id TEXT NOT NULL,
+  equipment_category_id TEXT NOT NULL,
+  created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+  updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+  FOREIGN KEY(exercise_id) REFERENCES exercise(id) ON DELETE CASCADE,
+  FOREIGN KEY(equipment_category_id) REFERENCES equipment_category(id) ON DELETE RESTRICT
+);
+
+-- 7. workout - Depends on: workout_template
 -- Represents an actual workout session executed by the user
 -- Created when user starts a workout from a template
 -- Records start/stop times for the session
@@ -44,7 +84,7 @@ CREATE TABLE workout (
   FOREIGN KEY(template_id) REFERENCES workout_template(id) ON DELETE SET NULL
 );
 
--- 4. exercise_for_workout_template - Depends on: workout_template, exercise
+-- 8. exercise_for_workout_template - Depends on: workout_template, exercise
 -- Links exercises to workout templates with ordering and swappable variants
 --
 -- Key concepts:
@@ -78,7 +118,7 @@ CREATE TABLE exercise_for_workout_template (
   FOREIGN KEY(exercise_id) REFERENCES exercise(id) ON DELETE RESTRICT
 );
 
--- 5. exercise_set_template - Depends on: exercise, exercise_for_workout_template
+-- 9. exercise_set_template - Depends on: exercise, exercise_for_workout_template
 -- Defines the planned sets for each exercise variant in a template
 -- Example: "Barbell Bench Press should have 3 sets of 8-10 reps at 80kg"
 --
@@ -107,7 +147,7 @@ CREATE TABLE exercise_set_template (
   FOREIGN KEY(exercise_for_workout_template_id) REFERENCES exercise_for_workout_template(id) ON DELETE CASCADE
 );
 
--- 6. exercise_set - Depends on: workout, exercise, exercise_for_workout_template
+-- 10. exercise_set - Depends on: workout, exercise, exercise_for_workout_template
 -- Records the actual sets performed during a workout session
 -- Links to exercise_for_workout_template_id to track which variant was used
 --
@@ -139,6 +179,10 @@ CREATE TABLE exercise_set (
 );
 
 -- Indexes for foreign keys to improve query performance
+CREATE INDEX idx_exercise_body_part_exercise_id ON exercise_body_part(exercise_id);
+CREATE INDEX idx_exercise_body_part_category_id ON exercise_body_part(body_part_category_id);
+CREATE INDEX idx_exercise_equipment_exercise_id ON exercise_equipment(exercise_id);
+CREATE INDEX idx_exercise_equipment_category_id ON exercise_equipment(equipment_category_id);
 CREATE INDEX idx_workout_template_id ON workout(template_id);
 CREATE INDEX idx_exercise_for_workout_template_workout_template_id ON exercise_for_workout_template(workout_template_id);
 CREATE INDEX idx_exercise_for_workout_template_exercise_id ON exercise_for_workout_template(exercise_id);
@@ -147,6 +191,10 @@ CREATE INDEX idx_exercise_set_template_exercise_for_workout_template_id ON exerc
 CREATE INDEX idx_exercise_set_workout_id ON exercise_set(workout_id);
 CREATE INDEX idx_exercise_set_exercise_id ON exercise_set(exercise_id);
 CREATE INDEX idx_exercise_set_exercise_for_workout_template_id ON exercise_set(exercise_for_workout_template_id);
+
+-- Unique constraints to prevent duplicates
+CREATE UNIQUE INDEX idx_exercise_body_part_unique ON exercise_body_part(exercise_id, body_part_category_id);
+CREATE UNIQUE INDEX idx_exercise_equipment_unique ON exercise_equipment(exercise_id, equipment_category_id);
 
 -- Unique constraint to enforce the exercise variant pattern
 -- Ensures each (template, ordering, index) combination is unique
