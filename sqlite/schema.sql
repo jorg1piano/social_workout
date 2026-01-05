@@ -1,9 +1,12 @@
 -- Database schema for workout tracking application
 -- Tables are ordered to respect foreign key dependencies
+-- Uses ULID (Universally Unique Lexicographically Sortable Identifier) for all IDs
+-- Format: app-01HJGT8MNTV3X9P0A6Y7Z8C9D (26 chars ULID + 4 char prefix = 30 total)
+-- Prefixes: app- (system/app generated), usr- (user created)
 
 -- 1. workout_template - No dependencies
 CREATE TABLE workout_template (
-  id INTEGER PRIMARY KEY NOT NULL,
+  id TEXT PRIMARY KEY NOT NULL CHECK((id LIKE 'app-%' OR id LIKE 'usr-%') AND length(id) = 30),
   name TEXT,
   description TEXT,
   notes TEXT,
@@ -13,7 +16,7 @@ CREATE TABLE workout_template (
 
 -- 2. exercise - No dependencies
 CREATE TABLE exercise (
-  id INTEGER PRIMARY KEY NOT NULL,
+  id TEXT PRIMARY KEY NOT NULL CHECK((id LIKE 'app-%' OR id LIKE 'usr-%') AND length(id) = 30),
   name TEXT,
   description TEXT,
   notes TEXT,
@@ -25,8 +28,8 @@ CREATE TABLE exercise (
 
 -- 3. workout_session - Depends on: workout_template
 CREATE TABLE workout (
-  id INTEGER PRIMARY KEY NOT NULL,
-  templateId INTEGER,
+  id TEXT PRIMARY KEY NOT NULL CHECK((id LIKE 'app-%' OR id LIKE 'usr-%') AND length(id) = 30),
+  templateId TEXT,
   startTime INTEGER,
   stopTime INTEGER,
   createdAt INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
@@ -36,9 +39,9 @@ CREATE TABLE workout (
 
 -- 4. exercise_for_workout_template - Depends on: workout_template, exercise
 CREATE TABLE exercise_for_workout_template (
-  id INTEGER PRIMARY KEY NOT NULL,
-  workoutTemplateId INTEGER NOT NULL,
-  exerciseId INTEGER NOT NULL,
+  id TEXT PRIMARY KEY NOT NULL CHECK((id LIKE 'app-%' OR id LIKE 'usr-%') AND length(id) = 30),
+  workoutTemplateId TEXT NOT NULL,
+  exerciseId TEXT NOT NULL,
   notes TEXT,
   ordering INTEGER,
   exerciseIndex INTEGER DEFAULT 0 NOT NULL,
@@ -50,7 +53,7 @@ CREATE TABLE exercise_for_workout_template (
 
 -- 5. exercise_set_template - Depends on: exercise, exercise_for_workout_template
 CREATE TABLE exercise_set_template (
-  id INTEGER PRIMARY KEY NOT NULL,
+  id TEXT PRIMARY KEY NOT NULL CHECK((id LIKE 'app-%' OR id LIKE 'usr-%') AND length(id) = 30),
   repCount INTEGER,
   weight DECIMAL(5,2),
   RIR DECIMAL(5,2),
@@ -59,8 +62,8 @@ CREATE TABLE exercise_set_template (
   ordering INTEGER NOT NULL,
   setType TEXT,
   restTime INTEGER DEFAULT 0 NOT NULL,
-  exerciseId INTEGER NOT NULL,
-  exerciseForWorkoutTemplateId INTEGER NOT NULL,
+  exerciseId TEXT NOT NULL,
+  exerciseForWorkoutTemplateId TEXT NOT NULL,
   createdAt INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
   updatedAt INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
   FOREIGN KEY(exerciseId) REFERENCES exercise(id),
@@ -69,7 +72,7 @@ CREATE TABLE exercise_set_template (
 
 -- 6. exercise_set - Depends on: workout, exercise, exercise_for_workout_template
 CREATE TABLE exercise_set (
-  id INTEGER PRIMARY KEY NOT NULL,
+  id TEXT PRIMARY KEY NOT NULL CHECK((id LIKE 'app-%' OR id LIKE 'usr-%') AND length(id) = 30),
   repCount INTEGER,
   weight DECIMAL(5,2),
   RIR DECIMAL(5,2),
@@ -78,9 +81,9 @@ CREATE TABLE exercise_set (
   ordering INTEGER,
   notes TEXT,
   restTime INTEGER DEFAULT 0 NOT NULL,
-  workoutId INTEGER NOT NULL,
-  exerciseId INTEGER NOT NULL,
-  exerciseForWorkoutTemplateId INTEGER NOT NULL,
+  workoutId TEXT NOT NULL,
+  exerciseId TEXT NOT NULL,
+  exerciseForWorkoutTemplateId TEXT NOT NULL,
   isCompleted INTEGER DEFAULT 0 NOT NULL,
   createdAt INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
   updatedAt INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
