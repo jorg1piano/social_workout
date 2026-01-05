@@ -133,6 +133,7 @@ See `database_schema_review.md` for detailed schema analysis and `sqlite/schema.
 
 - ✅ Added timestamps (`created_at`, `updated_at`) to all tables
 - ✅ Added `rest_time` field to set templates and actual sets
+- ✅ Added `duration` field to support timed exercises (cardio, planks, etc.)
 - ✅ Added indexes on all foreign keys
 - ✅ Fixed typos (INTENGER → INTEGER)
 - ✅ Added missing fields (weight, ordering, notes)

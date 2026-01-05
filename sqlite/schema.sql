@@ -87,10 +87,12 @@ CREATE TABLE exercise_for_workout_template (
 --   rpe: Rate of Perceived Exertion (1-10 scale)
 --   set_type: warmup, regularSet, dropSet, failure, etc.
 --   rest_time: Recommended rest between sets (in seconds)
+--   duration: Duration in seconds for timed exercises (cardio, planks, etc.)
 CREATE TABLE exercise_set_template (
   id TEXT PRIMARY KEY NOT NULL CHECK((id LIKE 'app-%' OR id LIKE 'usr-%') AND length(id) = 30),
   rep_count INTEGER,
   weight DECIMAL(5,2),
+  duration INTEGER,
   rir DECIMAL(5,2),
   rpe DECIMAL(5,2),
   unit TEXT,
@@ -110,6 +112,7 @@ CREATE TABLE exercise_set_template (
 -- Links to exercise_for_workout_template_id to track which variant was used
 --
 -- Example: "User did 10 reps at 100kg for Set 1 of Barbell Bench Press"
+--          "User cycled for 20 minutes (1200 seconds)"
 --
 -- This allows progression tracking by querying all sets for the same
 -- exercise_for_workout_template_id across multiple workout sessions
@@ -117,6 +120,7 @@ CREATE TABLE exercise_set (
   id TEXT PRIMARY KEY NOT NULL CHECK((id LIKE 'app-%' OR id LIKE 'usr-%') AND length(id) = 30),
   rep_count INTEGER,
   weight DECIMAL(5,2),
+  duration INTEGER,
   rir DECIMAL(5,2),
   rpe DECIMAL(5,2),
   unit TEXT,

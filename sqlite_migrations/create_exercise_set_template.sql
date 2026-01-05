@@ -2,6 +2,7 @@ CREATE TABLE exercise_set_template (
   id INTEGER PRIMARY KEY NOT NULL,
   rep_count INTEGER,
   weight DECIMAL(5,2),
+  duration INTEGER, /* Duration in seconds for timed exercises (cardio, planks, etc.) */
   rir DECIMAL(5,2),
   rpe DECIMAL(5,2),
   unit TEXT, /*kilos, pounds*/

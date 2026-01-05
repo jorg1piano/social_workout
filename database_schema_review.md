@@ -30,6 +30,7 @@ This document captures the review and analysis of the SQLite database schema for
 9. ✅ **NOT NULL constraints** - Added to `name` fields and `ordering` in `exercise_for_workout_template`
 10. ✅ **Foreign key cascade rules** - Proper ON DELETE behavior defined
 11. ✅ **Unique constraint** - Composite index on (workout_template_id, ordering, exercise_index)
+12. ✅ **`duration` field added** - Added `duration INTEGER` to both `exercise_set_template` and `exercise_set` for timed exercises (cardio, planks, etc.)
 
 ### Remaining Considerations
 None critical - schema is production-ready for MVP
@@ -42,6 +43,7 @@ None critical - schema is production-ready for MVP
 - ✅ `created_at` and `updated_at` timestamp fields
 - ✅ `rest_time` field in both templates and actual sets
 - ✅ All column names converted to snake_case (industry standard)
+- ✅ `duration` field for timed exercises (cardio, planks, etc.)
 
 ### Potential Future Features
 - `exercise_variation` field (e.g., "wide grip", "close grip") - could be added to `exercise_for_workout_template.notes` for now
@@ -67,6 +69,7 @@ None critical - schema is production-ready for MVP
 - [x] Add composite unique index on (workout_template_id, ordering, exercise_index)
 - [x] Add comprehensive schema documentation
 - [x] Convert all column names to snake_case (industry standard)
+- [x] Add `duration INTEGER` field to both `exercise_set_template` and `exercise_set` for timed exercises
 
 ### Future Considerations
 - [ ] Design multi-user support (user/profile tables)
