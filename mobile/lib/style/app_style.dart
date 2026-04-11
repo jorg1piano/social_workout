@@ -55,24 +55,17 @@ class AppStyle {
   static const double gapL = 16.0;
   static const double gapXL = 24.0;
 
-  static const EdgeInsets screenPadding =
-      EdgeInsets.symmetric(horizontal: 20.0);
-  static const EdgeInsets topBarPadding =
-      EdgeInsets.fromLTRB(12.0, 8.0, 12.0, 8.0);
+  static const EdgeInsets screenPadding = EdgeInsets.symmetric(horizontal: 20.0);
+  static const EdgeInsets topBarPadding = EdgeInsets.fromLTRB(12.0, 8.0, 12.0, 8.0);
   static const EdgeInsets cardPadding = EdgeInsets.all(16.0);
-  static const EdgeInsets pillPadding =
-      EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0);
-  static const EdgeInsets finishButtonPadding =
-      EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0);
+  static const EdgeInsets pillPadding = EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0);
+  static const EdgeInsets finishButtonPadding = EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0);
 
   // ---------- Radii ----------
 
-  static const BorderRadius cardRadius =
-      BorderRadius.all(Radius.circular(16.0));
-  static const BorderRadius pillRadius =
-      BorderRadius.all(Radius.circular(12.0));
-  static const BorderRadius circleRadius =
-      BorderRadius.all(Radius.circular(999.0));
+  static const BorderRadius cardRadius = BorderRadius.all(Radius.circular(16.0));
+  static const BorderRadius pillRadius = BorderRadius.all(Radius.circular(12.0));
+  static const BorderRadius circleRadius = BorderRadius.all(Radius.circular(999.0));
   static const BorderRadius sheetRadius = BorderRadius.only(
     topLeft: Radius.circular(24.0),
     topRight: Radius.circular(24.0),
@@ -99,16 +92,11 @@ class AppStyle {
   static const double setRowHGap = 10.0;
   static const double setRowVGap = 8.0;
 
-  static const EdgeInsets setRowPadding =
-      EdgeInsets.symmetric(vertical: 6.0);
+  static const EdgeInsets setRowPadding = EdgeInsets.symmetric(vertical: 6.0);
 
   // ---------- Text styles ----------
 
-  static const TextStyle topBarTimeStyle = TextStyle(
-    color: textPrimary,
-    fontSize: 15.0,
-    fontWeight: FontWeight.w500,
-  );
+  static const TextStyle topBarTimeStyle = TextStyle(color: textPrimary, fontSize: 15.0, fontWeight: FontWeight.w500);
 
   static const TextStyle finishButtonStyle = TextStyle(
     color: Colors.white,
@@ -123,29 +111,13 @@ class AppStyle {
     height: 1.1,
   );
 
-  static const TextStyle headerMetaStyle = TextStyle(
-    color: textSecondary,
-    fontSize: 13.0,
-    fontWeight: FontWeight.w500,
-  );
+  static const TextStyle headerMetaStyle = TextStyle(color: textSecondary, fontSize: 13.0, fontWeight: FontWeight.w500);
 
-  static const TextStyle exerciseNameStyle = TextStyle(
-    color: primaryBlue,
-    fontSize: 17.0,
-    fontWeight: FontWeight.w700,
-  );
+  static const TextStyle exerciseNameStyle = TextStyle(color: primaryBlue, fontSize: 17.0, fontWeight: FontWeight.w700);
 
-  static const TextStyle captionStyle = TextStyle(
-    color: textSecondary,
-    fontSize: 13.0,
-    fontWeight: FontWeight.w500,
-  );
+  static const TextStyle captionStyle = TextStyle(color: textSecondary, fontSize: 13.0, fontWeight: FontWeight.w500);
 
-  static const TextStyle sheetTitleStyle = TextStyle(
-    color: textPrimary,
-    fontSize: 18.0,
-    fontWeight: FontWeight.w700,
-  );
+  static const TextStyle sheetTitleStyle = TextStyle(color: textPrimary, fontSize: 18.0, fontWeight: FontWeight.w700);
 
   static const TextStyle sheetVariantNameStyle = TextStyle(
     color: textPrimary,
@@ -169,11 +141,7 @@ class AppStyle {
   );
 
   /// "1" / "2" / "3" working-set numbers in the Set column.
-  static const TextStyle setNumberStyle = TextStyle(
-    color: textPrimary,
-    fontSize: 15.0,
-    fontWeight: FontWeight.w700,
-  );
+  static const TextStyle setNumberStyle = TextStyle(color: textPrimary, fontSize: 15.0, fontWeight: FontWeight.w700);
 
   /// Orange "W" inside the warmup badge.
   static const TextStyle warmupBadgeStyle = TextStyle(
@@ -208,18 +176,10 @@ class AppStyle {
   );
 
   /// Editable value text inside the kg / reps input pill.
-  static const TextStyle inputPillStyle = TextStyle(
-    color: textPrimary,
-    fontSize: 15.0,
-    fontWeight: FontWeight.w600,
-  );
+  static const TextStyle inputPillStyle = TextStyle(color: textPrimary, fontSize: 15.0, fontWeight: FontWeight.w600);
 
   /// Blue "+ Add Set" action at the bottom of each card.
-  static const TextStyle addSetButtonStyle = TextStyle(
-    color: primaryBlue,
-    fontSize: 14.0,
-    fontWeight: FontWeight.w700,
-  );
+  static const TextStyle addSetButtonStyle = TextStyle(color: primaryBlue, fontSize: 14.0, fontWeight: FontWeight.w700);
 
   // ---------- Formatters ----------
 
@@ -254,10 +214,7 @@ class AppStyle {
     final base = ThemeData.light(useMaterial3: true);
     return base.copyWith(
       scaffoldBackgroundColor: scaffoldBackground,
-      colorScheme: base.colorScheme.copyWith(
-        primary: primaryBlue,
-        surface: scaffoldBackground,
-      ),
+      colorScheme: base.colorScheme.copyWith(primary: primaryBlue, surface: scaffoldBackground),
       splashFactory: NoSplash.splashFactory,
       highlightColor: Colors.transparent,
     );
