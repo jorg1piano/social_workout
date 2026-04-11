@@ -43,3 +43,8 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Local-only debug screenshots from emulator/device verification.
+# AC evidence lives in the spec doc + SQL spot-checks; binary artifacts
+# stay out of the tree.
+/screenshots/
