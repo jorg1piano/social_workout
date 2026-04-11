@@ -5,28 +5,19 @@ Format: Name (Equipment[, Equipment], Category[, Category]) - Bodypart[, Bodypar
 - Aerobics (Strength) - Cardio
 - Arnold Press (Dumbbell, Strength) - Shoulders
 - Around the World (Strength) - Chest
-- Back Extension (Strength) - Back
 - Back Extension (Machine, Strength) - Back
 - Ball Slams (Strength) - Full Body
 - Band Pull Apart (Strength) - Back, Other
 - Battle Ropes (Strength) - Cardio
 - Bayesian Curl (Cable, Strength) - Arms
 - Bench Dip (Strength) - Arms
-- Bench Press (Barbell, Strength) - Chest
-- Bench Press (Cable, Strength) - Chest
-- Bench Press (Dumbbell, Strength) - Chest
-- Bench Press (Smith Machine, Strength) - Chest
+- Bench Press (Barbell, Cable, Dumbbell, Smith Machine, Strength) - Chest
 - Bench Press - Close Grip (Barbell, Strength) - Arms
 - Bench Press - Wide Grip (Barbell, Strength) - Chest
 - Bent Over One Arm Row (Dumbbell, Cardio, Strength) - Back
-- Bent Over Row (Band, Cardio, Strength) - Back
-- Bent Over Row (Barbell, Cardio, Strength) - Back
-- Bent Over Row (Dumbbell, Cardio, Strength) - Back
+- Bent Over Row (Band, Barbell, Dumbbell, Cardio, Strength) - Back
 - Bent Over Row - Underhand (Barbell, Cardio, Strength) - Back
-- Bicep Curl (Barbell, Strength) - Arms
-- Bicep Curl (Cable, Strength) - Arms
-- Bicep Curl (Dumbbell, Strength) - Arms
-- Bicep Curl (Machine, Strength) - Arms
+- Bicep Curl (Barbell, Cable, Dumbbell, Machine, Strength) - Arms
 - Bicycle Crunch (Cardio) - Core
 - Bird Dog (Strength) - Core
 - Box Jump (Strength) - Legs
@@ -41,15 +32,10 @@ Format: Name (Equipment[, Equipment], Category[, Category]) - Bodypart[, Bodypar
 - Calf Press on Leg Press (Strength) - Legs
 - Calf Press on Seated Leg Press (Strength) - Legs
 - Cat Cow (Mobility) - Other
-- Chest Dip (Strength) - Chest
 - Chest Dip (Assisted, Strength) - Chest
-- Chest Fly (Strength) - Chest
-- Chest Fly (Band, Strength) - Chest
-- Chest Fly (Dumbbell, Strength) - Chest
-- Chest Press (Band, Strength) - Chest
-- Chest Press (Machine, Strength) - Chest
+- Chest Fly (Band, Dumbbell, Strength) - Chest
+- Chest Press (Band, Machine, Strength) - Chest
 - Chest Supported Row (Dumbbell, Cardio, Strength) - Back
-- Chin Up (Strength) - Back
 - Chin Up (Assisted, Strength) - Back
 - Clean (Barbell, Olympic, Strength) - Olympic
 - Clean and Jerk (Barbell, Olympic, Strength) - Olympic
@@ -59,22 +45,14 @@ Format: Name (Equipment[, Equipment], Category[, Category]) - Bodypart[, Bodypar
 - Cossack Squat (Strength) - Legs
 - Cross Body Crunch (Cardio) - Core
 - Cross Body Hammer Curl (Strength) - Arms
-- Crunch (Cardio) - Core
-- Crunch (Machine, Cardio, Strength) - Core
-- Crunch (Stability Ball, Cardio, Strength) - Core
+- Crunch (Machine, Stability Ball, Cardio, Strength) - Core
 - Cuban Press (Strength) - Shoulders
 - Curtsy Lunge (Strength) - Legs
-- Cycling (Strength) - Cardio
 - Cycling (Indoor, Strength) - Cardio
 - Dead Bug (Strength) - Core
-- Deadlift (Band, Strength) - Back, Legs
-- Deadlift (Barbell, Strength) - Back
-- Deadlift (Dumbbell, Strength) - Back, Legs
-- Deadlift (Smith Machine, Strength) - Back, Legs
+- Deadlift (Band, Barbell, Dumbbell, Smith Machine, Strength) - Back, Legs
 - Deadlift High Pull (Barbell, Strength) - Olympic
-- Decline Bench Press (Barbell, Strength) - Chest
-- Decline Bench Press (Dumbbell, Strength) - Chest
-- Decline Bench Press (Smith Machine, Strength) - Chest
+- Decline Bench Press (Barbell, Dumbbell, Smith Machine, Strength) - Chest
 - Decline Crunch (Cardio) - Core
 - Deficit Deadlift (Barbell, Strength) - Back, Legs
 - Drag Curl (Barbell, Strength) - Arms
@@ -84,23 +62,15 @@ Format: Name (Equipment[, Equipment], Category[, Category]) - Bodypart[, Bodypar
 - Flat Knee Raise (Strength) - Core
 - Flat Leg Raise (Strength) - Core
 - Floor Press (Barbell, Strength) - Chest, Other
-- Front Raise (Band, Strength) - Shoulders
-- Front Raise (Barbell, Strength) - Shoulders
-- Front Raise (Cable, Strength) - Shoulders
-- Front Raise (Dumbbell, Strength) - Shoulders
-- Front Raise (Plate, Strength) - Shoulders
+- Front Raise (Band, Barbell, Cable, Dumbbell, Plate, Strength) - Shoulders
 - Front Squat (Barbell, Strength) - Legs
-- Glute Bridge (Barbell, Strength) - Legs
-- Glute Bridge (Bodyweight, Strength) - Legs
+- Glute Bridge (Barbell, Bodyweight, Strength) - Legs
 - Glute Ham Raise (Strength) - Legs
 - Glute Kickback (Machine, Strength) - Legs
 - Goblet Squat (Kettlebell, Strength) - Legs
 - Good Morning (Barbell, Strength) - Back
-- Hack Squat (Strength) - Legs
 - Hack Squat (Barbell, Strength) - Legs
-- Hammer Curl (Band, Strength) - Arms
-- Hammer Curl (Cable, Strength) - Arms
-- Hammer Curl (Dumbbell, Strength) - Arms
+- Hammer Curl (Band, Cable, Dumbbell, Strength) - Arms
 - Handstand Push Up (Strength) - Chest, Legs
 - Hang Clean (Barbell, Olympic, Strength) - Olympic
 - Hang Snatch (Barbell, Olympic, Strength) - Olympic
@@ -111,14 +81,9 @@ Format: Name (Equipment[, Equipment], Category[, Category]) - Bodypart[, Bodypar
 - Hip Abductor (Machine, Strength) - Legs, Other
 - Hip Adductor (Machine, Strength) - Legs, Other
 - Hip Flexor Stretch (Half Kneeling, Mobility, Strength) - Other
-- Hip Thrust (Barbell, Strength) - Legs
-- Hip Thrust (Bodyweight, Strength) - Legs
-- Hip Thrust (Dumbbell, Strength) - Legs
+- Hip Thrust (Barbell, Bodyweight, Dumbbell, Strength) - Legs
 - Hollow Body Hold (Strength) - Core
-- Incline Bench Press (Barbell, Strength) - Chest
-- Incline Bench Press (Cable, Strength) - Chest
-- Incline Bench Press (Dumbbell, Strength) - Chest
-- Incline Bench Press (Smith Machine, Strength) - Chest
+- Incline Bench Press (Barbell, Cable, Dumbbell, Smith Machine, Strength) - Chest
 - Incline Chest Fly (Dumbbell, Strength) - Chest
 - Incline Chest Press (Machine, Strength) - Chest
 - Incline Curl (Dumbbell, Strength) - Arms
@@ -138,22 +103,14 @@ Format: Name (Equipment[, Equipment], Category[, Category]) - Bodypart[, Bodypar
 - Kneeling Pulldown (Band, Strength) - Back
 - Knees to Elbows (Strength) - Core, Other
 - Landmine Press (Single Arm, Strength) - Shoulders
-- Lat Pulldown (Cable, Strength) - Back
-- Lat Pulldown (Machine, Strength) - Back
-- Lat Pulldown (Single Arm, Strength) - Back
-- Lat Pulldown - Underhand (Band, Strength) - Back
-- Lat Pulldown - Underhand (Cable, Strength) - Back
+- Lat Pulldown (Cable, Machine, Single Arm, Strength) - Back
+- Lat Pulldown - Underhand (Band, Cable, Strength) - Back
 - Lat Pulldown - Wide Grip (Cable, Strength) - Back
 - Lateral Box Jump (Strength) - Legs
-- Lateral Raise (Band, Strength) - Shoulders
-- Lateral Raise (Cable, Strength) - Shoulders
-- Lateral Raise (Dumbbell, Strength) - Shoulders
-- Lateral Raise (Machine, Strength) - Shoulders
+- Lateral Raise (Band, Cable, Dumbbell, Machine, Strength) - Shoulders
 - Leg Extension (Machine, Strength) - Legs
 - Leg Press (Strength) - Legs
-- Lunge (Barbell, Strength) - Legs
-- Lunge (Bodyweight, Strength) - Legs
-- Lunge (Dumbbell, Strength) - Legs
+- Lunge (Barbell, Bodyweight, Dumbbell, Strength) - Legs
 - Lying Leg Curl (Machine, Strength) - Legs
 - Machine Chest Press (Strength) - Chest
 - Machine Overhead Press (Strength) - Arms
@@ -162,74 +119,46 @@ Format: Name (Equipment[, Equipment], Category[, Category]) - Bodypart[, Bodypar
 - Muscle Up (Full Body) - Full Body
 - Nordic Hamstring Curl (Strength) - Arms
 - Oblique Crunch (Cardio) - Core
-- Overhead Press (Barbell, Strength) - Shoulders
-- Overhead Press (Cable, Strength) - Shoulders
-- Overhead Press (Dumbbell, Strength) - Shoulders
-- Overhead Press (Smith Machine, Strength) - Shoulders
+- Overhead Press (Barbell, Cable, Dumbbell, Smith Machine, Strength) - Shoulders
 - Overhead Squat (Barbell, Strength) - Olympic
 - Overhead Triceps Extension (Cable, Strength) - Arms
-- Pallof Press (Band, Strength) - Core
-- Pallof Press (Cable, Strength) - Core
+- Pallof Press (Band, Cable, Strength) - Core
 - Pec Deck (Machine, Strength) - Chest
 - Pendlay Row (Barbell, Cardio, Strength) - Back
 - Pistol Squat (Strength) - Legs
 - Plank (Strength) - Core
 - Power Clean (Olympic) - Olympic
 - Power Snatch (Barbell, Olympic, Strength) - Olympic
-- Preacher Curl (Barbell, Strength) - Arms
-- Preacher Curl (Dumbbell, Strength) - Arms
-- Preacher Curl (Machine, Strength) - Arms
+- Preacher Curl (Barbell, Dumbbell, Machine, Strength) - Arms
 - Press Under (Barbell, Olympic, Strength) - Olympic
-- Pull Up (Strength) - Back
-- Pull Up (Assisted, Strength) - Back
-- Pull Up (Band, Strength) - Back
-- Pullover (Dumbbell, Strength) - Chest
-- Pullover (Machine, Strength) - Chest
+- Pull Up (Assisted, Band, Strength) - Back
+- Pullover (Dumbbell, Machine, Strength) - Chest
 - Push Press (Strength) - Shoulders
-- Push Up (Strength) - Chest
-- Push Up (Band, Strength) - Chest
-- Push Up (Decline, Strength) - Chest
-- Push Up (Diamond, Strength) - Chest
-- Push Up (Knees, Strength) - Chest
+- Push Up (Band, Decline, Diamond, Knees, Strength) - Chest
 - Rack Pull (Barbell, Strength) - Back
 - Rear Delt Row (Cardio) - Shoulders
 - Reverse Crunch (Cardio) - Core
-- Reverse Curl (Band, Strength) - Arms
-- Reverse Curl (Barbell, Strength) - Arms
-- Reverse Curl (Dumbbell, Strength) - Arms
-- Reverse Fly (Cable, Strength) - Shoulders
-- Reverse Fly (Dumbbell, Strength) - Chest, Shoulders
-- Reverse Fly (Machine, Strength) - Shoulders
+- Reverse Curl (Band, Barbell, Dumbbell, Strength) - Arms
+- Reverse Fly (Cable, Dumbbell, Machine, Strength) - Shoulders, Chest
 - Reverse Grip Concentration Curl (Dumbbell, Strength) - Arms
 - Reverse Lunge (Dumbbell, Strength) - Legs
 - Reverse Plank (Strength) - Core
-- Romanian Deadlift (Barbell, Strength) - Back
-- Romanian Deadlift (Dumbbell, Strength) - Legs
+- Romanian Deadlift (Barbell, Dumbbell, Strength) - Back, Legs
 - Rowing (Machine, Cardio, Strength) - Cardio
-- Running (Cardio) - Cardio
 - Running (Treadmill, Cardio, Strength) - Cardio
 - Russian Twist (Strength) - Core
 - Scapular Push Up (Strength) - Chest
-- Seated Calf Raise (Machine, Strength) - Legs
-- Seated Calf Raise (Plate Loaded, Strength) - Legs
+- Seated Calf Raise (Machine, Plate Loaded, Strength) - Legs
 - Seated Leg Curl (Machine, Strength) - Arms, Legs
 - Seated Leg Press (Machine, Strength) - Legs
-- Seated Overhead Press (Barbell, Strength) - Shoulders
-- Seated Overhead Press (Dumbbell, Strength) - Shoulders
+- Seated Overhead Press (Barbell, Dumbbell, Strength) - Shoulders
 - Seated Palms Up Wrist Curl (Dumbbell, Strength) - Arms
-- Seated Row (Cable, Cardio, Strength) - Back
-- Seated Row (Machine, Cardio, Strength) - Back
+- Seated Row (Cable, Machine, Cardio, Strength) - Back
 - Seated Wide-Grip Row (Cable, Cardio, Strength) - Back
-- Shoulder Press (Machine, Strength) - Shoulders
-- Shoulder Press (Plate Loaded, Strength) - Shoulders
+- Shoulder Press (Machine, Plate Loaded, Strength) - Shoulders
 - Shoulderpress (Strength) - Chest
-- Shrug (Barbell, Strength) - Shoulders
-- Shrug (Dumbbell, Strength) - Shoulders
-- Shrug (Machine, Strength) - Back
-- Shrug (Smith Machine, Strength) - Back
-- Side Bend (Band, Strength) - Core
-- Side Bend (Cable, Strength) - Core
-- Side Bend (Dumbbell, Strength) - Core
+- Shrug (Barbell, Dumbbell, Machine, Smith Machine, Strength) - Shoulders, Back
+- Side Bend (Band, Cable, Dumbbell, Strength) - Core
 - Side Plank (Strength) - Core
 - Single Leg Bridge (Strength) - Legs
 - Single-Leg Romanian Deadlift (Dumbbell, Strength) - Back
@@ -237,28 +166,17 @@ Format: Name (Equipment[, Equipment], Category[, Category]) - Bodypart[, Bodypar
 - Sit Up (Strength) - Core
 - Skating (Strength) - Cardio
 - Skiing (Cardio) - Cardio
-- Skullcrusher (Barbell, Strength) - Arms
-- Skullcrusher (Dumbbell, Strength) - Arms
+- Skullcrusher (Barbell, Dumbbell, Strength) - Arms
 - Snatch (Barbell, Olympic, Strength) - Olympic
 - Snatch Pull (Barbell, Olympic, Strength) - Olympic
 - Snowboarding (Strength) - Cardio
 - Split Jerk (Barbell, Olympic, Strength) - Olympic
-- Squat (Band, Strength) - Legs
-- Squat (Barbell, Strength) - Legs
-- Squat (Bodyweight, Strength) - Legs
-- Squat (Dumbbell, Strength) - Legs
-- Squat (Machine, Strength) - Legs
-- Squat (Smith Machine, Strength) - Legs
+- Squat (Band, Barbell, Bodyweight, Dumbbell, Machine, Smith Machine, Strength) - Legs
 - Squat Row (Band, Cardio, Strength) - Full Body
 - Squeeze Press (Dumbbell, Strength) - Other
-- Standing Calf Raise (Barbell, Strength) - Legs
-- Standing Calf Raise (Bodyweight, Strength) - Legs
-- Standing Calf Raise (Dumbbell, Strength) - Legs
-- Standing Calf Raise (Machine, Strength) - Legs
-- Standing Calf Raise (Smith Machine, Strength) - Legs
+- Standing Calf Raise (Barbell, Bodyweight, Dumbbell, Machine, Smith Machine, Strength) - Legs
 - Step-up (Strength) - Legs
-- Stiff Leg Deadlift (Barbell, Strength) - Back
-- Stiff Leg Deadlift (Dumbbell, Strength) - Legs
+- Stiff Leg Deadlift (Barbell, Dumbbell, Strength) - Back, Legs
 - Straight Arm Pulldown (Cable, Strength) - Back
 - Straight Leg Deadlift (Band, Strength) - Legs
 - Stretching (Mobility) - Other
@@ -268,24 +186,16 @@ Format: Name (Equipment[, Equipment], Category[, Category]) - Bodypart[, Bodypar
 - Superman (Strength) - Core
 - Swimming (Cardio) - Cardio
 - T Bar Row (Cardio) - Back
-- Thruster (Barbell, Full Body, Strength) - Full Body
-- Thruster (Kettlebell, Full Body, Strength) - Full Body
+- Thruster (Barbell, Kettlebell, Full Body, Strength) - Full Body
 - Toes To Bar (Strength) - Core
 - Torso Rotation (Machine, Strength) - Core, Other
 - Trap Bar Deadlift (Strength) - Back, Legs
 - tricep Flat Bar (Strength) - Arms
-- Triceps Dip (Strength) - Arms
 - Triceps Dip (Assisted, Strength) - Arms
-- Triceps Extension (Strength) - Arms
-- Triceps Extension (Barbell, Strength) - Arms
-- Triceps Extension (Cable, Strength) - Arms
-- Triceps Extension (Dumbbell, Strength) - Arms
-- Triceps Extension (Machine, Strength) - Arms
+- Triceps Extension (Barbell, Cable, Dumbbell, Machine, Strength) - Arms
 - Triceps Pressdown (Cable, Rope, Strength) - Arms
-- Triceps Pushdown (Cable - Straight Bar, Strength) - Arms
-- Upright Row (Barbell, Cardio, Strength) - Back
-- Upright Row (Cable, Cardio, Strength) - Arms
-- Upright Row (Dumbbell, Cardio, Strength) - Shoulders
+- Triceps Pushdown (Strength, Cable - Straight Bar) - Arms
+- Upright Row (Barbell, Cable, Dumbbell, Cardio, Strength) - Back, Arms, Shoulders
 - V Up (Strength) - Core, Other
 - Walking (Cardio) - Cardio
 - Walking Lunge (Dumbbell, Cardio, Strength) - Cardio

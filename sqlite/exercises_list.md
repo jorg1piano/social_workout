@@ -108,6 +108,7 @@ I've extracted **300+ exercises** from the images. Here's the complete breakdown
 - Hang Snatch (Barbell) - Olympic
 - Hanging Knee Raise - Core
 - Hanging Leg Raise - Core
+- Hex Squat (Barbell) - Legs
 - High Knee Skips - Legs
 - Hiking - Cardio
 - Hip Abductor (Machine) - Legs

@@ -52,27 +52,18 @@ INSERT INTO exercise (id, name) VALUES
 ('app-01KE649R2405SY8E2N83D8RSS1', 'Aerobics'),
 ('app-01KE649R2AZC9S7YFB0X3GAR5C', 'Arnold Press'),
 ('app-01KE649R27A1VGJGTFYP1NTCH6', 'Around the World'),
-('app-01KE649R2C6EM52ZY7T7AN8D3A', 'Back Extension'), -- Bodyweight
 ('app-01KE649R2F2K217WZY43G4EX0G', 'Back Extension'), -- Machine
 ('app-01KE649R2J18C5K5261V4H012M', 'Ball Slams'),
 ('app-01KE649R2ND0051KFVFEVZ8339', 'Band Pull Apart'),
 ('app-01KE649R2RW58W4B1KBVHZB16W', 'Battle Ropes'),
 ('app-01KE649R2VAVWWKS3PBMSY6M8W', 'Bayesian Curl'),
 ('app-01KE649R2Y6F4GV5R5V42Q3SET', 'Bench Dip'),
-('app-01KE649R3375V16T87J6WDBF31', 'Bench Press'), -- Barbell
-('app-01KE649R37QDQ7AJSVRE1QR6D1', 'Bench Press'), -- Cable
-('app-01KE649R3A1BAW2GA6RBH982VB', 'Bench Press'), -- Dumbbell
 ('app-01KE649R3DHD6HFEM69RKAA5BE', 'Bench Press'), -- Smith Machine
 ('app-01KE649R30T6WPRXDA5JTQXRVK', 'Bench Press - Close Grip'),
 ('app-01KE649R3G7ZBK12BFYN524VWM', 'Bench Press - Wide Grip'),
 ('app-01KE649R3ZKSW8RJK55YHXHRFK', 'Bent Over One Arm Row'),
-('app-01KE649R3K68YNKE6S70Z4RSYF', 'Bent Over Row'), -- Band
-('app-01KE649R3P5YCBT4BYMXC3X8GD', 'Bent Over Row'), -- Barbell
 ('app-01KE649R3SGW1J64BZ3JQ1ADDY', 'Bent Over Row'), -- Dumbbell
 ('app-01KE649R3WPW39H95PPTMHK2R0', 'Bent Over Row - Underhand'),
-('app-01KE649R421CQ35A6BZRFQGV5R', 'Bicep Curl'), -- Barbell
-('app-01KE649R45VRMCWZG086GF91G8', 'Bicep Curl'), -- Cable
-('app-01KE649R481B522130HFGHVXKA', 'Bicep Curl'), -- Dumbbell
 ('app-01KE649R4BVKJ25QRJMDTPJ23F', 'Bicep Curl'), -- Machine
 ('app-01KE649R4DXDNSFSCN2CS9F9J7', 'Bicycle Crunch'),
 ('app-01KE649R4GJW90E9JF0K7P8ENV', 'Bird Dog'),
@@ -88,15 +79,10 @@ INSERT INTO exercise (id, name) VALUES
 ('app-01KE649R6F98AX74S4R3M0F8X4', 'Calf Press on Leg Press'),
 ('app-01KE649R6D4Q97E2DCW2514CZY', 'Calf Press on Seated Leg Press'),
 ('app-01KE649R6JRPGKF4Y7687NEM4Y', 'Cat Cow'),
-('app-01KE649R6NYXXRDABVR23T1735', 'Chest Dip'), -- Bodyweight
 ('app-01KE649R6R5ZHEKHTVMAY9R7BS', 'Chest Dip'), -- Assisted
-('app-01KE649R6VBRR6YY73PPBJD2SH', 'Chest Fly'), -- Machine
-('app-01KE649R6YW66Q38T415HD6ECM', 'Chest Fly'), -- Band
 ('app-01KE649R71GSZG5BS5M600SD3V', 'Chest Fly'), -- Dumbbell
-('app-01KE649R74GCR98S8P73ESSADA', 'Chest Press'), -- Band
 ('app-01KE649R77SXW1FH959ZFBT5GG', 'Chest Press'), -- Machine
 ('app-01KE649R7A9BNP1G6Z7M8VZ6YM', 'Chest Supported Row'),
-('app-01KE649R7C0PMYVZSV4B4193F9', 'Chin Up'), -- Bodyweight
 ('app-01KE649R7F9CE9RM4BRZY6KJYT', 'Chin Up'), -- Assisted
 ('app-01KE649R7JTN7GNR4GRF9418YW', 'Clean'),
 ('app-01KE649R7M7XC613FRVHFN5QTB', 'Clean and Jerk'),
@@ -106,21 +92,13 @@ INSERT INTO exercise (id, name) VALUES
 ('app-01KE649R7ZFVYD4S6CAREM33H0', 'Cossack Squat'),
 ('app-01KE649R824MFPKA6SBRZX9XGV', 'Cross Body Crunch'),
 ('app-01KE649R842J418C3ZH4PWTBJC', 'Cross Body Hammer Curl'),
-('app-01KE649R87Y50ZNCPBW4PKPHRG', 'Crunch'), -- Bodyweight
-('app-01KE649R8AME388XCKFSVHP029', 'Crunch'), -- Machine
 ('app-01KE649R8DDZPPC0QZ0X1PWM0W', 'Crunch'), -- Stability Ball
 ('app-01KE649R8GVG7F67NTFQBFA9RP', 'Cuban Press'),
 ('app-01KE649R8K1GQJ174A0QEJBZFE', 'Curtsy Lunge'),
-('app-01KE649R8P6B82MY1AYZFVFMRH', 'Cycling'), -- Outdoor
 ('app-01KE649R8R865NZGE06TGJ0TX8', 'Cycling'), -- Indoor
 ('app-01KE649R8V1FAXZ9Z4E85P9WWX', 'Dead Bug'),
-('app-01KE649R8Y6X4SG98RKED6FQCJ', 'Deadlift'), -- Band
-('app-01KE649R91F7PM1C0ZKZ35GX08', 'Deadlift'), -- Barbell
-('app-01KE649R94XXRGSWN20098CYDV', 'Deadlift'), -- Dumbbell
 ('app-01KE649R9AJJEY97C4SQMPGK0P', 'Deadlift'), -- Smith Machine
 ('app-01KE649R969NQ6RCD3FVNNKG9P', 'Deadlift High Pull'),
-('app-01KE649R9DN1R24KHASFM3Y7C1', 'Decline Bench Press'), -- Barbell
-('app-01KE649R9GCT15KZTRKV557SD2', 'Decline Bench Press'), -- Dumbbell
 ('app-01KE649R9K9WFZJNYDK9Z3FM9Z', 'Decline Bench Press'), -- Smith Machine
 ('app-01KE649R9PXNTRR4EA0002NCPC', 'Decline Crunch'),
 ('app-01KE649R9S670TB998ZGFB5DBF', 'Deficit Deadlift'),
@@ -131,22 +109,14 @@ INSERT INTO exercise (id, name) VALUES
 ('app-01KE649RPJ2RZYQKTYBTS4E27Y', 'Flat Knee Raise'),
 ('app-01KE649RPNZZXWZKRPQXKB5MMJ', 'Flat Leg Raise'),
 ('app-01KE649RPS0XNG8N41378AC9Z6', 'Floor Press'),
-('app-01KE649RPWW7B5NYYAJY2D05TN', 'Front Raise'), -- Band
-('app-01KE649RQ8YMKGKJJZRA2AQWVS', 'Front Raise'), -- Barbell
-('app-01KE649RPZRAZVRSYFQDBHMZBN', 'Front Raise'), -- Cable
-('app-01KE649RQ2DFCZ5G024TXYDY2A', 'Front Raise'), -- Dumbbell
 ('app-01KE649RQ507VM700ABR0X72R9', 'Front Raise'), -- Plate
 ('app-01KE649RQB6WGGH0WQF73544DS', 'Front Squat'),
-('app-01KE649RQEV0S4BFBQRKPFDWSH', 'Glute Bridge'), -- Barbell
 ('app-01KE649RQHG0E6FCG9DTGBYPKE', 'Glute Bridge'), -- Bodyweight
 ('app-01KE649RQNQH57FMCM822XJETG', 'Glute Ham Raise'),
 ('app-01KE649RQR4RZDWWDN7XD2FY6E', 'Glute Kickback'),
 ('app-01KE649RQVRAS3DPHVP57TEMR5', 'Goblet Squat'),
 ('app-01KE649RQZ2J9298C3K7KRSZXZ', 'Good Morning'),
-('app-01KE649RR28T4Z5EE1XS1DFAS7', 'Hack Squat'), -- Machine
 ('app-01KE649RR5VDFXKEABEK2YZ2AK', 'Hack Squat'), -- Barbell
-('app-01KE649RR96M1PSF3NHTMP62SH', 'Hammer Curl'), -- Band
-('app-01KE649RRC6G49DZ8QKG5T9R8Y', 'Hammer Curl'), -- Cable
 ('app-01KE649RRFBV8CJ4DFTMZ5TTKH', 'Hammer Curl'), -- Dumbbell
 ('app-01KE649RRJP80MJNEMVNVR4P11', 'Handstand Push Up'),
 ('app-01KE649RRNYYNXHMFEDXDZ5JWS', 'Hang Clean'),
@@ -158,13 +128,8 @@ INSERT INTO exercise (id, name) VALUES
 ('app-01KE649RS8QFV656XPMM8YCJ8D', 'Hip Abductor'),
 ('app-01KE649RSBEHNSMBDS50BK3SDR', 'Hip Adductor'),
 ('app-01KE649RSE481357RP8WCEW34H', 'Hip Flexor Stretch'),
-('app-01KE649RSMQDRRNGZP51DP70H5', 'Hip Thrust'), -- Barbell
-('app-01KE649RSTB7BHSP8DCQ7FQJAR', 'Hip Thrust'), -- Bodyweight
 ('app-01KE649RSQSGDYVNMRD9FQVQTY', 'Hip Thrust'), -- Dumbbell
 ('app-01KE649RSXE21YF5G5JVAFVWY0', 'Hollow Body Hold'),
-('app-01KE649RT56B6SDJN4HR13WC1D', 'Incline Bench Press'), -- Barbell
-('app-01KE649RT82NHAHJTV220VPMZN', 'Incline Bench Press'), -- Cable
-('app-01KE649RTBQ74FQ145FGDGS98V', 'Incline Bench Press'), -- Dumbbell
 ('app-01KE649RTDT6F8FK63GNSJGNVQ', 'Incline Bench Press'), -- Smith Machine
 ('app-01KE649RT0N7HKKG6E66GX1SAZ', 'Incline Chest Fly'),
 ('app-01KE649RT21YA7H9QHFZYCTEH9', 'Incline Chest Press'),
@@ -185,21 +150,13 @@ INSERT INTO exercise (id, name) VALUES
 ('app-01KE649RVRH10VP6MBCWH8CJZY', 'Kneeling Pulldown'),
 ('app-01KE649RVZKBTX6SFYESSZT8RD', 'Knees to Elbows'),
 ('app-01KE649RW2GXTRGGG2ZJEV6NH8', 'Landmine Press'),
-('app-01KE649RWNZ4T450G3R2V89NZZ', 'Lat Pulldown'), -- Cable
-('app-01KE649RWRQN9YVY3SZ2FE3Z5Z', 'Lat Pulldown'), -- Machine
 ('app-01KE649RWVB6FB8E3Z2RMBGXPJ', 'Lat Pulldown'), -- Single Arm
-('app-01KE649RWYM19J2WV67TTSWC46', 'Lat Pulldown - Underhand'), -- Band
 ('app-01KE649RX23PEN2Z3VXYNSMMMZ', 'Lat Pulldown - Underhand'), -- Cable
 ('app-01KE649RX5NJJ18Y3M5J7AEJ6T', 'Lat Pulldown - Wide Grip'),
 ('app-01KE649RW5164K7BM5VSNTBQ50', 'Lateral Box Jump'),
-('app-01KE649RW8Q6TFGS5K0KHZFTTE', 'Lateral Raise'), -- Band
-('app-01KE649RWB26ZZ6DP344N8EJ6D', 'Lateral Raise'), -- Cable
-('app-01KE649RWFRATF5HQX4A89VR9P', 'Lateral Raise'), -- Dumbbell
 ('app-01KE649RWJPQJ2E9QWZP7DVC0H', 'Lateral Raise'), -- Machine
 ('app-01KE649RX8CSNX00Z0YBY7B3HE', 'Leg Extension'),
 ('app-01KE649RXBXE2BP0SE9JRDWP3Q', 'Leg Press'),
-('app-01KE649RXE9YM5EAZYZVKDDZ5Y', 'Lunge'), -- Barbell
-('app-01KE649RXH32NTHRZ61VDA3V62', 'Lunge'), -- Bodyweight
 ('app-01KE649RXMNPBJJ3ZVEQPV4BSF', 'Lunge'), -- Dumbbell
 ('app-01KE649RXQFR6VPGJ7WTFSPGX3', 'Lying Leg Curl'),
 ('app-01KE649RXV62614A291T2WJCZN', 'Machine Chest Press'),
@@ -209,13 +166,9 @@ INSERT INTO exercise (id, name) VALUES
 ('app-01KE649RY7G9G29ZXN0MMG5Z02', 'Muscle Up'),
 ('app-01KE649RY9197BWH7M1Q66NH2W', 'Nordic Hamstring Curl'),
 ('app-01KE649RYDZDMPFBEEK0540CJ9', 'Oblique Crunch'),
-('app-01KE649RYFG0DTPXFWPCRRSRE9', 'Overhead Press'), -- Barbell
-('app-01KE649RYJKPWVZYFMF1DA2HEY', 'Overhead Press'), -- Cable
-('app-01KE649RYPQ2DEMCGV38JW8DTR', 'Overhead Press'), -- Dumbbell
 ('app-01KE649RYS8PJ2SP1BEPEEE4T9', 'Overhead Press'), -- Smith Machine
 ('app-01KE649RYWA19K9RJ7CZ370F4E', 'Overhead Squat'),
 ('app-01KE649RYZM2JBP4JXD6PZNJS7', 'Overhead Triceps Extension'),
-('app-01KE649RZ3HEWRXJX3V8AHY04P', 'Pallof Press'), -- Band
 ('app-01KE649RZ6596C87W7FJ6P365N', 'Pallof Press'), -- Cable
 ('app-01KE649RZ91RCBEY81SSFEQWFP', 'Pec Deck'),
 ('app-01KE649RZCK655BYEAY4DRPR2T', 'Pendlay Row'),
@@ -223,59 +176,36 @@ INSERT INTO exercise (id, name) VALUES
 ('app-01KE649RZJ0W8JBMTENEB460ZT', 'Plank'),
 ('app-01KE649RZNHGF7FMTPQ0DZ0VFK', 'Power Clean'),
 ('app-01KE649RZRC3DCEP7W99WQ84BD', 'Power Snatch'),
-('app-01KE649RZWJAJP35DYH3Y5Q293', 'Preacher Curl'), -- Barbell
-('app-01KE649RZZ4SP1BB0G0J1BFTZ1', 'Preacher Curl'), -- Dumbbell
 ('app-01KE649S02TECGG3AT17G5ZWAY', 'Preacher Curl'), -- Machine
 ('app-01KE649S05F0ASQQE0P3CFJ2BX', 'Press Under'),
-('app-01KE649S0D91XMSMYXJRWAHPWA', 'Pull Up'), -- Bodyweight
-('app-01KE649S0G0C8N9G0DY4SGXGX6', 'Pull Up'), -- Assisted
 ('app-01KE649S0K5B5Z08APDGVKJEA3', 'Pull Up'), -- Band
-('app-01KE649S07TF699JZWXXJBTYJB', 'Pullover'), -- Dumbbell
 ('app-01KE649S0AZQNEMXVV3M01Q580', 'Pullover'), -- Machine
 ('app-01KE649S0P24F3WHMVVREBMQQ3', 'Push Press'),
-('app-01KE649S0SF1MNRGYHQ0RT76YE', 'Push Up'), -- Bodyweight
-('app-01KE649S0WPTM5JVCCJ9JHWG1N', 'Push Up'), -- Band
-('app-01KE649S0ZNG7XG3XXDSEHGGAR', 'Push Up'), -- Decline
-('app-01KE649S13YF5PXPR6Q6H80TQD', 'Push Up'), -- Diamond
 ('app-01KE649S1645JYS95VWAWWCG9J', 'Push Up'), -- Knees
 ('app-01KE649S19MHYM1FAKN33ESZT2', 'Rack Pull'),
 ('app-01KE649S1CGF86DNDMP48XGYXA', 'Rear Delt Row'),
 ('app-01KE649S1FSZPXPFV7APQMSXEZ', 'Reverse Crunch'),
-('app-01KE649S1JT5F68AQ4KQXNQCM8', 'Reverse Curl'), -- Band
-('app-01KE649S1R2XAK57NYT72FGNJM', 'Reverse Curl'), -- Barbell
 ('app-01KE649S1NQRD5T1F3WEVQMCBW', 'Reverse Curl'), -- Dumbbell
-('app-01KE649S1T7KWCZA6H3JXP3S0C', 'Reverse Fly'), -- Cable
-('app-01KE649S1X82WS377HV8MDXDRR', 'Reverse Fly'), -- Dumbbell
 ('app-01KE649S20TCKAS84XPK5XEP7F', 'Reverse Fly'), -- Machine
 ('app-01KE649S29VXFG2WVJ2TR6V720', 'Reverse Grip Concentration Curl'),
 ('app-01KE649S23A1Q0V2ETWXVP5YST', 'Reverse Lunge'),
 ('app-01KE649S26WNZ8Z4RYQHJ4VN00', 'Reverse Plank'),
-('app-01KE649S2CFHM6EEWC73ENWBG0', 'Romanian Deadlift'), -- Barbell
 ('app-01KE649S2FQP180BFDNG1DWJJC', 'Romanian Deadlift'), -- Dumbbell
 ('app-01KE649S2J095ZP9ETH04Z7NC7', 'Rowing'),
-('app-01KE649S2P5P3RVZ6QAGGP8TX9', 'Running'), -- Outdoor
 ('app-01KE649S2STZZ7QARCEZD3522P', 'Running'), -- Treadmill
 ('app-01KE649S2VP5EY7CR561TTE3RR', 'Russian Twist'),
 ('app-01KE649S2Y9EY49R2QM3XH2EH3', 'Scapular Push Up'),
-('app-01KE649S31MBEP3DYFCCMF4PF7', 'Seated Calf Raise'), -- Machine
 ('app-01KE649S34RY5H1PWF2N5H27SB', 'Seated Calf Raise'), -- Plate Loaded
 ('app-01KE649S37AZPK1G55Z5DDD5GA', 'Seated Leg Curl'),
 ('app-01KE649S3AV5QWXFQ2XFBACJ28', 'Seated Leg Press'),
-('app-01KE649S3D3HYC5B8BWKWXF6FK', 'Seated Overhead Press'), -- Barbell
 ('app-01KE649S3G9CFWH58FZSYFT7JZ', 'Seated Overhead Press'), -- Dumbbell
 ('app-01KE649S3KH52NX718STJBWE1X', 'Seated Palms Up Wrist Curl'),
-('app-01KE649S3P8AZ3JEKZ2R0QERJ5', 'Seated Row'), -- Cable
 ('app-01KE649S3TSE04BTXVDZ8GM549', 'Seated Row'), -- Machine
 ('app-01KE649S3XY8ZAC908FSJ6VCDX', 'Seated Wide-Grip Row'),
 ('app-01KE649S44D7S9WQDN7TTV2QFH', 'Shoulder Press'), -- Machine
 ('app-01KE649S47GZDS707CN7EXPFDS', 'Shoulder Press ( Loaded)'), -- Plate
 ('app-01KE649S41AJXMVJZXPPE516PH', 'Shoulderpress'),
-('app-01KE649S4B0TF96PGEANSJ2XBG', 'Shrug'), -- Barbell
-('app-01KE649S4E1XBV39657YW2FK4D', 'Shrug'), -- Dumbbell
-('app-01KE649S4HJPW6KX1B82EN2WNW', 'Shrug'), -- Machine
 ('app-01KE649S4MEW0MCGJS1TDJE72J', 'Shrug'), -- Smith Machine
-('app-01KE649S4QG4QEV3S80A8EV65A', 'Side Bend'), -- Band
-('app-01KE649S4T9SWHH5RQCJRA26X2', 'Side Bend'), -- Cable
 ('app-01KE649S4XJ9RC1W8A0RGQCPJP', 'Side Bend'), -- Dumbbell
 ('app-01KE649S504G4S4G76A00Q4J1K', 'Side Plank'),
 ('app-01KE649S53QKKD1Z2S108XMYCX', 'Single Leg Bridge'),
@@ -284,27 +214,16 @@ INSERT INTO exercise (id, name) VALUES
 ('app-01KE649S5C847BD1STQZBC5BA8', 'Sit Up'),
 ('app-01KE649S5FV8465ZF05XRP7K9J', 'Skating'),
 ('app-01KE649S5KJ0E0SDMKRRJX4GWM', 'Skiing'),
-('app-01KE649S5PWK3QNRREJF1MR9MF', 'Skullcrusher'), -- Barbell
 ('app-01KE649S5S3BV63153M6D1P3H9', 'Skullcrusher'), -- Dumbbell
 ('app-01KE649S5W12569FMY60R869R6', 'Snatch'),
 ('app-01KE649S5Z0HKWARFGBXDAJBZE', 'Snatch Pull'),
 ('app-01KE649S624QW8RQ31XGZGRXYF', 'Snowboarding'),
 ('app-01KE649S65YFTPDFM5CY8YFR2E', 'Split Jerk'),
-('app-01KE649S68EAVS6P9EKGSCZD0V', 'Squat'), -- Band
-('app-01KE649S6CVNW2W5PJQVYV3YY6', 'Squat'), -- Barbell
-('app-01KE649S6F442Y8K9MCPZXZ5NM', 'Squat'), -- Bodyweight
-('app-01KE649S6JP366XQD5GP3F0MHM', 'Squat'), -- Dumbbell
-('app-01KE649S6NWQT9RSAKP53D941K', 'Squat'), -- Machine
 ('app-01KE649S6V1B1B5CBZAAFF2XPG', 'Squat'), -- Smith Machine
 ('app-01KE649S6R0P8E4XZH7DCJEN9Y', 'Squat Row'),
 ('app-01KE649S6YFFJ0P2SFJ6W5D6H9', 'Squeeze Press'),
-('app-01KE649S71FKHZS29CFVM93RAA', 'Standing Calf Raise'), -- Barbell
-('app-01KE649S7EX5BXREHXC822DEV4', 'Standing Calf Raise'), -- Bodyweight
-('app-01KE649S74YXS06HPXYFJC5QQS', 'Standing Calf Raise'), -- Dumbbell
-('app-01KE649S78PMC8Y5B900749PAB', 'Standing Calf Raise'), -- Machine
 ('app-01KE649S7BB142PVQVKB0865YW', 'Standing Calf Raise'), -- Smith Machine
 ('app-01KE649S7H421DSV811KR9CA49', 'Step-up'),
-('app-01KE649S7NRFG4KBC0XB239KHZ', 'Stiff Leg Deadlift'), -- Barbell
 ('app-01KE649S7RH0XW6MQ2923XNDDT', 'Stiff Leg Deadlift'), -- Dumbbell
 ('app-01KE649S7V4QZS1QJZTM54WYS1', 'Straight Arm Pulldown'),
 ('app-01KE649S7YQD91DJ0FBARX4G17', 'Straight Leg Deadlift'),
@@ -315,23 +234,15 @@ INSERT INTO exercise (id, name) VALUES
 ('app-01KE649S8EKSQSNB64K23QRP00', 'Superman'),
 ('app-01KE649S8HM73FEE9DYZNW9AJN', 'Swimming'),
 ('app-01KE649S8MNE0KX6JES21HX24A', 'T Bar Row'),
-('app-01KE649S8QT1EDX98MB4Y2Y2NG', 'Thruster'), -- Barbell
 ('app-01KE649S8VC4YDQKA0X1V6J6E3', 'Thruster'), -- Kettlebell
 ('app-01KE649S8Y0PDC8XQ1HMVZ6DKE', 'Toes To Bar'),
 ('app-01KE649S91FR9E2M144J4HZR53', 'Torso Rotation'),
 ('app-01KE649S94AMSGYCDXV527Q9XW', 'Trap Bar Deadlift'),
 ('app-01KE649SA0NEF3WXHGSR1V1VN8', 'tricep Flat Bar'),
-('app-01KE649S97Q7YZPF4B5JG07DG1', 'Triceps Dip'), -- Bodyweight
 ('app-01KE649S9APQSR4XCJP6EBAZYN', 'Triceps Dip'), -- Assisted
-('app-01KE649S9EKMF7MY11QJGBKKH7', 'Triceps Extension'), -- Bodyweight
-('app-01KE649S9JYG496FXSDYE74TBR', 'Triceps Extension'), -- Barbell
-('app-01KE649S9NG3S8EDMBDEQCTSZ6', 'Triceps Extension'), -- Cable
-('app-01KE649S9SNY84BB7PSFPVDJS7', 'Triceps Extension'), -- Dumbbell
 ('app-01KE649S9W3GQWH5KZAPBNZ3Y2', 'Triceps Extension'), -- Machine
 ('app-01KE649SA3MR0AAWSVH0G0HJTQ', 'Triceps Pressdown'),
 ('app-01KE649SA771M1GMGD0NV11SEC', 'Triceps Pushdown'),
-('app-01KE649SABWKBVMVHTA8Q8KX38', 'Upright Row'), -- Barbell
-('app-01KE649SAFMZT21WQYY6JNNSJ5', 'Upright Row'), -- Cable
 ('app-01KE649SAJEAA8MEW7PSD7P2T2', 'Upright Row'), -- Dumbbell
 ('app-01KE649SAPCT2WM1T4B0J1VGA0', 'V Up'),
 ('app-01KE649SATPSZ3WSHDEE392R6R', 'Walking'),

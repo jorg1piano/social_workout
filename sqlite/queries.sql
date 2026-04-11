@@ -59,9 +59,12 @@ LEFT JOIN workout_template wt ON w.template_id = wt.id
 ORDER BY w.start_time DESC;
 
 -- 5. Get completed sets for a specific workout
+-- Note: set_type lives directly on exercise_set, so warmup-vs-working status
+-- is readable without joining exercise_set_template.
 SELECT
     e.name as exercise,
     es.ordering as set_number,
+    es.set_type,
     es.rep_count,
     es.weight,
     es.unit,

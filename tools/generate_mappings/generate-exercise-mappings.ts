@@ -118,6 +118,7 @@ function extractCategoriesFromSQL(sqlContent: string, tableName: string): Map<st
 
 function extractExercisesFromSQL(sqlContent: string): Map<string, string> {
   const map = new Map<string, string>();
+  const duplicates: string[] = [];
 
   // Match INSERT INTO exercise (id, name) VALUES
   const multiLineRegex = /INSERT INTO exercise \(id, name\) VALUES\s*([\s\S]*?);/g;
@@ -132,8 +133,29 @@ function extractExercisesFromSQL(sqlContent: string): Map<string, string> {
     for (const pair of pairs) {
       const id = pair[1];
       const name = pair[2].replace(/''/g, "'"); // Handle escaped quotes
+      // Exercise names MUST be unique — the schema models equipment/body-part
+      // variants via junction tables (exercise_equipment, exercise_body_part),
+      // NOT via duplicate exercise rows. A silent `map.set` on a duplicate
+      // would cause every variant's tag to pile onto whichever ULID happened
+      // to be inserted last, leaving the rest as naked, unreferenced rows.
+      // See task #7 — the original generator had this bug for ~89 exercises.
+      if (map.has(name)) {
+        duplicates.push(`${name} (existing=${map.get(name)}, new=${id})`);
+        continue;
+      }
       map.set(name, id);
     }
+  }
+
+  if (duplicates.length > 0) {
+    throw new Error(
+      `Duplicate exercise names found in source SQL — refusing to generate ` +
+      `mappings because the name → id map would silently drop variants. ` +
+      `Offenders:\n  - ${duplicates.join('\n  - ')}\n` +
+      `Fix: consolidate each exercise to a single row whose equipment set is ` +
+      `rolled up in the markdown (one bullet per name with all equipment in ` +
+      `the parens).`
+    );
   }
 
   return map;
