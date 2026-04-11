@@ -57,7 +57,7 @@ vs `start_time` drift):
 | `db_exercise_for_workout_template.dart`    | `exercise_for_workout_template`        |
 | `db_exercise_set_template.dart`            | `exercise_set_template`                |
 | `db_exercise_set.dart`                     | `exercise_set`                         |
-| `set_type.dart`                            | `SetType` enum (`warmup` / `working`)  |
+| `set_type.dart`                            | `SetType` enum (`warmup` / `regularSet` / `dropSet` / `failure`) |
 
 `lib/data/dao/` — three DAOs partition reads/writes by aggregate:
 
@@ -94,7 +94,9 @@ screen needs.
   rendered when the slot has more than one variant in
   `exercise_for_workout_template`.
 - **Set table** with columns: `Set` / `Previous` / `kg` / `Reps` / `✓`
-  - `Set` — working-set number; warmup rows show an orange `W` badge instead.
+  - `Set` — working-set number; non-`regularSet` rows show a letter badge
+    instead: orange `W` for `warmup`, purple `D` for `dropSet`, red `F`
+    for `failure`. All three badge styles live in `AppStyle`.
   - `Previous` — the most-recent prior `exercise_set` for this exercise
     in any earlier workout, formatted by `AppStyle.formatWeightDisplay`
     (em dash for null, `bw` for zero, `12,5 kg` for positive, `15 kg (−)`
@@ -105,6 +107,18 @@ screen needs.
   - `✓` — round check cell that toggles `is_completed`.
 - **`+ Add Set`** — appends a new `exercise_set` with NULL `weight` /
   `rep_count` and `is_completed = 0`.
+- **Set cell is tappable** — opens a bottom sheet picker to change the
+  row's `set_type` to any of `warmup` / `regularSet` / `dropSet` /
+  `failure`. The picker rows are intent-ordered (Warm-up → Regular →
+  Drop set → Failure), the current row is marked with a checkmark, and
+  selecting the same type closes the sheet without a DB write. On a
+  different selection the controller calls `WorkoutDao.updateSetType`
+  and re-reads the slot, so the badge re-renders from disk and the
+  working-set numbering re-derives automatically. Numbering counts
+  every non-warmup row, so converting `regularSet → dropSet` keeps the
+  rows below it numbered the same — drop sets and failure sets are
+  intensity modifiers on top of the working progression, not position
+  takers. Same `_commit()`-before-open discipline as the `✓` tap.
 
 ### Swap interaction
 Tapping the swap pill opens a bottom sheet listing every variant for that
@@ -201,6 +215,15 @@ with screenshot + `sqlite3` evidence captured during the AC sweep.
 - [x] **AC #13 — Styling discipline.** Zero hardcoded colors / paddings /
       text styles in widget code — everything routes through `AppStyle`,
       including the new `formatWeightDisplay` formatter.
+- [x] **AC #14 — Set cell tap-to-change persists.** Tapping a Set cell
+      opens the picker; selecting a different type (`regularSet → dropSet`
+      verified on Bench Press set 2 on `emulator-5554`) writes
+      `exercise_set.set_type` via `WorkoutDao.updateSetType`, re-renders
+      the row badge from disk, and survives `am force-stop` + relaunch.
+      Widget test `tap Set cell on Bench Press set 2 opens type sheet,
+      selecting Failure persists set_type to disk` covers the path
+      end-to-end, including a `runAsync`-wrapped `WorkoutDao.getSet`
+      assertion against the on-disk row.
 
 ## Visual style
 

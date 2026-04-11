@@ -4,6 +4,7 @@ import '../db/ulid.dart';
 import '../models/db_exercise_set.dart';
 import '../models/db_exercise_set_template.dart';
 import '../models/db_workout.dart';
+import '../models/set_type.dart';
 
 /// Write-side DAO for live workout sessions and their `exercise_set` rows.
 ///
@@ -70,6 +71,19 @@ class WorkoutDao {
       where: 'id = ?',
       whereArgs: [workoutId],
     );
+  }
+
+  /// Single `exercise_set` row by id. Returns null if no such row exists
+  /// (e.g. caller has a stale id after a swap deleted incomplete rows).
+  Future<DbExerciseSet?> getSet(String id) async {
+    final rows = await _db.query(
+      'exercise_set',
+      where: 'id = ?',
+      whereArgs: [id],
+      limit: 1,
+    );
+    if (rows.isEmpty) return null;
+    return DbExerciseSet.fromRow(rows.first);
   }
 
   /// All `exercise_set` rows for a workout slot, in set order. Reads
@@ -210,6 +224,26 @@ class WorkoutDao {
       {
         'weight': weight,
         'rep_count': repCount,
+        'updated_at': nowSec,
+      },
+      where: 'id = ?',
+      whereArgs: [setId],
+    );
+  }
+
+  /// Updates `set_type` on a single `exercise_set` row. The wire value
+  /// goes through [SetType.wireValue] so the four allowed strings line up
+  /// exactly with the schema CHECK constraint
+  /// (`'warmup','regularSet','dropSet','failure'`).
+  Future<void> updateSetType({
+    required String setId,
+    required SetType setType,
+  }) async {
+    final nowSec = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+    await _db.update(
+      'exercise_set',
+      {
+        'set_type': setType.wireValue,
         'updated_at': nowSec,
       },
       where: 'id = ?',

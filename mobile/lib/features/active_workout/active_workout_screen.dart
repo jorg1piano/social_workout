@@ -78,6 +78,30 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
     }
   }
 
+  /// Opens the bottom sheet that lets the user pick the `set_type` for a
+  /// row. Mirrors [_openSwapSheet]: the sheet returns the chosen enum
+  /// value (or null if the user dismissed it), and we only write back if
+  /// it's actually different from the current value.
+  Future<void> _openSetTypeSheet({
+    required int slotIndex,
+    required String setId,
+    required SetType current,
+  }) async {
+    final selected = await showModalBottomSheet<SetType>(
+      context: context,
+      backgroundColor: AppStyle.cardBackground,
+      shape: const RoundedRectangleBorder(borderRadius: AppStyle.sheetRadius),
+      builder: (sheetContext) => _SetTypeSheet(currentType: current),
+    );
+    if (selected != null && selected != current) {
+      await _controller.setSetType(
+        slotIndex: slotIndex,
+        setId: setId,
+        setType: selected,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_controller.loading) {
@@ -151,6 +175,11 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
                           setId: setId,
                           weight: weight,
                           repCount: repCount,
+                        ),
+                        onTapSetCell: (setId, current) => _openSetTypeSheet(
+                          slotIndex: i,
+                          setId: setId,
+                          current: current,
                         ),
                       ),
                     ),
@@ -326,6 +355,7 @@ typedef EditValuesCallback = void Function(
   double? weight,
   int? repCount,
 );
+typedef TapSetCellCallback = void Function(String setId, SetType current);
 
 class _SlotCard extends StatelessWidget {
   const _SlotCard({
@@ -335,6 +365,7 @@ class _SlotCard extends StatelessWidget {
     required this.onTapAddSet,
     required this.onToggleCompleted,
     required this.onEditValues,
+    required this.onTapSetCell,
   });
 
   final SlotState slot;
@@ -343,6 +374,7 @@ class _SlotCard extends StatelessWidget {
   final VoidCallback onTapAddSet;
   final ToggleCompletedCallback onToggleCompleted;
   final EditValuesCallback onEditValues;
+  final TapSetCellCallback onTapSetCell;
 
   @override
   Widget build(BuildContext context) {
@@ -383,6 +415,7 @@ class _SlotCard extends StatelessWidget {
                   onToggleCompleted(row.set.id, completed),
               onEditValues: (weight, repCount) =>
                   onEditValues(row.set.id, weight, repCount),
+              onTapSetCell: () => onTapSetCell(row.set.id, row.set.setType),
             ),
           const SizedBox(height: AppStyle.gapS),
           _AddSetButton(onTap: onTapAddSet),
@@ -392,8 +425,14 @@ class _SlotCard extends StatelessWidget {
   }
 
   /// Walks the slot's sets and tags each one with its working-set number
-  /// (1, 2, 3 ... skipping warmup rows). Warmup rows get the `W` badge
-  /// and no number.
+  /// (1, 2, 3 ...). The count increments for every **non-warmup** row,
+  /// per the team-lead spec on this screen. Drop-set and failure rows
+  /// still render as letter badges (D / F) — the underlying number is
+  /// computed but not displayed for those types. The visible effect is
+  /// that converting a row from `regularSet` → `dropSet` keeps the
+  /// numbering of the rows below it intact (the slot still owns N
+  /// non-warmup positions; the dropSet just paints a badge over its
+  /// number).
   Iterable<_IndexedSet> _indexedRows(List<DbExerciseSet> sets) sync* {
     var workingCount = 0;
     for (final set in sets) {
@@ -482,6 +521,7 @@ class _SetRow extends StatefulWidget {
     required this.previous,
     required this.onToggleCompleted,
     required this.onEditValues,
+    required this.onTapSetCell,
   });
 
   final DbExerciseSet set;
@@ -489,6 +529,7 @@ class _SetRow extends StatefulWidget {
   final DbExerciseSet? previous;
   final ValueChanged<bool> onToggleCompleted;
   final void Function(double? weight, int? repCount) onEditValues;
+  final VoidCallback onTapSetCell;
 
   @override
   State<_SetRow> createState() => _SetRowState();
@@ -602,7 +643,23 @@ class _SetRowState extends State<_SetRow> {
         children: [
           SizedBox(
             width: AppStyle.checkCircleSize,
-            child: Center(child: _setNumberCell()),
+            height: AppStyle.checkCircleSize,
+            child: Material(
+              color: Colors.transparent,
+              borderRadius: AppStyle.circleRadius,
+              child: InkWell(
+                borderRadius: AppStyle.circleRadius,
+                onTap: () {
+                  // Flush in-flight kg/reps edits before opening the
+                  // sheet — same pattern as the ✓ tap. The sheet pops
+                  // the modal route, which doesn't always trigger blur
+                  // first on every platform.
+                  _commit();
+                  widget.onTapSetCell();
+                },
+                child: Center(child: _setNumberCell()),
+              ),
+            ),
           ),
           const SizedBox(width: AppStyle.setRowHGap),
           Expanded(child: _previousCell(previous)),
@@ -640,14 +697,28 @@ class _SetRowState extends State<_SetRow> {
     );
   }
 
+  /// Renders the Set column cell. Four cases, one per `SetType`:
+  ///   * `warmup`     → orange `W`
+  ///   * `regularSet` → working-set number (`1`, `2`, ...)
+  ///   * `dropSet`    → purple `D`
+  ///   * `failure`    → red `F`
+  /// The em dash fallback only fires for an unexpected state where a
+  /// `regularSet` row was somehow not numbered — keeps the column from
+  /// going blank if the indexer ever drifts.
   Widget _setNumberCell() {
-    if (widget.set.setType == SetType.warmup) {
-      return const Text('W', style: AppStyle.warmupBadgeStyle);
+    switch (widget.set.setType) {
+      case SetType.warmup:
+        return const Text('W', style: AppStyle.warmupBadgeStyle);
+      case SetType.dropSet:
+        return const Text('D', style: AppStyle.dropSetBadgeStyle);
+      case SetType.failure:
+        return const Text('F', style: AppStyle.failureBadgeStyle);
+      case SetType.regularSet:
+        return Text(
+          widget.workingSetNumber?.toString() ?? '—',
+          style: AppStyle.setNumberStyle,
+        );
     }
-    return Text(
-      widget.workingSetNumber?.toString() ?? '—',
-      style: AppStyle.setNumberStyle,
-    );
   }
 
   Widget _previousCell(DbExerciseSet? previous) {
@@ -889,6 +960,158 @@ class _SwapSheetRow extends StatelessWidget {
               ),
               if (isCurrent)
                 const Text('CURRENT', style: AppStyle.sheetCurrentLabelStyle),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Set type bottom sheet
+// ---------------------------------------------------------------------------
+
+/// Bottom sheet that lists every `SetType` and pops with the user's pick.
+/// Mirrors [_SwapSheet] in shape and styling so the two sheets feel like
+/// the same family.
+class _SetTypeSheet extends StatelessWidget {
+  const _SetTypeSheet({required this.currentType});
+
+  final SetType currentType;
+
+  // Display order: the order users actually reach for. Warmup at the top
+  // because it's used first in a session, then the default working set,
+  // then the two intensity techniques.
+  static const List<SetType> _displayOrder = [
+    SetType.warmup,
+    SetType.regularSet,
+    SetType.dropSet,
+    SetType.failure,
+  ];
+
+  static String _label(SetType type) {
+    switch (type) {
+      case SetType.warmup:
+        return 'Warm-up';
+      case SetType.regularSet:
+        // Per spec: pickers should not show position. The cell number
+        // is dynamic (1, 2, ...) but the picker label is always "Regular".
+        return 'Regular';
+      case SetType.dropSet:
+        return 'Drop set';
+      case SetType.failure:
+        return 'Failure';
+    }
+  }
+
+  static String _badgeText(SetType type) {
+    switch (type) {
+      case SetType.warmup:
+        return 'W';
+      case SetType.regularSet:
+        return '1';
+      case SetType.dropSet:
+        return 'D';
+      case SetType.failure:
+        return 'F';
+    }
+  }
+
+  static TextStyle _badgeStyle(SetType type) {
+    switch (type) {
+      case SetType.warmup:
+        return AppStyle.warmupBadgeStyle;
+      case SetType.regularSet:
+        return AppStyle.setNumberStyle;
+      case SetType.dropSet:
+        return AppStyle.dropSetBadgeStyle;
+      case SetType.failure:
+        return AppStyle.failureBadgeStyle;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(
+          AppStyle.gapL,
+          AppStyle.gapL,
+          AppStyle.gapL,
+          AppStyle.gapL,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Padding(
+              padding: EdgeInsets.only(bottom: AppStyle.gapL),
+              child: Text('Set type', style: AppStyle.sheetTitleStyle),
+            ),
+            for (final type in _displayOrder)
+              Padding(
+                padding: const EdgeInsets.only(bottom: AppStyle.gapS),
+                child: _SetTypeSheetRow(
+                  badgeText: _badgeText(type),
+                  badgeStyle: _badgeStyle(type),
+                  label: _label(type),
+                  isCurrent: type == currentType,
+                  onTap: () => Navigator.of(context).pop(type),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SetTypeSheetRow extends StatelessWidget {
+  const _SetTypeSheetRow({
+    required this.badgeText,
+    required this.badgeStyle,
+    required this.label,
+    required this.isCurrent,
+    required this.onTap,
+  });
+
+  final String badgeText;
+  final TextStyle badgeStyle;
+  final String label;
+  final bool isCurrent;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: isCurrent ? AppStyle.accentBlueTint : AppStyle.cardBackground,
+      borderRadius: AppStyle.pillRadius,
+      child: InkWell(
+        borderRadius: AppStyle.pillRadius,
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppStyle.gapL,
+            vertical: AppStyle.gapM,
+          ),
+          child: Row(
+            children: [
+              SizedBox(
+                width: AppStyle.checkCircleSize,
+                child: Center(child: Text(badgeText, style: badgeStyle)),
+              ),
+              const SizedBox(width: AppStyle.gapM),
+              Expanded(
+                child: Text(label, style: AppStyle.sheetVariantNameStyle),
+              ),
+              if (isCurrent)
+                const Icon(
+                  Icons.check,
+                  size: AppStyle.smallIconSize,
+                  color: AppStyle.primaryBlue,
+                ),
             ],
           ),
         ),

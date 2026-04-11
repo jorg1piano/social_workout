@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
+import 'package:workout/data/dao/workout_dao.dart';
 import 'package:workout/data/db/database.dart';
+import 'package:workout/data/models/db_exercise_set.dart';
+import 'package:workout/data/models/set_type.dart';
 import 'package:workout/features/active_workout/active_workout_screen.dart';
 import 'package:workout/style/app_style.dart';
 
@@ -148,6 +151,80 @@ void main() {
 
     expect(find.text('Incline Bench Press'), findsOneWidget);
     expect(find.text('Bench Press'), findsNothing);
+  });
+
+  testWidgets(
+      'tap Set cell on Bench Press set 2 opens type sheet, '
+      'selecting Failure persists set_type to disk', (WidgetTester tester) async {
+    // Keep the default 800×600 surface so the modal bottom sheet renders
+    // inside the viewport — same reason the swap test does.
+    final db = await _openTestDatabase(tester);
+    addTearDown(db.close);
+
+    await tester.pumpWidget(_wrap(db));
+    await _pumpUntilFound(tester, find.text('Bench Press'));
+
+    // Initial seed: Bench Press has W (warmup) + 3 regular sets, so the
+    // Set column reads `W 1 2 3`. No drop-set / failure rows exist yet.
+    final ones = find.text('1');
+    expect(ones, findsWidgets);
+    expect(find.text('F'), findsNothing);
+
+    // The first "1" in the tree is Bench Press's set 2 cell — the row
+    // AC #7 says to mutate. Default surface keeps later cards out of
+    // view so we don't pick up another card's "1".
+    await tester.tap(ones.first);
+    await _pumpUntilFound(tester, find.text('Set type'));
+    // Settle the slide-up animation past 250 ms so the row's render box
+    // lives inside the viewport and the tap below actually lands.
+    for (var i = 0; i < 10; i++) {
+      await _tick(tester, const Duration(milliseconds: 50));
+    }
+
+    // Sheet open: every type label is visible. Note "Regular" not
+    // "Regular set" — the picker label is fixed, no position number.
+    expect(find.text('Warm-up'), findsOneWidget);
+    expect(find.text('Regular'), findsOneWidget);
+    expect(find.text('Drop set'), findsOneWidget);
+    expect(find.text('Failure'), findsOneWidget);
+
+    await tester.tap(find.text('Failure'));
+    // Wait until the sheet's title is fully gone before asserting on
+    // the row — otherwise the sheet's preview F badge is still in the
+    // tree alongside the new row badge.
+    await _pumpUntilGone(tester, find.text('Set type'));
+
+    // Sheet gone, row updated: an "F" badge appears in the Set column.
+    // Non-warmup numbering still includes the failure row in the count,
+    // so the slot now reads `W F 2 3` — exactly one F, no second "1".
+    expect(find.text('F'), findsOneWidget);
+    expect(find.text('Failure'), findsNothing);
+
+    // AC #7 in-process verification: query the actual exercise_set row
+    // through WorkoutDao.getSet and assert set_type made it to disk.
+    // Look up by `set_type = 'failure'` to find the row id without
+    // having to thread it through the widget tree.
+    //
+    // The DAO/raw-query calls hit FFI sqlite, which is real I/O and
+    // needs real wall time — awaiting them inside the test's fake-async
+    // zone hangs forever. `runAsync` opts the awaits into the real
+    // event loop the same way `_tick` does for the UI ticks above.
+    late final List<Map<String, Object?>> rows;
+    DbExerciseSet? updated;
+    await tester.runAsync(() async {
+      final dao = WorkoutDao(db.raw);
+      rows = await db.raw.query(
+        'exercise_set',
+        where: 'set_type = ?',
+        whereArgs: ['failure'],
+      );
+      if (rows.isNotEmpty) {
+        updated = await dao.getSet(rows.first['id']! as String);
+      }
+    });
+    expect(rows, hasLength(1));
+    expect(updated, isNotNull);
+    expect(updated!.setType, SetType.failure);
   });
 
   testWidgets('add set inserts a new row at the bottom of the slot',

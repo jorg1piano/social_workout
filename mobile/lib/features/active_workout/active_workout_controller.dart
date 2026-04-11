@@ -8,6 +8,7 @@ import '../../data/models/db_exercise_for_workout_template.dart';
 import '../../data/models/db_exercise_set.dart';
 import '../../data/models/db_workout.dart';
 import '../../data/models/db_workout_template.dart';
+import '../../data/models/set_type.dart';
 
 /// One render-ready slot: the ordered position in a workout, the sibling
 /// variants the user can swap between, the currently-selected variant, the
@@ -263,6 +264,20 @@ class ActiveWorkoutController extends ChangeNotifier {
       weight: weight,
       repCount: repCount,
     );
+    await _refreshSlot(slotIndex);
+  }
+
+  /// Updates `set_type` on a set, then re-reads the slot so the cell badge
+  /// re-renders against on-disk truth. Working-set numbering recomputes
+  /// from the refreshed list — the count increments for every non-warmup
+  /// row, so converting `regularSet` ↔ `dropSet`/`failure` does not shift
+  /// the numbers of the rows below.
+  Future<void> setSetType({
+    required int slotIndex,
+    required String setId,
+    required SetType setType,
+  }) async {
+    await _workoutDao.updateSetType(setId: setId, setType: setType);
     await _refreshSlot(slotIndex);
   }
 

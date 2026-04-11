@@ -34,6 +34,16 @@ class AppStyle {
   static const Color warmupOrange = Color(0xFFF28C18);
   static const Color warmupOrangeTint = Color(0x1FF28C18); // 12% warmupOrange
 
+  /// Accent used for drop-set badges and the "D" marker.
+  /// Purple is the conventional drop-set color in tracking apps; chosen so
+  /// it doesn't clash with the warmup orange or the failure red.
+  static const Color dropSetPurple = Color(0xFF8E44AD);
+
+  /// Accent used for failure-set badges and the "F" marker.
+  /// Red signals "went to failure" — distinct from the green completed
+  /// flood so it's still legible on a completed row.
+  static const Color failureRed = Color(0xFFE74C3C);
+
   /// Completed-row tint — a soft green flood over a completed set row.
   static const Color completedRowTint = Color(0x1F2ECC71); // 12% finishGreen
 
@@ -168,6 +178,23 @@ class AppStyle {
   /// Orange "W" inside the warmup badge.
   static const TextStyle warmupBadgeStyle = TextStyle(
     color: warmupOrange,
+    fontSize: 13.0,
+    fontWeight: FontWeight.w800,
+    letterSpacing: 0.4,
+  );
+
+  /// Purple "D" inside the drop-set badge. Same weight/size as the warmup
+  /// badge so the column stays visually balanced.
+  static const TextStyle dropSetBadgeStyle = TextStyle(
+    color: dropSetPurple,
+    fontSize: 13.0,
+    fontWeight: FontWeight.w800,
+    letterSpacing: 0.4,
+  );
+
+  /// Red "F" inside the failure badge.
+  static const TextStyle failureBadgeStyle = TextStyle(
+    color: failureRed,
     fontSize: 13.0,
     fontWeight: FontWeight.w800,
     letterSpacing: 0.4,
