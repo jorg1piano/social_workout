@@ -148,3 +148,61 @@ INSERT INTO exercise_set (id, rep_count, weight, duration, rir, rpe, unit, order
 ('app-01KE6BHH27WB0RQ4BRN014ZH7B', 8, 115, NULL, 1, 8, 'lbs', 2, NULL, 150, 'app-01KE6BHGMXHSVYM0R5GAQW7FQD', 'app-01KE649RYS8PJ2SP1BEPEEE4T9', 'app-01KE6BHGK0KF9CCWHXDNQDCEPN', 1),
 ('app-01KE6BHH2BCRBT3SA26JMYGS7R', 6, 125, NULL, 0, 9, 'lbs', 3, 'Last rep was tough', 150, 'app-01KE6BHGMXHSVYM0R5GAQW7FQD', 'app-01KE649RYS8PJ2SP1BEPEEE4T9', 'app-01KE6BHGK0KF9CCWHXDNQDCEPN', 1);
 
+-- Step 8: Body measurements — 30 daily weight entries trending 85.2 → 81.8 kg
+-- over 90 days, plus circumference snapshots every ~30 days.
+INSERT INTO body_measurement (id, measurement_type, value, unit, measured_at, notes) VALUES
+('app-01KP0RQR0DT69BH7TPH4Q8PC4S', 'weight', 85.2, 'kg', strftime('%s', 'now', '-90 days', '+7 hours'), 'Morning fasted'),
+('app-01KP0RQR0KBYKBRWQM7CSJA4MR', 'weight', 85.0, 'kg', strftime('%s', 'now', '-87 days', '+7 hours'), 'Morning fasted'),
+('app-01KP0RQR0R0P9B7V1MRH11ARBF', 'weight', 84.8, 'kg', strftime('%s', 'now', '-84 days', '+7 hours'), NULL),
+('app-01KP0RQR0V3SJDHT9SJQWG7F0T', 'weight', 85.1, 'kg', strftime('%s', 'now', '-81 days', '+7 hours'), 'Post cheat day'),
+('app-01KP0RQR11G4P7CBJGRE6RWP1P', 'weight', 84.6, 'kg', strftime('%s', 'now', '-78 days', '+7 hours'), 'Morning fasted'),
+('app-01KP0RQR17G15JE2BY37202BHK', 'weight', 84.3, 'kg', strftime('%s', 'now', '-75 days', '+7 hours'), NULL),
+('app-01KP0RQR1QD4TXS2N3AD3VXWH7', 'weight', 84.5, 'kg', strftime('%s', 'now', '-72 days', '+7 hours'), NULL),
+('app-01KP0RQR1YK7T2JDFJR5MSQD9G', 'weight', 84.1, 'kg', strftime('%s', 'now', '-69 days', '+7 hours'), 'Morning fasted'),
+('app-01KP0RQR2A7Q66BBG1JQC9SEXP', 'weight', 83.9, 'kg', strftime('%s', 'now', '-66 days', '+7 hours'), NULL),
+('app-01KP0RQR2EWDW2VXCDAZ7K74D9', 'weight', 84.2, 'kg', strftime('%s', 'now', '-63 days', '+7 hours'), 'Birthday weekend'),
+('app-01KP0RQR2H176W31EWG0RZBYG1', 'weight', 83.8, 'kg', strftime('%s', 'now', '-60 days', '+7 hours'), 'Morning fasted'),
+('app-01KP0RQR2MJEVR7CD0B9B0XG89', 'weight', 83.5, 'kg', strftime('%s', 'now', '-57 days', '+7 hours'), NULL),
+('app-01KP0RQR2RMHWADC09ZMBNE769', 'weight', 83.7, 'kg', strftime('%s', 'now', '-54 days', '+7 hours'), NULL),
+('app-01KP0RQR2V5Y1EKF1G60PTNAMS', 'weight', 83.3, 'kg', strftime('%s', 'now', '-51 days', '+7 hours'), 'Morning fasted'),
+('app-01KP0RQR2YW2S0NS2JSNMWKTTA', 'weight', 83.1, 'kg', strftime('%s', 'now', '-48 days', '+7 hours'), NULL),
+('app-01KP0RQR337D1GKQWXDMENF4AD', 'weight', 83.4, 'kg', strftime('%s', 'now', '-45 days', '+7 hours'), 'Water retention'),
+('app-01KP0RQR37GB9MWEK0PGXJHWWP', 'weight', 83.0, 'kg', strftime('%s', 'now', '-42 days', '+7 hours'), 'Morning fasted'),
+('app-01KP0RQR3AG72WG5MYPZ8ZYZ4J', 'weight', 82.8, 'kg', strftime('%s', 'now', '-39 days', '+7 hours'), NULL),
+('app-01KP0RQR3EGJA39W6K5FPCY447', 'weight', 83.0, 'kg', strftime('%s', 'now', '-36 days', '+7 hours'), NULL),
+('app-01KP0RQR3GCVHV369HFY4XTR99', 'weight', 82.6, 'kg', strftime('%s', 'now', '-33 days', '+7 hours'), 'Morning fasted'),
+('app-01KP0RQR3KGB45Q1MR2C580Q66', 'weight', 82.4, 'kg', strftime('%s', 'now', '-30 days', '+7 hours'), NULL),
+('app-01KP0RQR3PGM82PZDD042FHBWE', 'weight', 82.7, 'kg', strftime('%s', 'now', '-27 days', '+7 hours'), 'Creatine loading'),
+('app-01KP0RQR3RZ2KC8R091096JXGC', 'weight', 82.3, 'kg', strftime('%s', 'now', '-24 days', '+7 hours'), 'Morning fasted'),
+('app-01KP0RQR3T9HVJ8N7M29G6E7V3', 'weight', 82.1, 'kg', strftime('%s', 'now', '-21 days', '+7 hours'), NULL),
+('app-01KP0RQR3XJY2W20NAVGKD3Z51', 'weight', 82.5, 'kg', strftime('%s', 'now', '-18 days', '+7 hours'), 'Post vacation'),
+('app-01KP0RQR3ZB038SJCWG3TR75WN', 'weight', 82.2, 'kg', strftime('%s', 'now', '-15 days', '+7 hours'), 'Morning fasted'),
+('app-01KP0RQR41JX0GK5K54VQRADE9', 'weight', 81.9, 'kg', strftime('%s', 'now', '-12 days', '+7 hours'), NULL),
+('app-01KP0RQR44ARHGZ9K9FHGK2K3J', 'weight', 82.1, 'kg', strftime('%s', 'now', '-9 days', '+7 hours'), NULL),
+('app-01KP0RQR473HXZBJ9M51R4EFMN', 'weight', 81.7, 'kg', strftime('%s', 'now', '-6 days', '+7 hours'), 'Morning fasted'),
+('app-01KP0RQR49J5KZVJPK7TJA99ZN', 'weight', 81.8, 'kg', strftime('%s', 'now', '-3 days', '+7 hours'), NULL),
+('app-01KP0RQR4B7WCPSZ7MT2ZA2X68', 'weight', 81.5, 'kg', strftime('%s', 'now', '+7 hours'), 'Morning fasted');
+
+-- Circumference snapshots every ~30 days
+INSERT INTO body_measurement (id, measurement_type, value, unit, measured_at, notes) VALUES
+('app-01KP0Q4RKD8T2X6A8PXGWJP1F9', 'body_fat_pct', 16.1, '%', strftime('%s', 'now', '-90 days', '+7 hours'), 'Caliper measurement'),
+('app-01KP0Q4RKGNMAGQ6B1KCWT71AG', 'chest', 101.0, 'cm', strftime('%s', 'now', '-90 days', '+7 hours'), NULL),
+('app-01KP0Q4RKMY1BNCX6MDGF6NAT0', 'waist', 86.0, 'cm', strftime('%s', 'now', '-90 days', '+7 hours'), NULL),
+('app-01KP0Q4RKT570V65H5M5RJGX93', 'bicep_left', 35.5, 'cm', strftime('%s', 'now', '-90 days', '+7 hours'), 'Flexed'),
+('app-01KP0Q4RKX1545ZP7K3HPMQAZV', 'bicep_right', 36.0, 'cm', strftime('%s', 'now', '-90 days', '+7 hours'), 'Flexed'),
+('app-01KP0Q4RKQ7DBBFEEZQDCTBX4P', 'thigh_left', 57.0, 'cm', strftime('%s', 'now', '-90 days', '+7 hours'), NULL);
+
+INSERT INTO body_measurement (id, measurement_type, value, unit, measured_at, notes) VALUES
+('app-01KP0RQR4EFFA4Q4H2WJHEMVWN', 'body_fat_pct', 15.5, '%', strftime('%s', 'now', '-60 days', '+7 hours'), 'Caliper measurement'),
+('app-01KP0RQR4GHGDRYZH7C9GPD47F', 'chest', 101.5, 'cm', strftime('%s', 'now', '-60 days', '+7 hours'), NULL),
+('app-01KP0RQR4J1RNXKBC3MHACDESM', 'waist', 85.0, 'cm', strftime('%s', 'now', '-60 days', '+7 hours'), NULL),
+('app-01KP0RQR4N3F1RS8NS4T3G53XF', 'bicep_left', 36.0, 'cm', strftime('%s', 'now', '-60 days', '+7 hours'), 'Flexed');
+
+INSERT INTO body_measurement (id, measurement_type, value, unit, measured_at, notes) VALUES
+('app-01KP0Q4RM026SRH6J6NMS7EMAT', 'body_fat_pct', 14.9, '%', strftime('%s', 'now', '-30 days', '+7 hours'), 'Caliper measurement'),
+('app-01KP0Q4RM37AS9WTV1D7Z3ZYGG', 'chest', 102.0, 'cm', strftime('%s', 'now', '-30 days', '+7 hours'), NULL),
+('app-01KP0Q4RM7NDAJTEA76RHT9ZTT', 'waist', 84.5, 'cm', strftime('%s', 'now', '-30 days', '+7 hours'), NULL),
+('app-01KP0Q4RKAMZV26CVMDCNHC7QN', 'bicep_left', 36.5, 'cm', strftime('%s', 'now', '-30 days', '+7 hours'), 'Flexed'),
+('app-01KP0RQSZZ7N8BT1C4WP2GXJEK', 'bicep_right', 37.0, 'cm', strftime('%s', 'now', '-30 days', '+7 hours'), 'Flexed'),
+('app-01KP0RQSZWMHV5J3NMCG00QMRH', 'thigh_left', 58.0, 'cm', strftime('%s', 'now', '-30 days', '+7 hours'), NULL);
+

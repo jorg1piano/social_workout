@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'data/db/database.dart';
 import 'features/active_workout/active_workout_screen.dart';
+import 'features/body_measurements/body_measurements_screen.dart';
 import 'features/competition/competition_list_screen.dart';
 import 'style/app_style.dart';
 
@@ -66,6 +67,17 @@ class FeatureListScreen extends StatelessWidget {
               context,
               MaterialPageRoute(
                 builder: (_) => CompetitionListScreen(database: database),
+              ),
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.straighten),
+            title: const Text('Body Measurements'),
+            subtitle: const Text('Track weight, body fat, circumferences'),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => BodyMeasurementsScreen(database: database),
               ),
             ),
           ),
