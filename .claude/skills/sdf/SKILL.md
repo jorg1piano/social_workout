@@ -236,6 +236,7 @@ Use this when the user wants to boot the dev stack and spawn an agent team. Work
 REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
 if [ -f "$REPO_ROOT/.env.worktree" ]; then
   echo "=== WORKTREE MODE ==="
+  echo "WORKTREE_ROOT=$REPO_ROOT"
   cat "$REPO_ROOT/.env.worktree"
 else
   echo "=== MAIN MODE ==="
@@ -244,7 +245,7 @@ fi
 ls "$REPO_ROOT"/*/.claude/agents/*.md "$REPO_ROOT"/.claude/agents/*.md 2>/dev/null || true
 ```
 
-**Worktree mode** (`.env.worktree` exists): source it for `APP_PORT`, `DB_PORT`, `COMPOSE_PROJECT_NAME`, `FLUTTER_DEVICE_ID`, etc.
+**Worktree mode** (`.env.worktree` exists): source it for `APP_PORT`, `DB_PORT`, `COMPOSE_PROJECT_NAME`, `FLUTTER_DEVICE_ID`, etc. **CRITICAL: all commands and all spawned teammates must use `$REPO_ROOT` (the worktree root), never the main repo path.** The worktree is a full copy — `mobile/`, `web/`, etc. all exist inside it.
 
 **Main mode**: use defaults from `.sdf.yaml` port bases, or fall back to common defaults (8080, 5432).
 
@@ -272,11 +273,11 @@ Team pre-flight (<worktree: branch slot N  OR  main>)
 - Main: `cd <compose-dir> && docker compose up -d` (auto-loads the local `.env`).
 - Poll port ~15s. Never `down -v`, `prune`, `rmi`, or `--build` unless asked.
 
-**Mobile** — only if a Flutter project exists:
-- Worktree with `FLUTTER_DEVICE_ID`: use directly, don't ask.
-- Main or no pre-assigned device: list connected devices, ask if multiple.
+**Mobile** — only if a Flutter project exists. **Always launch the app** — don't wait to be asked:
+- Use the device assigned to this worktree (`$FLUTTER_DEVICE_ID` from `.env.worktree`, or the pool-allocated device ID). Never prompt for device selection — the pool handles it.
 - Android: `adb reverse tcp:$APP_PORT tcp:$APP_PORT` first.
-- Run in background (`run_in_background: true`).
+- Launch with `flutter run -d $FLUTTER_DEVICE_ID` in background (`run_in_background: true`).
+- Confirm the app is running on the device before proceeding to Step 3.
 
 ## Step 3 — Discover and spawn teammates
 
@@ -285,7 +286,7 @@ Scan for agent definitions:
 ls "$REPO_ROOT"/*/.claude/agents/*.md "$REPO_ROOT"/.claude/agents/*.md 2>/dev/null
 ```
 
-Spawn one teammate per agent definition found. Include worktree context (ports, device, status) in each spawn prompt. Each teammate reads its own CLAUDE.md, confirms in one sentence, then stands by.
+Spawn one teammate per agent definition found. **Include the worktree root path (`$REPO_ROOT`) in each spawn prompt** so teammates work in the worktree, not the main repo. Include worktree context (ports, device, status) in each spawn prompt. Each teammate reads its own CLAUDE.md, confirms in one sentence, then stands by.
 
 **Rules:**
 - Don't invent teammates beyond what agent definitions exist.
@@ -311,6 +312,7 @@ Team — ready
 - **Never** start Flutter in the foreground.
 - **Never** loop on boot failures — show logs and stop.
 - **Never** duplicate agent definitions inline.
+- **Never** run commands or edit files in the main repo when in worktree mode. All paths must be relative to `$REPO_ROOT` (the worktree root).
 
 ---
 
