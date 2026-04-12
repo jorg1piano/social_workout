@@ -413,12 +413,12 @@ CREATE INDEX idx_body_measurement_type ON body_measurement(measurement_type);
 CREATE INDEX idx_body_measurement_measured_at ON body_measurement(measured_at DESC);
 
 -- ============================================================================
--- Planned Workouts (Stories / "Who's working out today")
+-- Planned Workout Tables
 -- ============================================================================
 
 -- 20. planned_workout - Depends on: user_profile, workout_template
--- A user's intention to do a specific workout on a given date.
--- Powers the "who's working out today" Stories row on the social feed.
+-- Tracks which users have planned which workouts for which dates.
+-- Powers the "who's working out today" Stories row in the social feed.
 CREATE TABLE planned_workout (
   id TEXT PRIMARY KEY NOT NULL CHECK((id LIKE 'app-%' OR id LIKE 'usr-%') AND length(id) = 30),
   user_id TEXT NOT NULL,
@@ -434,4 +434,78 @@ CREATE TABLE planned_workout (
 
 CREATE INDEX idx_planned_workout_user_id ON planned_workout(user_id);
 CREATE INDEX idx_planned_workout_template_id ON planned_workout(workout_template_id);
-CREATE INDEX idx_planned_workout_planned_date_user ON planned_workout(planned_date, user_id);
+CREATE INDEX idx_planned_workout_date ON planned_workout(planned_date);
+
+-- ============================================================================
+-- Training Program Tables
+-- ============================================================================
+
+-- 20. training_program - No dependencies
+-- Top-level container for a workout program / split.
+-- schedule_type determines how program_slots are interpreted:
+--   weekly_fixed     — same pattern every week (PPL 6-day, PHUL, Bro Split)
+--   rotation         — cycle through workouts regardless of calendar day (SL 5×5, PPL 3-day)
+--   multi_week_cycle — repeating block > 1 week where parameters change (5/3/1 = 4 weeks)
+--   freeform         — no schedule, user picks from a collection of templates
+CREATE TABLE training_program (
+  id TEXT PRIMARY KEY NOT NULL CHECK((id LIKE 'app-%' OR id LIKE 'usr-%') AND length(id) = 30),
+  name TEXT NOT NULL,
+  description TEXT,
+  schedule_type TEXT NOT NULL CHECK (schedule_type IN ('weekly_fixed', 'rotation', 'multi_week_cycle', 'freeform')),
+  cycle_length_weeks INTEGER,
+  days_per_week INTEGER,
+  created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+  updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now'))
+);
+
+-- 21. program_slot - Depends on: training_program, workout_template
+-- Maps workout_templates into the program schedule.
+-- Interpretation varies by schedule_type:
+--   weekly_fixed     — week_number=1, day_of_week=0..6
+--   rotation         — week_number=NULL, day_of_week=NULL, slot_order gives cycle position
+--   multi_week_cycle — week_number=1..N, day_of_week=0..6
+--   freeform         — week_number=NULL, day_of_week=NULL (just a bag of templates)
+CREATE TABLE program_slot (
+  id TEXT PRIMARY KEY NOT NULL CHECK((id LIKE 'app-%' OR id LIKE 'usr-%') AND length(id) = 30),
+  training_program_id TEXT NOT NULL,
+  workout_template_id TEXT,
+  week_number INTEGER,
+  day_of_week INTEGER CHECK (day_of_week IS NULL OR (day_of_week >= 0 AND day_of_week <= 6)),
+  slot_order INTEGER NOT NULL,
+  is_rest_day INTEGER NOT NULL DEFAULT 0,
+  notes TEXT,
+  created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+  updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+  FOREIGN KEY(training_program_id) REFERENCES training_program(id) ON DELETE CASCADE,
+  FOREIGN KEY(workout_template_id) REFERENCES workout_template(id) ON DELETE SET NULL
+);
+
+-- 22. program_enrollment - Depends on: user_profile, training_program
+-- Tracks a user's active program and current position within it.
+CREATE TABLE program_enrollment (
+  id TEXT PRIMARY KEY NOT NULL CHECK((id LIKE 'app-%' OR id LIKE 'usr-%') AND length(id) = 30),
+  user_id TEXT NOT NULL,
+  training_program_id TEXT NOT NULL,
+  current_week INTEGER NOT NULL DEFAULT 1,
+  current_slot_order INTEGER NOT NULL DEFAULT 1,
+  started_at INTEGER NOT NULL,
+  is_active INTEGER NOT NULL DEFAULT 1,
+  cycle_count INTEGER NOT NULL DEFAULT 0,
+  created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+  updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+  FOREIGN KEY(user_id) REFERENCES user_profile(id) ON DELETE CASCADE,
+  FOREIGN KEY(training_program_id) REFERENCES training_program(id) ON DELETE CASCADE
+);
+
+-- Training program indexes
+CREATE INDEX idx_program_slot_training_program_id ON program_slot(training_program_id);
+CREATE INDEX idx_program_slot_workout_template_id ON program_slot(workout_template_id);
+CREATE INDEX idx_program_enrollment_user_id ON program_enrollment(user_id);
+CREATE INDEX idx_program_enrollment_training_program_id ON program_enrollment(training_program_id);
+CREATE INDEX idx_program_enrollment_is_active ON program_enrollment(is_active);
+
+-- Unique constraints
+CREATE UNIQUE INDEX idx_program_slot_order ON program_slot(training_program_id, slot_order);
+CREATE UNIQUE INDEX idx_program_slot_day ON program_slot(training_program_id, week_number, day_of_week)
+  WHERE day_of_week IS NOT NULL;
+CREATE UNIQUE INDEX idx_program_enrollment_unique ON program_enrollment(user_id, training_program_id);

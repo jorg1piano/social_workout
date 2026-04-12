@@ -369,3 +369,82 @@ LEFT JOIN user_profile up ON cle.user_id = up.id
 WHERE c.status = 'active'
 GROUP BY c.id
 ORDER BY c.end_date ASC;
+
+-- ============================================================================
+-- Training Program Queries
+-- ============================================================================
+
+-- 22. Get a user's active training program with all its slots
+SELECT
+    tp.id as program_id,
+    tp.name as program_name,
+    tp.schedule_type,
+    tp.cycle_length_weeks,
+    tp.days_per_week,
+    pe.current_week,
+    pe.current_slot_order,
+    pe.cycle_count,
+    ps.slot_order,
+    ps.week_number,
+    ps.day_of_week,
+    ps.is_rest_day,
+    ps.notes as slot_notes,
+    wt.id as template_id,
+    wt.name as template_name
+FROM program_enrollment pe
+JOIN training_program tp ON pe.training_program_id = tp.id
+LEFT JOIN program_slot ps ON tp.id = ps.training_program_id
+LEFT JOIN workout_template wt ON ps.workout_template_id = wt.id
+WHERE pe.user_id = :user_id
+  AND pe.is_active = 1
+ORDER BY ps.week_number ASC NULLS LAST, ps.slot_order ASC;
+
+-- 23. Get today's workout for a weekly_fixed program
+-- Uses day_of_week: 0=Monday..6=Sunday (matching SQLite strftime('%w') with adjustment)
+SELECT
+    wt.id as template_id,
+    wt.name as template_name,
+    wt.description,
+    ps.notes as slot_notes
+FROM program_enrollment pe
+JOIN training_program tp ON pe.training_program_id = tp.id
+JOIN program_slot ps ON tp.id = ps.training_program_id
+JOIN workout_template wt ON ps.workout_template_id = wt.id
+WHERE pe.user_id = :user_id
+  AND pe.is_active = 1
+  AND tp.schedule_type = 'weekly_fixed'
+  AND ps.week_number = 1
+  AND ps.day_of_week = :today_day_of_week
+  AND ps.is_rest_day = 0;
+
+-- 24. Get the next workout for a rotation program
+SELECT
+    wt.id as template_id,
+    wt.name as template_name,
+    wt.description,
+    ps.slot_order,
+    ps.notes as slot_notes
+FROM program_enrollment pe
+JOIN training_program tp ON pe.training_program_id = tp.id
+JOIN program_slot ps ON tp.id = ps.training_program_id
+JOIN workout_template wt ON ps.workout_template_id = wt.id
+WHERE pe.user_id = :user_id
+  AND pe.is_active = 1
+  AND tp.schedule_type = 'rotation'
+  AND ps.slot_order = pe.current_slot_order
+  AND ps.is_rest_day = 0;
+
+-- 25. List all training programs with enrollment status for a user
+SELECT
+    tp.id,
+    tp.name,
+    tp.description,
+    tp.schedule_type,
+    tp.days_per_week,
+    pe.id as enrollment_id,
+    pe.is_active,
+    pe.cycle_count,
+    (SELECT COUNT(*) FROM program_slot ps WHERE ps.training_program_id = tp.id AND ps.is_rest_day = 0) as workout_count
+FROM training_program tp
+LEFT JOIN program_enrollment pe ON tp.id = pe.training_program_id AND pe.user_id = :user_id
+ORDER BY pe.is_active DESC NULLS LAST, tp.name ASC;

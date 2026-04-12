@@ -22,6 +22,7 @@ class DatabaseBootstrap {
     'assets/sqlite/new-test-data.sql',
     'assets/sqlite/feed-seed-data.sql',
     'assets/sqlite/competition-seed-data.sql',
+    'assets/sqlite/training-program-seed-data.sql',
   ];
 
   /// Runs the full schema + seed against [db]. Caller must ensure this is
