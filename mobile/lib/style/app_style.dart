@@ -47,6 +47,20 @@ class AppStyle {
   /// Completed-row tint — a soft green flood over a completed set row.
   static const Color completedRowTint = Color(0x1F2ECC71); // 12% finishGreen
 
+  /// Streak flame orange — used for the active streak indicator.
+  static const Color streakOrange = Color(0xFFFF6B35);
+  static const Color streakOrangeTint = Color(0x1FFF6B35); // 12% streakOrange
+
+  /// Muted day indicator for days with no workout.
+  static const Color streakInactiveDay = Color(0xFFE8E8EA);
+
+  /// Calendar heatmap levels (lightest → darkest).
+  static const Color heatmapLevel0 = Color(0xFFEBEDF0);
+  static const Color heatmapLevel1 = Color(0xFFFFE0B2);
+  static const Color heatmapLevel2 = Color(0xFFFFAB40);
+  static const Color heatmapLevel3 = Color(0xFFFF6B35);
+  static const Color heatmapLevel4 = Color(0xFFE65100);
+
   // ---------- Spacing ----------
 
   static const double gapXS = 4.0;
@@ -180,6 +194,49 @@ class AppStyle {
 
   /// Blue "+ Add Set" action at the bottom of each card.
   static const TextStyle addSetButtonStyle = TextStyle(color: primaryBlue, fontSize: 14.0, fontWeight: FontWeight.w700);
+
+  /// Large streak count number.
+  static const TextStyle streakCountStyle = TextStyle(
+    color: streakOrange,
+    fontSize: 48.0,
+    fontWeight: FontWeight.w900,
+    height: 1.0,
+  );
+
+  /// Streak label text ("day streak").
+  static const TextStyle streakLabelStyle = TextStyle(
+    color: textSecondary,
+    fontSize: 15.0,
+    fontWeight: FontWeight.w600,
+  );
+
+  /// Streak stat value (e.g. "23").
+  static const TextStyle streakStatValueStyle = TextStyle(
+    color: textPrimary,
+    fontSize: 22.0,
+    fontWeight: FontWeight.w800,
+  );
+
+  /// Streak stat caption (e.g. "longest").
+  static const TextStyle streakStatCaptionStyle = TextStyle(
+    color: textSecondary,
+    fontSize: 12.0,
+    fontWeight: FontWeight.w500,
+  );
+
+  /// Day-of-week label in the weekly strip.
+  static const TextStyle weekdayLabelStyle = TextStyle(
+    color: textSecondary,
+    fontSize: 11.0,
+    fontWeight: FontWeight.w600,
+  );
+
+  /// Month label in the heatmap.
+  static const TextStyle heatmapMonthStyle = TextStyle(
+    color: textSecondary,
+    fontSize: 11.0,
+    fontWeight: FontWeight.w500,
+  );
 
   // ---------- Formatters ----------
 

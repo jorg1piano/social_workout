@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'data/db/database.dart';
 import 'features/active_workout/active_workout_screen.dart';
 import 'features/competition/competition_list_screen.dart';
+import 'features/streak/streak_screen.dart';
 import 'style/app_style.dart';
 
 /// Push Day template ULID from `sqlite/new-test-data.sql` — the initial
@@ -44,6 +45,16 @@ class FeatureListScreen extends StatelessWidget {
       appBar: AppBar(title: const Text('Social Workout')),
       body: ListView(
         children: [
+          ListTile(
+            leading: const Icon(Icons.local_fire_department_rounded,
+                color: AppStyle.streakOrange),
+            title: const Text('Streak'),
+            subtitle: const Text('Workout streak concept'),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const StreakScreen()),
+            ),
+          ),
           ListTile(
             leading: const Icon(Icons.fitness_center),
             title: const Text('Active Workout'),
