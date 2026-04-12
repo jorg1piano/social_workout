@@ -1,0 +1,15 @@
+project_name: social-workout
+
+copy:
+  files:
+    - workout.db
+
+pools:
+  devices:
+    - emulator-5556
+    - emulator-5558
+    - emulator-5560
+
+hooks:
+  post_create:
+    - just db-with-test-data
