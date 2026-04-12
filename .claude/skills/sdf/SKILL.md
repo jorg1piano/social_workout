@@ -249,31 +249,40 @@ ls "$REPO_ROOT"/*/.claude/agents/*.md "$REPO_ROOT"/.claude/agents/*.md 2>/dev/nu
 
 **Main mode**: use defaults from `.sdf.yaml` port bases, or fall back to common defaults (8080, 5432).
 
-## Step 1 — Pre-flight
+## Step 1 — Discover what this project has
+
+Not every project has a backend, a mobile app, or Docker. Detect what exists before doing anything:
 
 ```bash
+# Backend: look for docker-compose or a Go/Node/Python server
+ls "$REPO_ROOT"/**/docker-compose.yml "$REPO_ROOT"/docker-compose.yml 2>/dev/null || true
+# Mobile: look for a Flutter project
+ls "$REPO_ROOT"/**/pubspec.yaml 2>/dev/null || true
+# Running services
 docker compose ps --format json 2>/dev/null || true
-nc -zv localhost $APP_PORT 2>&1 || true
 pgrep -fl 'flutter run' 2>&1 || true
 which flutter >/dev/null 2>&1 && flutter devices --machine 2>/dev/null || true
 ```
 
-Show:
+Only include components that actually exist in the pre-flight report:
+
 ```
 Team pre-flight (<worktree: branch slot N  OR  main>)
-  backend     ✓ up (:$APP_PORT)   or   ✗ down
-  mobile      ✓ running           or   ✗ not running   or   n/a
+  backend     ✓ up (:$APP_PORT)   or   ✗ down          or   — (no backend found)
+  mobile      ✓ running           or   ✗ not running   or   — (no Flutter project)
   devices     <list>              or   n/a
 ```
 
 ## Step 2 — Boot what's missing
 
-**Backend** — only if a compose file exists:
+Only boot components that exist in this project. Skip sections that don't apply.
+
+**Backend** — only if a docker-compose.yml exists:
 - Worktree: find the compose file AND the credentials env file (e.g. `web/.env`, `backend/.env`, or `.env`). Pass both: `docker compose -f <compose-file> --env-file <creds-env> --env-file .env.worktree -p $COMPOSE_PROJECT_NAME up -d`. The creds file provides DB passwords etc., `.env.worktree` overrides the ports. **Missing this is the #1 failure mode** — always check for a separate `.env` file near the compose file.
 - Main: `cd <compose-dir> && docker compose up -d` (auto-loads the local `.env`).
 - Poll port ~15s. Never `down -v`, `prune`, `rmi`, or `--build` unless asked.
 
-**Mobile** — only if a Flutter project exists. **Always launch the app** — don't wait to be asked:
+**Mobile** — only if a `pubspec.yaml` exists. **Always launch the app** — don't wait to be asked:
 - Use the device assigned to this worktree (`$FLUTTER_DEVICE_ID` from `.env.worktree`, or the pool-allocated device ID). Never prompt for device selection — the pool handles it.
 - Android: `adb reverse tcp:$APP_PORT tcp:$APP_PORT` first.
 - Launch with `flutter run -d $FLUTTER_DEVICE_ID` in background (`run_in_background: true`).
@@ -296,11 +305,13 @@ Spawn one teammate per agent definition found. **Include the worktree root path 
 
 ## Step 4 — Report
 
+Only include lines for components that exist. A mobile-only project should NOT show a backend line:
+
 ```
 Team — ready
   context     <worktree: branch slot N  OR  main repo>
-  ✓ backend   <status>   :$APP_PORT
-  ✓ mobile    <status>   device: $DEVICE_ID
+  ✓ backend   <status>   :$APP_PORT              ← only if backend exists
+  ✓ mobile    <status>   device: $DEVICE_ID       ← only if Flutter project exists
   ✓ team      N teammates: <names>
   > next      Tell the lead what to work on
 ```
