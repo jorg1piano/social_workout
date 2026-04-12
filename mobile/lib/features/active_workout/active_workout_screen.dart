@@ -209,7 +209,7 @@ class _TopBar extends StatelessWidget {
       padding: AppStyle.topBarPadding,
       child: Row(
         children: [
-          _CircleIconButton(icon: Icons.arrow_back_ios_new, onTap: () {}),
+          _CircleIconButton(icon: Icons.arrow_back_ios_new, onTap: () => Navigator.pop(context)),
           Expanded(
             child: Center(
               child: Text(elapsed, style: AppStyle.topBarTimeStyle),
