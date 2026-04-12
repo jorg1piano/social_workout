@@ -14,14 +14,63 @@ class _StreakData {
   /// Which days of the current week had a workout (Mon=0 .. Sun=6).
   static const List<bool> thisWeek = [true, false, true, true, false, true, false];
 
-  /// Friends and their current streaks.
-  static const List<({String name, int streak, bool activeToday})> friends = [
-    (name: 'Erik', streak: 45, activeToday: true),
-    (name: 'Marte', streak: 30, activeToday: true),
-    (name: 'Silje', streak: 18, activeToday: false),
-    (name: 'Kristian', streak: 7, activeToday: true),
-    (name: 'Jonas', streak: 3, activeToday: false),
-    (name: 'Hanna', streak: 0, activeToday: false),
+  /// Friends and their current streaks with recent workout history.
+  static const List<({
+    String name,
+    int streak,
+    bool activeToday,
+    int longest,
+    List<String> recentWorkouts,
+    List<bool> thisWeek,
+  })> friends = [
+    (
+      name: 'Erik',
+      streak: 45,
+      activeToday: true,
+      longest: 60,
+      recentWorkouts: ['Pull Day', 'Legs', 'Push Day', 'Cardio', 'Pull Day'],
+      thisWeek: [true, true, true, true, true, false, false],
+    ),
+    (
+      name: 'Marte',
+      streak: 30,
+      activeToday: true,
+      longest: 30,
+      recentWorkouts: ['Upper Body', 'Running', 'Yoga', 'Lower Body'],
+      thisWeek: [true, false, true, true, false, false, false],
+    ),
+    (
+      name: 'Silje',
+      streak: 18,
+      activeToday: false,
+      longest: 22,
+      recentWorkouts: ['Push Day', 'Legs', 'Pull Day'],
+      thisWeek: [true, false, true, false, false, false, false],
+    ),
+    (
+      name: 'Kristian',
+      streak: 7,
+      activeToday: true,
+      longest: 14,
+      recentWorkouts: ['Full Body', 'Cardio', 'Full Body'],
+      thisWeek: [true, false, false, true, false, false, false],
+    ),
+    (
+      name: 'Jonas',
+      streak: 3,
+      activeToday: false,
+      longest: 11,
+      recentWorkouts: ['Push Day', 'Pull Day'],
+      thisWeek: [true, false, true, false, false, false, false],
+    ),
+    (
+      name: 'Hanna',
+      streak: 0,
+      activeToday: false,
+      longest: 8,
+      recentWorkouts: [],
+      thisWeek: [false, false, false, false, false, false, false],
+    ),
   ];
 
   /// 12 weeks of activity for the heatmap.
@@ -220,11 +269,32 @@ class _FriendsSection extends StatelessWidget {
   const _FriendsSection();
 
   /// All entries: the user ("You") merged with friends, sorted by streak desc.
-  static List<({String name, int streak, bool activeToday, bool isMe})> get _allEntries {
-    final entries = <({String name, int streak, bool activeToday, bool isMe})>[
-      (name: 'You', streak: _StreakData.currentStreak, activeToday: true, isMe: true),
-      ..._StreakData.friends.map((f) =>
-          (name: f.name, streak: f.streak, activeToday: f.activeToday, isMe: false)),
+  static List<({
+    String name, int streak, bool activeToday, bool isMe,
+    int longest, List<String> recentWorkouts, List<bool> thisWeek,
+  })> get _allEntries {
+    final entries = <({
+      String name, int streak, bool activeToday, bool isMe,
+      int longest, List<String> recentWorkouts, List<bool> thisWeek,
+    })>[
+      (
+        name: 'You',
+        streak: _StreakData.currentStreak,
+        activeToday: true,
+        isMe: true,
+        longest: _StreakData.longestStreak,
+        recentWorkouts: const ['Push Day', 'Legs', 'Pull Day', 'Push Day'],
+        thisWeek: _StreakData.thisWeek,
+      ),
+      ..._StreakData.friends.map((f) => (
+        name: f.name,
+        streak: f.streak,
+        activeToday: f.activeToday,
+        isMe: false,
+        longest: f.longest,
+        recentWorkouts: f.recentWorkouts,
+        thisWeek: f.thisWeek,
+      )),
     ];
     entries.sort((a, b) => b.streak.compareTo(a.streak));
     return entries;
@@ -242,15 +312,259 @@ class _FriendsSection extends StatelessWidget {
           final entry = entries[i];
           return Padding(
             padding: EdgeInsets.only(bottom: i < entries.length - 1 ? AppStyle.gapS : 0),
-            child: _StreakRow(
-              name: entry.name,
-              streak: entry.streak,
-              activeToday: entry.activeToday,
-              isMe: entry.isMe,
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () => _showStreakDetail(context, entry),
+              child: _StreakRow(
+                name: entry.name,
+                streak: entry.streak,
+                activeToday: entry.activeToday,
+                isMe: entry.isMe,
+              ),
             ),
           );
         }),
       ],
+    );
+  }
+
+  static void _showStreakDetail(BuildContext context, dynamic entry) {
+    final String name = entry.name;
+    final int streak = entry.streak;
+    final bool isMe = entry.isMe;
+    final int longest = entry.longest;
+    final List<String> recentWorkouts = entry.recentWorkouts;
+    final List<bool> thisWeek = entry.thisWeek;
+
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (_) => _StreakDetailSheet(
+        name: name,
+        streak: streak,
+        isMe: isMe,
+        longest: longest,
+        recentWorkouts: recentWorkouts,
+        thisWeek: thisWeek,
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Streak detail bottom sheet
+// ---------------------------------------------------------------------------
+
+class _StreakDetailSheet extends StatelessWidget {
+  const _StreakDetailSheet({
+    required this.name,
+    required this.streak,
+    required this.isMe,
+    required this.longest,
+    required this.recentWorkouts,
+    required this.thisWeek,
+  });
+
+  final String name;
+  final int streak;
+  final bool isMe;
+  final int longest;
+  final List<String> recentWorkouts;
+  final List<bool> thisWeek;
+
+  static const _days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        color: AppStyle.cardBackground,
+        borderRadius: AppStyle.sheetRadius,
+      ),
+      padding: const EdgeInsets.fromLTRB(20.0, 12.0, 20.0, 32.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Drag handle
+          Container(
+            width: 36.0,
+            height: 4.0,
+            decoration: BoxDecoration(
+              color: AppStyle.streakInactiveDay,
+              borderRadius: BorderRadius.circular(2.0),
+            ),
+          ),
+          const SizedBox(height: AppStyle.gapXL),
+
+          // Avatar + name
+          Container(
+            width: 56.0,
+            height: 56.0,
+            decoration: BoxDecoration(
+              color: isMe
+                  ? AppStyle.streakOrange
+                  : streak > 0
+                      ? AppStyle.streakOrangeTint
+                      : AppStyle.streakInactiveDay,
+              shape: BoxShape.circle,
+            ),
+            alignment: Alignment.center,
+            child: isMe
+                ? const Icon(Icons.local_fire_department_rounded,
+                    color: Colors.white, size: 28.0)
+                : Text(
+                    name[0],
+                    style: TextStyle(
+                      color: streak > 0 ? AppStyle.streakOrange : AppStyle.textSecondary,
+                      fontSize: 22.0,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+          ),
+          const SizedBox(height: AppStyle.gapM),
+          Text(name, style: AppStyle.sheetTitleStyle),
+          const SizedBox(height: AppStyle.gapXL),
+
+          // Streak + longest row
+          Row(
+            children: [
+              Expanded(
+                child: _DetailStat(
+                  icon: Icons.local_fire_department_rounded,
+                  iconColor: AppStyle.streakOrange,
+                  value: '$streak',
+                  label: 'Current streak',
+                ),
+              ),
+              const SizedBox(width: AppStyle.gapM),
+              Expanded(
+                child: _DetailStat(
+                  icon: Icons.emoji_events_rounded,
+                  iconColor: const Color(0xFFFFAB40),
+                  value: '$longest',
+                  label: 'Longest streak',
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppStyle.gapXL),
+
+          // This week strip
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text('This week',
+                style: AppStyle.captionStyle.copyWith(fontWeight: FontWeight.w700)),
+          ),
+          const SizedBox(height: AppStyle.gapM),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: List.generate(7, (i) {
+              final active = thisWeek[i];
+              return Column(
+                children: [
+                  Text(_days[i], style: AppStyle.weekdayLabelStyle),
+                  const SizedBox(height: AppStyle.gapS),
+                  Container(
+                    width: 36.0,
+                    height: 36.0,
+                    decoration: BoxDecoration(
+                      color: active ? AppStyle.streakOrange : AppStyle.streakInactiveDay,
+                      shape: BoxShape.circle,
+                    ),
+                    child: active
+                        ? const Icon(Icons.check_rounded, color: Colors.white, size: 20.0)
+                        : null,
+                  ),
+                ],
+              );
+            }),
+          ),
+          const SizedBox(height: AppStyle.gapXL),
+
+          // Recent workouts
+          if (recentWorkouts.isNotEmpty) ...[
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text('Recent workouts',
+                  style: AppStyle.captionStyle.copyWith(fontWeight: FontWeight.w700)),
+            ),
+            const SizedBox(height: AppStyle.gapM),
+            Wrap(
+              spacing: AppStyle.gapS,
+              runSpacing: AppStyle.gapS,
+              children: recentWorkouts.map((w) => Container(
+                padding: AppStyle.pillPadding,
+                decoration: BoxDecoration(
+                  color: AppStyle.streakOrangeTint,
+                  borderRadius: AppStyle.pillRadius,
+                ),
+                child: Text(
+                  w,
+                  style: const TextStyle(
+                    color: AppStyle.streakOrange,
+                    fontSize: 13.0,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              )).toList(),
+            ),
+          ] else ...[
+            Container(
+              width: double.infinity,
+              padding: AppStyle.cardPadding,
+              decoration: BoxDecoration(
+                color: AppStyle.streakInactiveDay.withAlpha(128),
+                borderRadius: AppStyle.cardRadius,
+              ),
+              child: const Text(
+                'No recent workouts',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: AppStyle.textSecondary,
+                  fontSize: 14.0,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _DetailStat extends StatelessWidget {
+  const _DetailStat({
+    required this.icon,
+    required this.iconColor,
+    required this.value,
+    required this.label,
+  });
+
+  final IconData icon;
+  final Color iconColor;
+  final String value;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: AppStyle.gapL, horizontal: AppStyle.gapM),
+      decoration: BoxDecoration(
+        color: AppStyle.cardBackground,
+        borderRadius: AppStyle.cardRadius,
+        border: Border.all(color: AppStyle.cardBorder),
+      ),
+      child: Column(
+        children: [
+          Icon(icon, color: iconColor, size: 24.0),
+          const SizedBox(height: AppStyle.gapS),
+          Text(value, style: AppStyle.streakStatValueStyle),
+          const SizedBox(height: AppStyle.gapXS),
+          Text(label, style: AppStyle.streakStatCaptionStyle),
+        ],
+      ),
     );
   }
 }
