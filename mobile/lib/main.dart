@@ -8,6 +8,7 @@ import 'features/home/home_screen.dart';
 import 'features/home/home_variant_a.dart';
 import 'features/home/home_variant_b.dart';
 import 'features/home/home_variant_c.dart';
+import 'features/paywall/paywall_flow_screen.dart';
 import 'features/social_feed/social_feed_screen.dart';
 import 'features/streak/streak_screen.dart';
 import 'style/app_style.dart';
@@ -141,6 +142,17 @@ class FeatureListScreen extends StatelessWidget {
               context,
               MaterialPageRoute(
                 builder: (_) => SocialFeedScreen(database: database),
+              ),
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.diamond, color: Color(0xFFD4A017)),
+            title: const Text('Paywall'),
+            subtitle: const Text('Subscription onboarding flow'),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const PaywallFlowScreen(),
               ),
             ),
           ),
