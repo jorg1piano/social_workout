@@ -11,6 +11,7 @@ import 'features/home/home_variant_c.dart';
 import 'features/paywall/paywall_flow_screen.dart';
 import 'features/social_feed/social_feed_screen.dart';
 import 'features/streak/streak_screen.dart';
+import 'features/workout_summary/workout_summary_screen.dart';
 import 'style/app_style.dart';
 
 /// Push Day template ULID from `sqlite/new-test-data.sql` — the initial
@@ -96,6 +97,15 @@ class FeatureListScreen extends StatelessWidget {
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const StreakScreen()),
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.celebration_rounded, color: AppStyle.finishGreen),
+            title: const Text('Workout Summary'),
+            subtitle: const Text('Post-workout recap'),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const WorkoutSummaryScreen()),
             ),
           ),
           ListTile(
