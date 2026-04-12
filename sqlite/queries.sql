@@ -206,3 +206,74 @@ FROM workout w
 LEFT JOIN exercise_set es ON w.id = es.workout_id AND es.is_completed = 1
 GROUP BY week
 ORDER BY week DESC;
+
+-- ============================================================================
+-- Social Feed Queries
+-- ============================================================================
+
+-- 13. Get social feed (paginated, most recent first)
+SELECT
+    fi.id,
+    fi.item_type,
+    fi.title,
+    fi.description,
+    fi.metric_value,
+    fi.metric_unit,
+    fi.like_count,
+    fi.comment_count,
+    datetime(fi.occurred_at, 'unixepoch') as occurred,
+    up.display_name,
+    up.username,
+    up.avatar_url
+FROM feed_item fi
+JOIN user_profile up ON fi.user_id = up.id
+ORDER BY fi.occurred_at DESC
+LIMIT 20 OFFSET 0;
+
+-- 14. Get feed items for a specific user
+SELECT
+    fi.id,
+    fi.item_type,
+    fi.title,
+    fi.description,
+    fi.metric_value,
+    fi.metric_unit,
+    fi.like_count,
+    fi.comment_count,
+    datetime(fi.occurred_at, 'unixepoch') as occurred
+FROM feed_item fi
+WHERE fi.user_id = 'app-01KP0CGRYVW31E28H1TV6A605D'
+ORDER BY fi.occurred_at DESC;
+
+-- 15. Get comments for a feed item
+SELECT
+    fc.id,
+    fc.body,
+    datetime(fc.created_at, 'unixepoch') as posted_at,
+    up.display_name,
+    up.username,
+    up.avatar_url
+FROM feed_comment fc
+JOIN user_profile up ON fc.user_id = up.id
+WHERE fc.feed_item_id = 'app-01KP0CGRZAN7GK90JWG3W32623'
+ORDER BY fc.created_at ASC;
+
+-- 16. Check if current user has liked a feed item
+SELECT EXISTS(
+    SELECT 1 FROM feed_like
+    WHERE feed_item_id = 'app-01KP0CGRZAN7GK90JWG3W32623'
+      AND user_id = 'app-01KP0CGRYVW31E28H1TV6A605D'
+) as has_liked;
+
+-- 17. Get feed summary stats for a user profile
+SELECT
+    up.display_name,
+    up.username,
+    up.bio,
+    COUNT(DISTINCT CASE WHEN fi.item_type = 'workout_completed' THEN fi.id END) as workouts_shared,
+    COUNT(DISTINCT CASE WHEN fi.item_type = 'personal_record' THEN fi.id END) as prs_posted,
+    MAX(CASE WHEN fi.item_type = 'streak_milestone' THEN fi.metric_value END) as best_streak
+FROM user_profile up
+LEFT JOIN feed_item fi ON up.id = fi.user_id
+WHERE up.id = 'app-01KP0CGRYVW31E28H1TV6A605D'
+GROUP BY up.id;

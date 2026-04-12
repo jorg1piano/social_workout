@@ -241,3 +241,79 @@ CREATE UNIQUE INDEX idx_exercise_variant ON exercise_for_workout_template(workou
 -- Ensures each (workout, exercise variant, set number, attempt) combination is unique
 -- Allows multiple attempts at the same set but prevents logging the same attempt twice
 CREATE UNIQUE INDEX idx_exercise_set_attempt ON exercise_set(workout_id, exercise_for_workout_template_id, ordering, attempt_number);
+
+-- ============================================================================
+-- Social Feed Tables
+-- ============================================================================
+
+-- 11. user_profile - No dependencies
+-- Represents users in the system (the local user + friends whose feed items sync down)
+CREATE TABLE user_profile (
+  id TEXT PRIMARY KEY NOT NULL CHECK((id LIKE 'app-%' OR id LIKE 'usr-%') AND length(id) = 30),
+  display_name TEXT NOT NULL,
+  username TEXT NOT NULL UNIQUE,
+  avatar_url TEXT,
+  bio TEXT,
+  is_current_user INTEGER NOT NULL DEFAULT 0,
+  created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+  updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now'))
+);
+
+-- 12. feed_item - Depends on: user_profile, workout (optional), exercise (optional)
+-- Social feed entries — workout completions, personal records, streak milestones.
+-- Stores denormalized title/description for fast feed rendering without joins.
+CREATE TABLE feed_item (
+  id TEXT PRIMARY KEY NOT NULL CHECK((id LIKE 'app-%' OR id LIKE 'usr-%') AND length(id) = 30),
+  user_id TEXT NOT NULL,
+  item_type TEXT NOT NULL CHECK (item_type IN ('workout_completed', 'personal_record', 'streak_milestone')),
+  title TEXT NOT NULL,
+  description TEXT,
+  workout_id TEXT,
+  exercise_id TEXT,
+  metric_value DECIMAL(10,2),
+  metric_unit TEXT,
+  like_count INTEGER NOT NULL DEFAULT 0,
+  comment_count INTEGER NOT NULL DEFAULT 0,
+  occurred_at INTEGER NOT NULL,
+  created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+  updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+  FOREIGN KEY(user_id) REFERENCES user_profile(id) ON DELETE CASCADE,
+  FOREIGN KEY(workout_id) REFERENCES workout(id) ON DELETE SET NULL,
+  FOREIGN KEY(exercise_id) REFERENCES exercise(id) ON DELETE SET NULL
+);
+
+-- 13. feed_like - Depends on: feed_item, user_profile
+-- Tracks who liked which feed item
+CREATE TABLE feed_like (
+  id TEXT PRIMARY KEY NOT NULL CHECK((id LIKE 'app-%' OR id LIKE 'usr-%') AND length(id) = 30),
+  feed_item_id TEXT NOT NULL,
+  user_id TEXT NOT NULL,
+  created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+  FOREIGN KEY(feed_item_id) REFERENCES feed_item(id) ON DELETE CASCADE,
+  FOREIGN KEY(user_id) REFERENCES user_profile(id) ON DELETE CASCADE
+);
+
+-- 14. feed_comment - Depends on: feed_item, user_profile
+-- Comments on feed items
+CREATE TABLE feed_comment (
+  id TEXT PRIMARY KEY NOT NULL CHECK((id LIKE 'app-%' OR id LIKE 'usr-%') AND length(id) = 30),
+  feed_item_id TEXT NOT NULL,
+  user_id TEXT NOT NULL,
+  body TEXT NOT NULL,
+  created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+  updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+  FOREIGN KEY(feed_item_id) REFERENCES feed_item(id) ON DELETE CASCADE,
+  FOREIGN KEY(user_id) REFERENCES user_profile(id) ON DELETE CASCADE
+);
+
+-- Social feed indexes
+CREATE INDEX idx_feed_item_user_id ON feed_item(user_id);
+CREATE INDEX idx_feed_item_workout_id ON feed_item(workout_id);
+CREATE INDEX idx_feed_item_exercise_id ON feed_item(exercise_id);
+CREATE INDEX idx_feed_like_feed_item_id ON feed_like(feed_item_id);
+CREATE INDEX idx_feed_like_user_id ON feed_like(user_id);
+CREATE INDEX idx_feed_comment_feed_item_id ON feed_comment(feed_item_id);
+CREATE INDEX idx_feed_comment_user_id ON feed_comment(user_id);
+CREATE INDEX idx_feed_item_occurred_at ON feed_item(occurred_at DESC);
+CREATE INDEX idx_feed_item_type ON feed_item(item_type);
+CREATE UNIQUE INDEX idx_feed_like_unique ON feed_like(feed_item_id, user_id);
