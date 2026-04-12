@@ -1,18 +1,16 @@
 project_name: social-workout
-
 copy:
-  files:
-    - workout.db
-
+    files:
+        - workout.db
 pools:
-  devices:
-    - emulator-5556
-    - emulator-5558
-    - emulator-5560
-
+    devices:
+        - emulator-5556
+        - emulator-5558
+        - emulator-5560
+        - emulator-5562
+        - emulator-5564
 hooks:
-  post_create:
-    - just db
-
-  pool_grow:
+    post_create:
+        - just db
+pool_grow:
     devices: android-emulator
