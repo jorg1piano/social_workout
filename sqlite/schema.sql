@@ -317,3 +317,77 @@ CREATE INDEX idx_feed_comment_user_id ON feed_comment(user_id);
 CREATE INDEX idx_feed_item_occurred_at ON feed_item(occurred_at DESC);
 CREATE INDEX idx_feed_item_type ON feed_item(item_type);
 CREATE UNIQUE INDEX idx_feed_like_unique ON feed_like(feed_item_id, user_id);
+
+-- ============================================================================
+-- Competition Tables
+-- ============================================================================
+
+-- 15. competition - Depends on: user_profile
+-- A competition between users (e.g., "Most bench press volume in January")
+-- Tracks a specific metric across one or more exercises over a date range.
+CREATE TABLE competition (
+  id TEXT PRIMARY KEY NOT NULL CHECK((id LIKE 'app-%' OR id LIKE 'usr-%') AND length(id) = 30),
+  name TEXT NOT NULL,
+  description TEXT,
+  competition_type TEXT NOT NULL CHECK (competition_type IN ('total_volume', 'max_weight', 'streak', 'total_reps')),
+  start_date INTEGER NOT NULL,
+  end_date INTEGER NOT NULL,
+  created_by TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'upcoming' CHECK (status IN ('upcoming', 'active', 'completed')),
+  created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+  updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+  FOREIGN KEY(created_by) REFERENCES user_profile(id) ON DELETE CASCADE
+);
+
+-- 16. competition_exercise - Depends on: competition, exercise
+-- Which exercises count toward a competition's scoring
+CREATE TABLE competition_exercise (
+  id TEXT PRIMARY KEY NOT NULL CHECK((id LIKE 'app-%' OR id LIKE 'usr-%') AND length(id) = 30),
+  competition_id TEXT NOT NULL,
+  exercise_id TEXT NOT NULL,
+  created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+  updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+  FOREIGN KEY(competition_id) REFERENCES competition(id) ON DELETE CASCADE,
+  FOREIGN KEY(exercise_id) REFERENCES exercise(id) ON DELETE RESTRICT
+);
+
+-- 17. competition_participant - Depends on: competition, user_profile
+-- Users who have joined a competition
+CREATE TABLE competition_participant (
+  id TEXT PRIMARY KEY NOT NULL CHECK((id LIKE 'app-%' OR id LIKE 'usr-%') AND length(id) = 30),
+  competition_id TEXT NOT NULL,
+  user_id TEXT NOT NULL,
+  joined_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+  created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+  updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+  FOREIGN KEY(competition_id) REFERENCES competition(id) ON DELETE CASCADE,
+  FOREIGN KEY(user_id) REFERENCES user_profile(id) ON DELETE CASCADE
+);
+
+-- 18. competition_leaderboard_entry - Depends on: competition, user_profile
+-- Tracks each participant's current score and rank in a competition
+CREATE TABLE competition_leaderboard_entry (
+  id TEXT PRIMARY KEY NOT NULL CHECK((id LIKE 'app-%' OR id LIKE 'usr-%') AND length(id) = 30),
+  competition_id TEXT NOT NULL,
+  user_id TEXT NOT NULL,
+  score DECIMAL(10,2) NOT NULL DEFAULT 0,
+  rank INTEGER,
+  last_activity_at INTEGER,
+  created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+  updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+  FOREIGN KEY(competition_id) REFERENCES competition(id) ON DELETE CASCADE,
+  FOREIGN KEY(user_id) REFERENCES user_profile(id) ON DELETE CASCADE
+);
+
+-- Competition indexes
+CREATE INDEX idx_competition_created_by ON competition(created_by);
+CREATE INDEX idx_competition_status ON competition(status);
+CREATE INDEX idx_competition_exercise_competition_id ON competition_exercise(competition_id);
+CREATE INDEX idx_competition_exercise_exercise_id ON competition_exercise(exercise_id);
+CREATE INDEX idx_competition_participant_competition_id ON competition_participant(competition_id);
+CREATE INDEX idx_competition_participant_user_id ON competition_participant(user_id);
+CREATE INDEX idx_competition_leaderboard_entry_competition_id ON competition_leaderboard_entry(competition_id);
+CREATE INDEX idx_competition_leaderboard_entry_user_id ON competition_leaderboard_entry(user_id);
+CREATE UNIQUE INDEX idx_competition_exercise_unique ON competition_exercise(competition_id, exercise_id);
+CREATE UNIQUE INDEX idx_competition_participant_unique ON competition_participant(competition_id, user_id);
+CREATE UNIQUE INDEX idx_competition_leaderboard_entry_unique ON competition_leaderboard_entry(competition_id, user_id);
