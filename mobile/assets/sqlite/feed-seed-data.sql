@@ -264,3 +264,37 @@ INSERT INTO feed_comment (id, feed_item_id, user_id, body) VALUES
 INSERT INTO feed_comment (id, feed_item_id, user_id, body) VALUES
 ('app-01KP0CGS2GS50R6Y5MQ7V0RDCH', 'app-01KP0CGS0365G3ZJ9GRY53RGT2', 'app-01KP0CGRYVW31E28H1TV6A605D',
  'Day 201! You never stop.');
+
+-- ============================================================================
+-- Planned Workouts ("Who's working out today" Stories row)
+-- ============================================================================
+
+-- Alex: Push Day today at 6 PM
+INSERT INTO planned_workout (id, user_id, workout_template_id, planned_date, planned_time, notes) VALUES
+('app-01KP0QG2KZ84Z9EZ8X8G01M43R', 'app-01KP0CGRYVW31E28H1TV6A605D', 'app-01KE6BHGJAFFKEAQ7X760EBPHJ',
+ strftime('%s', 'now', 'start of day'), strftime('%s', 'now', 'start of day', '+18 hours'),
+ 'Going heavy on bench today');
+
+-- Maria: Leg Day today at 7:30 AM (early bird)
+INSERT INTO planned_workout (id, user_id, workout_template_id, planned_date, planned_time, notes) VALUES
+('app-01KP0QG2M3X23BFMADA6BZ35E7', 'app-01KP0CGRYY87WWH29CYY028PTP', 'app-01KE6BHGJK7ST9KXA9FBBRW9X0',
+ strftime('%s', 'now', 'start of day'), strftime('%s', 'now', 'start of day', '+7 hours', '+30 minutes'),
+ NULL);
+
+-- Sam: Pull Day today, no specific time
+INSERT INTO planned_workout (id, user_id, workout_template_id, planned_date, planned_time, notes) VALUES
+('app-01KP0QG2M65GT4DWX5X6KQEV1B', 'app-01KP0CGRZ1H6K81WAMGYWX8DX0', 'app-01KE6BHGJFXP86HZR1XJBZHQS4',
+ strftime('%s', 'now', 'start of day'), NULL,
+ 'Day 202 — keeping the streak alive');
+
+-- Jordan: Push Day today, no specific time
+INSERT INTO planned_workout (id, user_id, workout_template_id, planned_date, planned_time, notes) VALUES
+('app-01KP0QG2M9CQ4QGN7DCRWS0GS3', 'app-01KP0CGRZ4HQW4CHEWFB9YG3KD', 'app-01KE6BHGJAFFKEAQ7X760EBPHJ',
+ strftime('%s', 'now', 'start of day'), NULL,
+ NULL);
+
+-- Alex also has Leg Day planned tomorrow at 5 PM (shows only today's in stories)
+INSERT INTO planned_workout (id, user_id, workout_template_id, planned_date, planned_time, notes) VALUES
+('app-01KP0QG2MD7FV0E6R6QZBTWGPP', 'app-01KP0CGRYVW31E28H1TV6A605D', 'app-01KE6BHGJK7ST9KXA9FBBRW9X0',
+ strftime('%s', 'now', 'start of day', '+1 day'), strftime('%s', 'now', 'start of day', '+1 day', '+17 hours'),
+ 'Squat day — aiming for 285');

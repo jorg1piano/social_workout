@@ -61,6 +61,33 @@ class AppStyle {
   static const Color heatmapLevel3 = Color(0xFFFF6B35);
   static const Color heatmapLevel4 = Color(0xFFE65100);
 
+  // ---------- Social feed colors ----------
+
+  /// Gold/amber accent for personal-record feed items.
+  static const Color prGold = Color(0xFFE6A817);
+  static const Color prGoldTint = Color(0x1AE6A817); // 10%
+
+  /// Green accent for streak milestone feed items.
+  static const Color streakGreen = Color(0xFF27AE60);
+  static const Color streakGreenTint = Color(0x1A27AE60); // 10%
+
+  /// Blue tint for workout-completed feed items (re-uses primaryBlue).
+  static const Color workoutBlueTint = Color(0x1A1E88E5); // 10%
+
+  /// Subtle red for the heart / like icon.
+  static const Color heartRed = Color(0xFFE74C3C);
+
+  /// Light background for the feed screen.
+  static const Color feedBackground = Color(0xFFF5F5F7);
+
+  /// Gradient ring colors for the Stories-style planned-workout avatars.
+  static const Color storiesRingStart = Color(0xFF1E88E5);
+  static const Color storiesRingEnd = Color(0xFF27AE60);
+
+  /// Background for the Stories popover bubble.
+  static const Color popoverBackground = Color(0xFFFFFFFF);
+  static const Color popoverShadow = Color(0x30000000);
+
   // ---------- Spacing ----------
 
   static const double gapXS = 4.0;
@@ -236,6 +263,110 @@ class AppStyle {
     color: textSecondary,
     fontSize: 11.0,
     fontWeight: FontWeight.w500,
+  );
+
+  // ---------- Social feed text styles ----------
+
+  static const TextStyle feedUserNameStyle = TextStyle(
+    color: textPrimary,
+    fontSize: 15.0,
+    fontWeight: FontWeight.w700,
+  );
+
+  static const TextStyle feedUsernameHandle = TextStyle(
+    color: textSecondary,
+    fontSize: 13.0,
+    fontWeight: FontWeight.w400,
+  );
+
+  static const TextStyle feedTimestampStyle = TextStyle(
+    color: textSecondary,
+    fontSize: 12.0,
+    fontWeight: FontWeight.w400,
+  );
+
+  static const TextStyle feedTitleStyle = TextStyle(
+    color: textPrimary,
+    fontSize: 16.0,
+    fontWeight: FontWeight.w700,
+  );
+
+  static const TextStyle feedDescriptionStyle = TextStyle(
+    color: textPrimary,
+    fontSize: 14.0,
+    fontWeight: FontWeight.w400,
+    height: 1.4,
+  );
+
+  static const TextStyle feedMetricStyle = TextStyle(
+    color: textPrimary,
+    fontSize: 22.0,
+    fontWeight: FontWeight.w800,
+  );
+
+  static const TextStyle feedMetricUnitStyle = TextStyle(
+    color: textSecondary,
+    fontSize: 14.0,
+    fontWeight: FontWeight.w500,
+  );
+
+  static const TextStyle feedBadgeStyle = TextStyle(
+    color: Colors.white,
+    fontSize: 11.0,
+    fontWeight: FontWeight.w700,
+    letterSpacing: 0.3,
+  );
+
+  static const TextStyle feedActionStyle = TextStyle(
+    color: textSecondary,
+    fontSize: 13.0,
+    fontWeight: FontWeight.w500,
+  );
+
+  static const TextStyle feedCommentBodyStyle = TextStyle(
+    color: textPrimary,
+    fontSize: 13.0,
+    fontWeight: FontWeight.w400,
+    height: 1.3,
+  );
+
+  static const TextStyle feedCommentAuthorStyle = TextStyle(
+    color: textPrimary,
+    fontSize: 13.0,
+    fontWeight: FontWeight.w600,
+  );
+
+  // ---------- Stories row text styles ----------
+
+  static const TextStyle storiesUsernameStyle = TextStyle(
+    color: textPrimary,
+    fontSize: 11.0,
+    fontWeight: FontWeight.w500,
+  );
+
+  static const TextStyle storiesLabelStyle = TextStyle(
+    color: textSecondary,
+    fontSize: 12.0,
+    fontWeight: FontWeight.w600,
+    letterSpacing: 0.3,
+  );
+
+  static const TextStyle popoverNameStyle = TextStyle(
+    color: textPrimary,
+    fontSize: 14.0,
+    fontWeight: FontWeight.w700,
+  );
+
+  static const TextStyle popoverDetailStyle = TextStyle(
+    color: textSecondary,
+    fontSize: 13.0,
+    fontWeight: FontWeight.w400,
+  );
+
+  static const TextStyle popoverWorkoutStyle = TextStyle(
+    color: primaryBlue,
+    fontSize: 13.0,
+    fontWeight: FontWeight.w600,
   );
 
   // ---------- Formatters ----------
