@@ -4,6 +4,10 @@ import 'data/db/database.dart';
 import 'features/active_workout/active_workout_screen.dart';
 import 'features/body_measurements/body_measurements_screen.dart';
 import 'features/competition/competition_list_screen.dart';
+import 'features/home/home_screen.dart';
+import 'features/home/home_variant_a.dart';
+import 'features/home/home_variant_b.dart';
+import 'features/home/home_variant_c.dart';
 import 'features/social_feed/social_feed_screen.dart';
 import 'features/streak/streak_screen.dart';
 import 'style/app_style.dart';
@@ -47,6 +51,42 @@ class FeatureListScreen extends StatelessWidget {
       appBar: AppBar(title: const Text('Social Workout')),
       body: ListView(
         children: [
+          ListTile(
+            leading: const Icon(Icons.home_rounded, color: AppStyle.primaryBlue),
+            title: const Text('Home Page'),
+            subtitle: const Text('Scaffolding concept'),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const HomeScreen()),
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.dashboard_rounded, color: AppStyle.primaryBlue),
+            title: const Text('Home Variant A'),
+            subtitle: const Text('Dashboard-first layout'),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const HomeVariantA()),
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.people_rounded, color: AppStyle.primaryBlue),
+            title: const Text('Home Variant B'),
+            subtitle: const Text('Social-first layout'),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const HomeVariantB()),
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.bolt_rounded, color: AppStyle.primaryBlue),
+            title: const Text('Home Variant C'),
+            subtitle: const Text('Action-first layout'),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const HomeVariantC()),
+            ),
+          ),
           ListTile(
             leading: const Icon(Icons.local_fire_department_rounded,
                 color: AppStyle.streakOrange),
