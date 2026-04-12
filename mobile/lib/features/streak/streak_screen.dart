@@ -11,6 +11,10 @@ class _StreakData {
   static const int totalThisMonth = 16;
   static const int totalThisWeek = 4;
 
+  /// The user's planned workout days (Mon=0 .. Sun=6).
+  static const String planLabel = '4x / week';
+  static const List<int> planDays = [0, 2, 3, 5]; // Mon, Wed, Thu, Sat
+
   /// Which days of the current week had a workout (Mon=0 .. Sun=6).
   static const List<bool> thisWeek = [true, false, true, true, false, true, false];
 
@@ -20,6 +24,7 @@ class _StreakData {
     int streak,
     bool activeToday,
     int longest,
+    String planLabel,
     List<String> recentWorkouts,
     List<bool> thisWeek,
   })> friends = [
@@ -28,6 +33,7 @@ class _StreakData {
       streak: 45,
       activeToday: true,
       longest: 60,
+      planLabel: '5x / week',
       recentWorkouts: ['Pull Day', 'Legs', 'Push Day', 'Cardio', 'Pull Day'],
       thisWeek: [true, true, true, true, true, false, false],
     ),
@@ -36,6 +42,7 @@ class _StreakData {
       streak: 30,
       activeToday: true,
       longest: 30,
+      planLabel: '4x / week',
       recentWorkouts: ['Upper Body', 'Running', 'Yoga', 'Lower Body'],
       thisWeek: [true, false, true, true, false, false, false],
     ),
@@ -44,6 +51,7 @@ class _StreakData {
       streak: 18,
       activeToday: false,
       longest: 22,
+      planLabel: '3x / week',
       recentWorkouts: ['Push Day', 'Legs', 'Pull Day'],
       thisWeek: [true, false, true, false, false, false, false],
     ),
@@ -52,6 +60,7 @@ class _StreakData {
       streak: 7,
       activeToday: true,
       longest: 14,
+      planLabel: '3x / week',
       recentWorkouts: ['Full Body', 'Cardio', 'Full Body'],
       thisWeek: [true, false, false, true, false, false, false],
     ),
@@ -60,6 +69,7 @@ class _StreakData {
       streak: 3,
       activeToday: false,
       longest: 11,
+      planLabel: '2x / week',
       recentWorkouts: ['Push Day', 'Pull Day'],
       thisWeek: [true, false, true, false, false, false, false],
     ),
@@ -68,6 +78,7 @@ class _StreakData {
       streak: 0,
       activeToday: false,
       longest: 8,
+      planLabel: '3x / week',
       recentWorkouts: [],
       thisWeek: [false, false, false, false, false, false, false],
     ),
@@ -112,6 +123,8 @@ class StreakScreen extends StatelessWidget {
         padding: AppStyle.screenPadding.copyWith(top: AppStyle.gapL, bottom: 40.0),
         children: const [
           _FriendsSection(),
+          SizedBox(height: AppStyle.gapL),
+          _StreakExplainerCard(),
           SizedBox(height: AppStyle.gapXL),
           _CurrentStreakCard(),
           SizedBox(height: AppStyle.gapL),
@@ -120,6 +133,44 @@ class StreakScreen extends StatelessWidget {
           _StatsRow(),
           SizedBox(height: AppStyle.gapXL),
           _ActivityHeatmap(),
+        ],
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Streak explainer card
+// ---------------------------------------------------------------------------
+
+class _StreakExplainerCard extends StatelessWidget {
+  const _StreakExplainerCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(AppStyle.gapL),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8F8FA),
+        borderRadius: AppStyle.cardRadius,
+        border: Border.all(color: AppStyle.cardBorder),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(Icons.info_outline_rounded,
+              color: AppStyle.textSecondary, size: 18.0),
+          const SizedBox(width: AppStyle.gapM),
+          Expanded(
+            child: Text(
+              'A streak counts consecutive weeks you follow your plan. '
+              'Train more often to grow your streak faster.',
+              style: AppStyle.captionStyle.copyWith(
+                height: 1.4,
+                color: AppStyle.textSecondary,
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -271,11 +322,11 @@ class _FriendsSection extends StatelessWidget {
   /// All entries: the user ("You") merged with friends, sorted by streak desc.
   static List<({
     String name, int streak, bool activeToday, bool isMe,
-    int longest, List<String> recentWorkouts, List<bool> thisWeek,
+    int longest, String planLabel, List<String> recentWorkouts, List<bool> thisWeek,
   })> get _allEntries {
     final entries = <({
       String name, int streak, bool activeToday, bool isMe,
-      int longest, List<String> recentWorkouts, List<bool> thisWeek,
+      int longest, String planLabel, List<String> recentWorkouts, List<bool> thisWeek,
     })>[
       (
         name: 'You',
@@ -283,6 +334,7 @@ class _FriendsSection extends StatelessWidget {
         activeToday: true,
         isMe: true,
         longest: _StreakData.longestStreak,
+        planLabel: _StreakData.planLabel,
         recentWorkouts: const ['Push Day', 'Legs', 'Pull Day', 'Push Day'],
         thisWeek: _StreakData.thisWeek,
       ),
@@ -292,6 +344,7 @@ class _FriendsSection extends StatelessWidget {
         activeToday: f.activeToday,
         isMe: false,
         longest: f.longest,
+        planLabel: f.planLabel,
         recentWorkouts: f.recentWorkouts,
         thisWeek: f.thisWeek,
       )),
@@ -333,6 +386,7 @@ class _FriendsSection extends StatelessWidget {
     final int streak = entry.streak;
     final bool isMe = entry.isMe;
     final int longest = entry.longest;
+    final String planLabel = entry.planLabel;
     final List<String> recentWorkouts = entry.recentWorkouts;
     final List<bool> thisWeek = entry.thisWeek;
 
@@ -345,6 +399,7 @@ class _FriendsSection extends StatelessWidget {
         streak: streak,
         isMe: isMe,
         longest: longest,
+        planLabel: planLabel,
         recentWorkouts: recentWorkouts,
         thisWeek: thisWeek,
       ),
@@ -362,6 +417,7 @@ class _StreakDetailSheet extends StatelessWidget {
     required this.streak,
     required this.isMe,
     required this.longest,
+    required this.planLabel,
     required this.recentWorkouts,
     required this.thisWeek,
   });
@@ -370,6 +426,7 @@ class _StreakDetailSheet extends StatelessWidget {
   final int streak;
   final bool isMe;
   final int longest;
+  final String planLabel;
   final List<String> recentWorkouts;
   final List<bool> thisWeek;
 
@@ -424,6 +481,22 @@ class _StreakDetailSheet extends StatelessWidget {
           ),
           const SizedBox(height: AppStyle.gapM),
           Text(name, style: AppStyle.sheetTitleStyle),
+          const SizedBox(height: AppStyle.gapXS),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),
+            decoration: BoxDecoration(
+              color: AppStyle.streakOrangeTint,
+              borderRadius: AppStyle.pillRadius,
+            ),
+            child: Text(
+              planLabel,
+              style: const TextStyle(
+                color: AppStyle.streakOrange,
+                fontSize: 12.0,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
           const SizedBox(height: AppStyle.gapXL),
 
           // Streak + longest row
