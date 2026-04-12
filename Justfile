@@ -15,11 +15,6 @@ db-fresh:
 db:
     ./sqlite/db.sh
 
-# Rebuild the dev DB and load randomized test workouts
-db-with-test-data:
-    ./sqlite/db.sh
-    sqlite3 {{DB}} < sqlite/new-test-data.sql
-
 # Re-insert seed data into the existing dev DB
 test-data:
     sqlite3 {{DB}} < sqlite/new-test-data.sql

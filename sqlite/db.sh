@@ -6,12 +6,6 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DB_NAME="$SCRIPT_DIR/test-db.db"
 
-if [ ! -f "$DB_NAME" ]; then
-  echo "Error: test-db.db not found. Run ./test-db.sh first"
-  exit 1
-fi
-
-echo "Deleting existing data..."
 rm -f "$DB_NAME"
 
 echo "Instantiate fresh database schema..."

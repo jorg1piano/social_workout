@@ -12,4 +12,4 @@ pools:
 
 hooks:
   post_create:
-    - just db-with-test-data
+    - just db
