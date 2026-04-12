@@ -13,3 +13,6 @@ pools:
 hooks:
   post_create:
     - just db
+
+  pool_grow:
+    devices: android-emulator
