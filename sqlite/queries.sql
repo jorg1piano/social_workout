@@ -277,3 +277,95 @@ FROM user_profile up
 LEFT JOIN feed_item fi ON up.id = fi.user_id
 WHERE up.id = 'app-01KP0CGRYVW31E28H1TV6A605D'
 GROUP BY up.id;
+
+-- ============================================================================
+-- Competition Queries
+-- ============================================================================
+
+-- 18. List all competitions with participant count and status
+SELECT
+    c.id,
+    c.name,
+    c.competition_type,
+    c.status,
+    datetime(c.start_date, 'unixepoch') as starts,
+    datetime(c.end_date, 'unixepoch') as ends,
+    up.display_name as created_by,
+    COUNT(cp.id) as participant_count
+FROM competition c
+JOIN user_profile up ON c.created_by = up.id
+LEFT JOIN competition_participant cp ON c.id = cp.competition_id
+GROUP BY c.id
+ORDER BY c.start_date DESC;
+
+-- 19. Get competition details with tracked exercises
+SELECT
+    c.name as competition_name,
+    c.description,
+    c.competition_type,
+    c.status,
+    e.name as exercise_name
+FROM competition c
+JOIN competition_exercise ce ON c.id = ce.competition_id
+JOIN exercise e ON ce.exercise_id = e.id
+WHERE c.id = 'app-01KP0Q58BD3B6ETRMH8NFB64HC';
+
+-- 20. Get leaderboard for a competition (ranked by score)
+SELECT
+    cle.rank,
+    up.display_name,
+    up.username,
+    cle.score,
+    datetime(cle.last_activity_at, 'unixepoch') as last_active
+FROM competition_leaderboard_entry cle
+JOIN user_profile up ON cle.user_id = up.id
+WHERE cle.competition_id = 'app-01KP0Q58BD3B6ETRMH8NFB64HC'
+ORDER BY cle.score DESC;
+
+-- 21. Get competitions the current user has joined
+SELECT
+    c.id,
+    c.name,
+    c.competition_type,
+    c.status,
+    cle.score as my_score,
+    cle.rank as my_rank,
+    (SELECT COUNT(*) FROM competition_participant cp2 WHERE cp2.competition_id = c.id) as total_participants
+FROM competition c
+JOIN competition_participant cp ON c.id = cp.competition_id
+LEFT JOIN competition_leaderboard_entry cle ON c.id = cle.competition_id AND cle.user_id = cp.user_id
+WHERE cp.user_id = 'app-01KP0CGRYVW31E28H1TV6A605D'
+ORDER BY c.status = 'active' DESC, c.start_date DESC;
+
+-- 22. Calculate live total_volume score for a user in a competition
+-- Sums weight × reps from exercise_set for all tracked exercises within the date range
+SELECT
+    up.display_name,
+    SUM(es.weight * es.rep_count) as calculated_volume
+FROM exercise_set es
+JOIN workout w ON es.workout_id = w.id
+JOIN competition_exercise ce ON es.exercise_id = ce.exercise_id
+JOIN competition c ON ce.competition_id = c.id
+JOIN competition_participant cp ON c.id = cp.competition_id AND cp.user_id = 'app-01KP0CGRYVW31E28H1TV6A605D'
+JOIN user_profile up ON cp.user_id = up.id
+WHERE c.id = 'app-01KP0Q58BD3B6ETRMH8NFB64HC'
+  AND es.is_completed = 1
+  AND w.start_time >= c.start_date
+  AND w.start_time <= c.end_date
+GROUP BY cp.user_id;
+
+-- 23. Get active competitions (for home screen / competition list)
+SELECT
+    c.id,
+    c.name,
+    c.competition_type,
+    datetime(c.end_date, 'unixepoch') as ends,
+    (SELECT COUNT(*) FROM competition_participant cp WHERE cp.competition_id = c.id) as participants,
+    up.display_name as leader_name,
+    MAX(cle.score) as top_score
+FROM competition c
+LEFT JOIN competition_leaderboard_entry cle ON c.id = cle.competition_id AND cle.rank = 1
+LEFT JOIN user_profile up ON cle.user_id = up.id
+WHERE c.status = 'active'
+GROUP BY c.id
+ORDER BY c.end_date ASC;
