@@ -4,6 +4,7 @@ import 'data/db/database.dart';
 import 'features/active_workout/active_workout_screen.dart';
 import 'features/body_measurements/body_measurements_screen.dart';
 import 'features/competition/competition_list_screen.dart';
+import 'features/social_feed/social_feed_screen.dart';
 import 'features/streak/streak_screen.dart';
 import 'style/app_style.dart';
 
@@ -89,6 +90,17 @@ class FeatureListScreen extends StatelessWidget {
               context,
               MaterialPageRoute(
                 builder: (_) => BodyMeasurementsScreen(database: database),
+              ),
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.people),
+            title: const Text('Social Feed'),
+            subtitle: const Text('Workout updates from friends'),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => SocialFeedScreen(database: database),
               ),
             ),
           ),

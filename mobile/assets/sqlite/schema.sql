@@ -411,3 +411,27 @@ CREATE TABLE body_measurement (
 
 CREATE INDEX idx_body_measurement_type ON body_measurement(measurement_type);
 CREATE INDEX idx_body_measurement_measured_at ON body_measurement(measured_at DESC);
+
+-- ============================================================================
+-- Planned Workouts (Stories / "Who's working out today")
+-- ============================================================================
+
+-- 20. planned_workout - Depends on: user_profile, workout_template
+-- A user's intention to do a specific workout on a given date.
+-- Powers the "who's working out today" Stories row on the social feed.
+CREATE TABLE planned_workout (
+  id TEXT PRIMARY KEY NOT NULL CHECK((id LIKE 'app-%' OR id LIKE 'usr-%') AND length(id) = 30),
+  user_id TEXT NOT NULL,
+  workout_template_id TEXT NOT NULL,
+  planned_date INTEGER NOT NULL,
+  planned_time INTEGER,
+  notes TEXT,
+  created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+  updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+  FOREIGN KEY(user_id) REFERENCES user_profile(id) ON DELETE CASCADE,
+  FOREIGN KEY(workout_template_id) REFERENCES workout_template(id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_planned_workout_user_id ON planned_workout(user_id);
+CREATE INDEX idx_planned_workout_template_id ON planned_workout(workout_template_id);
+CREATE INDEX idx_planned_workout_planned_date_user ON planned_workout(planned_date, user_id);
