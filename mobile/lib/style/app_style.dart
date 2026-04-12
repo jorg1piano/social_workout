@@ -474,6 +474,32 @@ class AppStyle {
     fontWeight: FontWeight.w700,
   );
 
+  // ---------- Workout summary text styles ----------
+
+  static const TextStyle summaryHeadlineStyle = TextStyle(
+    color: textPrimary,
+    fontSize: 24.0,
+    fontWeight: FontWeight.w800,
+  );
+
+  static const TextStyle summaryWorkoutNameStyle = TextStyle(
+    color: primaryBlue,
+    fontSize: 18.0,
+    fontWeight: FontWeight.w700,
+  );
+
+  static const TextStyle summaryPRBannerStyle = TextStyle(
+    color: prGold,
+    fontSize: 15.0,
+    fontWeight: FontWeight.w700,
+  );
+
+  static const TextStyle summarySetValueStyle = TextStyle(
+    color: textPrimary,
+    fontSize: 14.0,
+    fontWeight: FontWeight.w500,
+  );
+
   // ---------- Formatters ----------
 
   /// Sign-aware weight display formatter for the "Previous" column and any
