@@ -11,6 +11,7 @@ import 'features/home/home_variant_c.dart';
 import 'features/paywall/paywall_flow_screen.dart';
 import 'features/social_feed/social_feed_screen.dart';
 import 'features/streak/streak_screen.dart';
+import 'features/workout_planner/program_list_screen.dart';
 import 'features/workout_summary/workout_summary_screen.dart';
 import 'style/app_style.dart';
 
@@ -163,6 +164,17 @@ class FeatureListScreen extends StatelessWidget {
               context,
               MaterialPageRoute(
                 builder: (_) => const PaywallFlowScreen(),
+              ),
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.calendar_month),
+            title: const Text('Training Programs'),
+            subtitle: const Text('Workout plans & schedules'),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => ProgramListScreen(database: database),
               ),
             ),
           ),

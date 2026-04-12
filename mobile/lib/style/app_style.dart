@@ -80,6 +80,10 @@ class AppStyle {
   /// Light background for the feed screen.
   static const Color feedBackground = Color(0xFFF5F5F7);
 
+  /// Chip/badge background and text colors for program schedule tags.
+  static const Color chipBackground = Color(0xFFF2F2F4);
+  static const Color chipText = Color(0xFF6B6B70);
+
   /// Gradient ring colors for the Stories-style planned-workout avatars.
   static const Color storiesRingStart = Color(0xFF1E88E5);
   static const Color storiesRingEnd = Color(0xFF27AE60);
@@ -299,6 +303,21 @@ class AppStyle {
   );
 
   // ---------- Social feed text styles ----------
+
+  /// Card title text style (used in program cards, etc.).
+  static const TextStyle cardTitle = TextStyle(
+    color: textPrimary,
+    fontSize: 17.0,
+    fontWeight: FontWeight.w700,
+  );
+
+  /// Section body text style for descriptive content.
+  static const TextStyle sectionBody = TextStyle(
+    color: textSecondary,
+    fontSize: 14.0,
+    fontWeight: FontWeight.w400,
+    height: 1.4,
+  );
 
   static const TextStyle feedUserNameStyle = TextStyle(
     color: textPrimary,
