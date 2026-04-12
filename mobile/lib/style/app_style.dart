@@ -88,6 +88,39 @@ class AppStyle {
   static const Color popoverBackground = Color(0xFFFFFFFF);
   static const Color popoverShadow = Color(0x30000000);
 
+  // ---------- Paywall colors ----------
+
+  /// Gold accent for premium / paywall elements.
+  static const Color premiumGold = Color(0xFFD4A017);
+  static const Color premiumGoldTint = Color(0x1AD4A017); // 10%
+
+  /// Dark background for the paywall screen to feel distinct/premium.
+  static const Color paywallBackground = Color(0xFF0D0D0D);
+
+  /// Slightly lighter surface for paywall cards.
+  static const Color paywallCardBackground = Color(0xFF1A1A1A);
+
+  /// Border for selected paywall pricing card.
+  static const Color paywallSelectedBorder = Color(0xFFD4A017);
+
+  /// Border for unselected paywall pricing card.
+  static const Color paywallUnselectedBorder = Color(0xFF333333);
+
+  /// Muted text on dark paywall background.
+  static const Color paywallTextMuted = Color(0xFF888888);
+
+  /// Light text on dark paywall background.
+  static const Color paywallTextPrimary = Color(0xFFFFFFFF);
+
+  /// Secondary text on dark paywall background.
+  static const Color paywallTextSecondary = Color(0xFFCCCCCC);
+
+  /// Progress bar track on dark background.
+  static const Color paywallProgressTrack = Color(0xFF333333);
+
+  /// Green CTA specific to paywall (uses finishGreen but we alias for clarity).
+  static const Color paywallCta = finishGreen;
+
   // ---------- Spacing ----------
 
   static const double gapXS = 4.0;
@@ -367,6 +400,78 @@ class AppStyle {
     color: primaryBlue,
     fontSize: 13.0,
     fontWeight: FontWeight.w600,
+  );
+
+  // ---------- Paywall text styles ----------
+
+  static const TextStyle paywallHeadlineStyle = TextStyle(
+    color: paywallTextPrimary,
+    fontSize: 28.0,
+    fontWeight: FontWeight.w800,
+    height: 1.15,
+  );
+
+  static const TextStyle paywallSubheadlineStyle = TextStyle(
+    color: paywallTextSecondary,
+    fontSize: 16.0,
+    fontWeight: FontWeight.w400,
+    height: 1.4,
+  );
+
+  static const TextStyle paywallCardTitleStyle = TextStyle(
+    color: paywallTextPrimary,
+    fontSize: 17.0,
+    fontWeight: FontWeight.w700,
+  );
+
+  static const TextStyle paywallCardSubtitleStyle = TextStyle(
+    color: paywallTextMuted,
+    fontSize: 13.0,
+    fontWeight: FontWeight.w400,
+  );
+
+  static const TextStyle paywallPriceStyle = TextStyle(
+    color: paywallTextPrimary,
+    fontSize: 24.0,
+    fontWeight: FontWeight.w800,
+  );
+
+  static const TextStyle paywallPriceUnitStyle = TextStyle(
+    color: paywallTextMuted,
+    fontSize: 14.0,
+    fontWeight: FontWeight.w500,
+  );
+
+  static const TextStyle paywallBadgeStyle = TextStyle(
+    color: Colors.white,
+    fontSize: 11.0,
+    fontWeight: FontWeight.w800,
+    letterSpacing: 0.5,
+  );
+
+  static const TextStyle paywallCtaStyle = TextStyle(
+    color: Colors.white,
+    fontSize: 17.0,
+    fontWeight: FontWeight.w700,
+  );
+
+  static const TextStyle paywallFinePrintStyle = TextStyle(
+    color: paywallTextMuted,
+    fontSize: 12.0,
+    fontWeight: FontWeight.w400,
+  );
+
+  static const TextStyle paywallBenefitStyle = TextStyle(
+    color: paywallTextSecondary,
+    fontSize: 15.0,
+    fontWeight: FontWeight.w500,
+    height: 1.5,
+  );
+
+  static const TextStyle paywallSaveBadgeStyle = TextStyle(
+    color: paywallBackground,
+    fontSize: 12.0,
+    fontWeight: FontWeight.w700,
   );
 
   // ---------- Formatters ----------
