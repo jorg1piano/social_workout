@@ -5,6 +5,7 @@ import '../../data/db/database.dart';
 import '../../data/models/db_exercise_set.dart';
 import '../../data/models/set_type.dart';
 import '../../style/app_style.dart';
+import '../../style/glass_surface.dart';
 import 'active_workout_controller.dart';
 
 /// Home route: the Hevy-style active-workout tracking screen. All visual
@@ -59,8 +60,10 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
     final slot = _controller.slots[slotIndex];
     final selected = await showModalBottomSheet<int>(
       context: context,
-      backgroundColor: AppStyle.cardBackground,
-      shape: const RoundedRectangleBorder(borderRadius: AppStyle.sheetRadius),
+      // Transparent backdrop + no default shape — the sheet body paints its
+      // own `GlassSurface` with the heavy-glass blur and top-rounded radius,
+      // so the Material layer underneath must get out of the way.
+      backgroundColor: Colors.transparent,
       builder: (sheetContext) {
         return _SwapSheet(
           variantNames: [
@@ -89,8 +92,9 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
   }) async {
     final selected = await showModalBottomSheet<SetType>(
       context: context,
-      backgroundColor: AppStyle.cardBackground,
-      shape: const RoundedRectangleBorder(borderRadius: AppStyle.sheetRadius),
+      // Same rationale as _openSwapSheet — transparent so the glass pane
+      // inside the sheet body is what the user actually sees.
+      backgroundColor: Colors.transparent,
       builder: (sheetContext) => _SetTypeSheet(currentType: current),
     );
     if (selected != null && selected != current) {
@@ -102,23 +106,37 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
     }
   }
 
+  /// Wraps the screen body in the indigo → near-black gradient wash
+  /// that lives behind every glass pane. Without something to refract,
+  /// glass just looks like a flat tinted rectangle — this gradient is
+  /// the "thing underneath the glass." All three screen states
+  /// (loading / error / normal) share the same wash.
+  Widget _glassScaffold(Widget body) {
+    return Scaffold(
+      // Transparent so the gradient Container paints the full surface.
+      backgroundColor: Colors.transparent,
+      body: Container(
+        decoration: const BoxDecoration(gradient: AppStyle.backgroundGradient),
+        child: SafeArea(child: body),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_controller.loading) {
-      return const Scaffold(
-        backgroundColor: AppStyle.scaffoldBackground,
-        body: Center(child: CircularProgressIndicator()),
+      return _glassScaffold(
+        const Center(child: CircularProgressIndicator()),
       );
     }
     if (_controller.error != null) {
-      return Scaffold(
-        backgroundColor: AppStyle.scaffoldBackground,
-        body: Padding(
+      return _glassScaffold(
+        Padding(
           padding: AppStyle.screenPadding,
           child: Center(
             child: Text(
               _controller.error!,
-              style: AppStyle.captionStyle,
+              style: AppStyle.glassCaptionStyle,
               textAlign: TextAlign.center,
             ),
           ),
@@ -126,68 +144,65 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
       );
     }
 
-    return Scaffold(
-      backgroundColor: AppStyle.scaffoldBackground,
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _TopBar(
-              elapsed: _elapsedPlaceholder,
-              onFinish: _controller.isFinished
-                  ? null
-                  : () => _controller.finishWorkout(),
-            ),
-            Expanded(
-              child: ListView(
-                padding: const EdgeInsets.only(bottom: AppStyle.gapXL),
-                children: [
-                  _WorkoutHeader(
-                    templateName:
-                        _controller.template?.name.toLowerCase() ?? '',
-                    date: _datePlaceholder,
-                    elapsed: _elapsedPlaceholder,
-                  ),
-                  const SizedBox(height: AppStyle.gapL),
-                  for (var i = 0; i < _controller.slots.length; i++)
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        left: AppStyle.gapL,
-                        right: AppStyle.gapL,
-                        bottom: AppStyle.gapL,
-                      ),
-                      child: _SlotCard(
-                        slot: _controller.slots[i],
+    return _glassScaffold(
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _TopBar(
+            elapsed: _elapsedPlaceholder,
+            onFinish: _controller.isFinished
+                ? null
+                : () => _controller.finishWorkout(),
+          ),
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.only(bottom: AppStyle.gapXL),
+              children: [
+                _WorkoutHeader(
+                  templateName:
+                      _controller.template?.name.toLowerCase() ?? '',
+                  date: _datePlaceholder,
+                  elapsed: _elapsedPlaceholder,
+                ),
+                const SizedBox(height: AppStyle.gapL),
+                for (var i = 0; i < _controller.slots.length; i++)
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      left: AppStyle.gapL,
+                      right: AppStyle.gapL,
+                      bottom: AppStyle.gapL,
+                    ),
+                    child: _SlotCard(
+                      slot: _controller.slots[i],
+                      slotIndex: i,
+                      onTapSwap: _controller.slots[i].hasAlternatives
+                          ? () => _openSwapSheet(i)
+                          : null,
+                      onTapAddSet: () => _controller.addSet(i),
+                      onToggleCompleted: (setId, completed) =>
+                          _controller.toggleSetCompleted(
                         slotIndex: i,
-                        onTapSwap: _controller.slots[i].hasAlternatives
-                            ? () => _openSwapSheet(i)
-                            : null,
-                        onTapAddSet: () => _controller.addSet(i),
-                        onToggleCompleted: (setId, completed) =>
-                            _controller.toggleSetCompleted(
-                          slotIndex: i,
-                          setId: setId,
-                          completed: completed,
-                        ),
-                        onEditValues: (setId, weight, repCount) =>
-                            _controller.updateSetValues(
-                          slotIndex: i,
-                          setId: setId,
-                          weight: weight,
-                          repCount: repCount,
-                        ),
-                        onTapSetCell: (setId, current) => _openSetTypeSheet(
-                          slotIndex: i,
-                          setId: setId,
-                          current: current,
-                        ),
+                        setId: setId,
+                        completed: completed,
+                      ),
+                      onEditValues: (setId, weight, repCount) =>
+                          _controller.updateSetValues(
+                        slotIndex: i,
+                        setId: setId,
+                        weight: weight,
+                        repCount: repCount,
+                      ),
+                      onTapSetCell: (setId, current) => _openSetTypeSheet(
+                        slotIndex: i,
+                        setId: setId,
+                        current: current,
                       ),
                     ),
-                ],
-              ),
+                  ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -205,18 +220,32 @@ class _TopBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // The top bar is a horizontal glass pane pinned under the safe-area.
+    // Extra horizontal padding around the GlassSurface so the pane
+    // doesn't touch the screen edge — the Liquid Glass reference always
+    // has breathing room around floating glass elements.
     return Padding(
-      padding: AppStyle.topBarPadding,
-      child: Row(
-        children: [
-          _CircleIconButton(icon: Icons.arrow_back_ios_new, onTap: () {}),
-          Expanded(
-            child: Center(
-              child: Text(elapsed, style: AppStyle.topBarTimeStyle),
-            ),
+      padding: const EdgeInsets.fromLTRB(
+        AppStyle.gapM,
+        AppStyle.gapS,
+        AppStyle.gapM,
+        AppStyle.gapS,
+      ),
+      child: GlassSurface(
+        child: Padding(
+          padding: AppStyle.topBarPadding,
+          child: Row(
+            children: [
+              _CircleIconButton(icon: Icons.arrow_back_ios_new, onTap: () {}),
+              Expanded(
+                child: Center(
+                  child: Text(elapsed, style: AppStyle.glassTopBarTimeStyle),
+                ),
+              ),
+              _FinishButton(onTap: onFinish ?? () {}),
+            ],
           ),
-          _FinishButton(onTap: onFinish ?? () {}),
-        ],
+        ),
       ),
     );
   }
@@ -230,8 +259,10 @@ class _CircleIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Glass chip: transparent fill (the outer top-bar GlassSurface already
+    // owns the blur/tint), just the icon in glass-white on top of it.
     return Material(
-      color: AppStyle.topBarBackground,
+      color: Colors.transparent,
       borderRadius: AppStyle.circleRadius,
       child: InkWell(
         borderRadius: AppStyle.circleRadius,
@@ -242,7 +273,7 @@ class _CircleIconButton extends StatelessWidget {
           child: Icon(
             icon,
             size: AppStyle.topBarIconSize,
-            color: AppStyle.textPrimary,
+            color: AppStyle.glassTextPrimary,
           ),
         ),
       ),
@@ -305,7 +336,7 @@ class _WorkoutHeader extends StatelessWidget {
               Flexible(
                 child: Text(
                   templateName,
-                  style: AppStyle.workoutTitleStyle,
+                  style: AppStyle.glassWorkoutTitleStyle,
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -336,10 +367,10 @@ class _MetaRow extends StatelessWidget {
         Icon(
           icon,
           size: AppStyle.metaIconSize,
-          color: AppStyle.textSecondary,
+          color: AppStyle.glassTextSecondary,
         ),
         const SizedBox(width: AppStyle.gapS),
-        Text(label, style: AppStyle.headerMetaStyle),
+        Text(label, style: AppStyle.glassHeaderMetaStyle),
       ],
     );
   }
@@ -378,48 +409,48 @@ class _SlotCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppStyle.cardBackground,
-        borderRadius: AppStyle.cardRadius,
-        border: Border.all(color: AppStyle.cardBorder),
-      ),
-      padding: AppStyle.cardPadding,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  slot.currentExercise.name,
-                  style: AppStyle.exerciseNameStyle,
+    // Each exercise card is its own glass pane floating over the gradient.
+    // GlassSurface owns the radius / blur / tint / rim; the inner Padding
+    // supplies the card content insets the old Container used.
+    return GlassSurface(
+      child: Padding(
+        padding: AppStyle.cardPadding,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    slot.currentExercise.name,
+                    style: AppStyle.glassExerciseNameStyle,
+                  ),
                 ),
-              ),
-              if (onTapSwap != null) ...[
-                _SwapPill(onTap: onTapSwap!),
-                const SizedBox(width: AppStyle.gapS),
+                if (onTapSwap != null) ...[
+                  _SwapPill(onTap: onTapSwap!),
+                  const SizedBox(width: AppStyle.gapS),
+                ],
+                const _MoreOptionsPill(),
               ],
-              const _MoreOptionsPill(),
-            ],
-          ),
-          const SizedBox(height: AppStyle.gapM),
-          const _SetTableHeader(),
-          for (final row in _indexedRows(slot.sets))
-            _SetRow(
-              key: ValueKey(row.set.id),
-              set: row.set,
-              workingSetNumber: row.workingSetNumber,
-              previous: slot.previousForOrdering(row.set.ordering),
-              onToggleCompleted: (completed) =>
-                  onToggleCompleted(row.set.id, completed),
-              onEditValues: (weight, repCount) =>
-                  onEditValues(row.set.id, weight, repCount),
-              onTapSetCell: () => onTapSetCell(row.set.id, row.set.setType),
             ),
-          const SizedBox(height: AppStyle.gapS),
-          _AddSetButton(onTap: onTapAddSet),
-        ],
+            const SizedBox(height: AppStyle.gapM),
+            const _SetTableHeader(),
+            for (final row in _indexedRows(slot.sets))
+              _SetRow(
+                key: ValueKey(row.set.id),
+                set: row.set,
+                workingSetNumber: row.workingSetNumber,
+                previous: slot.previousForOrdering(row.set.ordering),
+                onToggleCompleted: (completed) =>
+                    onToggleCompleted(row.set.id, completed),
+                onEditValues: (weight, repCount) =>
+                    onEditValues(row.set.id, weight, repCount),
+                onTapSetCell: () => onTapSetCell(row.set.id, row.set.setType),
+              ),
+            const SizedBox(height: AppStyle.gapS),
+            _AddSetButton(onTap: onTapAddSet),
+          ],
+        ),
       ),
     );
   }
@@ -465,7 +496,7 @@ class _SetTableHeader extends StatelessWidget {
             width: AppStyle.checkCircleSize,
             child: Text(
               'Set',
-              style: AppStyle.setTableHeaderStyle,
+              style: AppStyle.glassSetTableHeaderStyle,
               textAlign: TextAlign.center,
             ),
           ),
@@ -473,7 +504,7 @@ class _SetTableHeader extends StatelessWidget {
           Expanded(
             child: Text(
               'Previous',
-              style: AppStyle.setTableHeaderStyle,
+              style: AppStyle.glassSetTableHeaderStyle,
             ),
           ),
           SizedBox(width: AppStyle.setRowHGap),
@@ -481,7 +512,7 @@ class _SetTableHeader extends StatelessWidget {
             width: AppStyle.inputPillWidth,
             child: Text(
               'kg',
-              style: AppStyle.setTableHeaderStyle,
+              style: AppStyle.glassSetTableHeaderStyle,
               textAlign: TextAlign.center,
             ),
           ),
@@ -490,7 +521,7 @@ class _SetTableHeader extends StatelessWidget {
             width: AppStyle.inputPillWidth,
             child: Text(
               'Reps',
-              style: AppStyle.setTableHeaderStyle,
+              style: AppStyle.glassSetTableHeaderStyle,
               textAlign: TextAlign.center,
             ),
           ),
@@ -499,7 +530,7 @@ class _SetTableHeader extends StatelessWidget {
             width: AppStyle.checkCircleSize,
             child: Text(
               '✓',
-              style: AppStyle.setTableHeaderStyle,
+              style: AppStyle.glassSetTableHeaderStyle,
               textAlign: TextAlign.center,
             ),
           ),
@@ -632,8 +663,11 @@ class _SetRowState extends State<_SetRow> {
   Widget build(BuildContext context) {
     final set = widget.set;
     final previous = widget.previous;
+    // On glass, a completed row glows with a slightly stronger green wash
+    // than the flat theme — the gradient behind the pane eats contrast, so
+    // the tint needs more alpha to read as "completed."
     final rowBackground = set.isCompleted
-        ? AppStyle.completedRowTint
+        ? AppStyle.glassCompletedRowTint
         : Colors.transparent;
 
     return Container(
@@ -708,22 +742,52 @@ class _SetRowState extends State<_SetRow> {
   Widget _setNumberCell() {
     switch (widget.set.setType) {
       case SetType.warmup:
-        return const Text('W', style: AppStyle.warmupBadgeStyle);
+        return _glowBadge(
+          text: 'W',
+          style: AppStyle.warmupBadgeStyle,
+          glow: AppStyle.warmupGlowColor,
+        );
       case SetType.dropSet:
-        return const Text('D', style: AppStyle.dropSetBadgeStyle);
+        return _glowBadge(
+          text: 'D',
+          style: AppStyle.dropSetBadgeStyle,
+          glow: AppStyle.dropSetGlowColor,
+        );
       case SetType.failure:
-        return const Text('F', style: AppStyle.failureBadgeStyle);
+        return _glowBadge(
+          text: 'F',
+          style: AppStyle.failureBadgeStyle,
+          glow: AppStyle.failureGlowColor,
+        );
       case SetType.regularSet:
         return Text(
           widget.workingSetNumber?.toString() ?? '—',
-          style: AppStyle.setNumberStyle,
+          style: AppStyle.glassSetNumberStyle,
         );
     }
   }
 
+  /// Badge wrapper used for W/D/F on the glass surface. Without the glow
+  /// the letters disappear against the desaturated backdrop; a soft halo
+  /// in the badge's own color puts it back on top of the blur. The halo
+  /// colors are pre-blended in [AppStyle] so this stays const-friendly.
+  Widget _glowBadge({
+    required String text,
+    required TextStyle style,
+    required Color glow,
+  }) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        boxShadow: AppStyle.glassBadgeGlow(glow),
+      ),
+      child: Text(text, style: style),
+    );
+  }
+
   Widget _previousCell(DbExerciseSet? previous) {
     if (previous == null || previous.weight == null || previous.repCount == null) {
-      return const Text('—', style: AppStyle.previousColumnStyle);
+      return const Text('—', style: AppStyle.glassPreviousColumnStyle);
     }
     final suffix = previous.setType == SetType.warmup ? ' (W)' : '';
     // Use the sign-aware AppStyle formatter so assistance (negative kg)
@@ -733,7 +797,7 @@ class _SetRowState extends State<_SetRow> {
     final weightText = AppStyle.formatWeightDisplay(previous.weight);
     return Text(
       '$weightText × ${previous.repCount}$suffix',
-      style: AppStyle.previousColumnStyle,
+      style: AppStyle.glassPreviousColumnStyle,
     );
   }
 }
@@ -760,7 +824,7 @@ class _InputPill extends StatelessWidget {
       height: AppStyle.inputPillHeight,
       child: Container(
         decoration: const BoxDecoration(
-          color: AppStyle.inputPillBackground,
+          color: AppStyle.glassInputPillBackground,
           borderRadius: AppStyle.pillRadius,
         ),
         alignment: Alignment.center,
@@ -771,7 +835,10 @@ class _InputPill extends StatelessWidget {
           keyboardType: keyboardType,
           inputFormatters: inputFormatters,
           onSubmitted: onSubmitted,
-          style: AppStyle.inputPillStyle,
+          style: AppStyle.glassInputPillStyle,
+          // Cursor + selection tuned for the dark glass pill; default
+          // material cursor goes black and disappears on the dark fill.
+          cursorColor: AppStyle.glassTextPrimary,
           decoration: const InputDecoration(
             border: InputBorder.none,
             isCollapsed: true,
@@ -795,7 +862,12 @@ class _CheckCircle extends StatelessWidget {
       width: AppStyle.checkCircleSize,
       height: AppStyle.checkCircleSize,
       child: Material(
-        color: completed ? AppStyle.finishGreen : AppStyle.inputPillBackground,
+        // Completed = luminous translucent green (reads as "lit from
+        // within" on the glass surface). Idle = dark translucent pill
+        // matching the kg / reps cells so the row stays visually balanced.
+        color: completed
+            ? AppStyle.glassCompletedFill
+            : AppStyle.glassInputPillBackground,
         borderRadius: AppStyle.circleRadius,
         child: InkWell(
           borderRadius: AppStyle.circleRadius,
@@ -803,7 +875,9 @@ class _CheckCircle extends StatelessWidget {
           child: Icon(
             Icons.check,
             size: AppStyle.checkIconSize,
-            color: completed ? Colors.white : AppStyle.textSecondary,
+            color: completed
+                ? AppStyle.glassTextPrimary
+                : AppStyle.glassTextSecondary,
           ),
         ),
       ),
@@ -818,8 +892,11 @@ class _AddSetButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // No background on glass — the action reads as a plain text affordance
+    // in the card accent blue, like the exercise name at the top. The glass
+    // card already provides the pane; a second filled pill would be noise.
     return Material(
-      color: AppStyle.inputPillBackground,
+      color: Colors.transparent,
       borderRadius: AppStyle.pillRadius,
       child: InkWell(
         borderRadius: AppStyle.pillRadius,
@@ -830,7 +907,7 @@ class _AddSetButton extends StatelessWidget {
             vertical: AppStyle.gapS,
           ),
           child: Center(
-            child: Text('+ Add Set', style: AppStyle.addSetButtonStyle),
+            child: Text('+ Add Set', style: AppStyle.glassAddSetButtonStyle),
           ),
         ),
       ),
@@ -849,8 +926,10 @@ class _SwapPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Glass-blue chip — brighter tint + brighter icon than the flat
+    // variant so the chip stays legible on the desaturated card.
     return Material(
-      color: AppStyle.accentBlueTint,
+      color: AppStyle.glassAccentBlueTint,
       borderRadius: AppStyle.pillRadius,
       child: InkWell(
         borderRadius: AppStyle.pillRadius,
@@ -860,7 +939,7 @@ class _SwapPill extends StatelessWidget {
           child: Icon(
             Icons.swap_horiz,
             size: AppStyle.smallIconSize,
-            color: AppStyle.primaryBlue,
+            color: AppStyle.glassAccentBlue,
           ),
         ),
       ),
@@ -875,14 +954,14 @@ class _MoreOptionsPill extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-        color: AppStyle.accentBlueTint,
+        color: AppStyle.glassAccentBlueTint,
         borderRadius: AppStyle.pillRadius,
       ),
       padding: AppStyle.pillPadding,
       child: const Icon(
         Icons.more_horiz,
         size: AppStyle.smallIconSize,
-        color: AppStyle.primaryBlue,
+        color: AppStyle.glassAccentBlue,
       ),
     );
   }
@@ -896,33 +975,41 @@ class _SwapSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      top: false,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          AppStyle.gapL,
-          AppStyle.gapL,
-          AppStyle.gapL,
-          AppStyle.gapL,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const Padding(
-              padding: EdgeInsets.only(bottom: AppStyle.gapL),
-              child: Text('Swap exercise', style: AppStyle.sheetTitleStyle),
-            ),
-            for (int i = 0; i < variantNames.length; i++)
-              Padding(
-                padding: const EdgeInsets.only(bottom: AppStyle.gapS),
-                child: _SwapSheetRow(
-                  name: variantNames[i],
-                  isCurrent: i == currentIndex,
-                  onTap: () => Navigator.of(context).pop(i),
-                ),
+    // Heavy glass pane: bigger blur sigma, stronger tint, only top
+    // corners rounded. Anchored to the bottom by `showModalBottomSheet`
+    // itself — this widget just owns the pane shape + contents.
+    return GlassSurface(
+      borderRadius: AppStyle.glassSheetRadius,
+      blurSigma: AppStyle.glassBlurSigmaHeavy,
+      tint: AppStyle.glassTintHeavy,
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(
+            AppStyle.gapL,
+            AppStyle.gapL,
+            AppStyle.gapL,
+            AppStyle.gapL,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Padding(
+                padding: EdgeInsets.only(bottom: AppStyle.gapL),
+                child: Text('Swap exercise', style: AppStyle.glassSheetTitleStyle),
               ),
-          ],
+              for (int i = 0; i < variantNames.length; i++)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: AppStyle.gapS),
+                  child: _SwapSheetRow(
+                    name: variantNames[i],
+                    isCurrent: i == currentIndex,
+                    onTap: () => Navigator.of(context).pop(i),
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );
@@ -942,8 +1029,11 @@ class _SwapSheetRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // On the glass sheet, the "current" row gets a translucent blue wash
+    // instead of the flat card fill; non-current rows are transparent so
+    // the glass backdrop shows through.
     return Material(
-      color: isCurrent ? AppStyle.accentBlueTint : AppStyle.cardBackground,
+      color: isCurrent ? AppStyle.glassAccentBlueTint : Colors.transparent,
       borderRadius: AppStyle.pillRadius,
       child: InkWell(
         borderRadius: AppStyle.pillRadius,
@@ -956,7 +1046,7 @@ class _SwapSheetRow extends StatelessWidget {
           child: Row(
             children: [
               Expanded(
-                child: Text(name, style: AppStyle.sheetVariantNameStyle),
+                child: Text(name, style: AppStyle.glassSheetVariantNameStyle),
               ),
               if (isCurrent)
                 const Text('CURRENT', style: AppStyle.sheetCurrentLabelStyle),
@@ -1023,7 +1113,10 @@ class _SetTypeSheet extends StatelessWidget {
       case SetType.warmup:
         return AppStyle.warmupBadgeStyle;
       case SetType.regularSet:
-        return AppStyle.setNumberStyle;
+        // Regular uses the glass number style so the "1" reads white on
+        // the sheet's glass backdrop (flat `setNumberStyle` is near-black
+        // and disappears).
+        return AppStyle.glassSetNumberStyle;
       case SetType.dropSet:
         return AppStyle.dropSetBadgeStyle;
       case SetType.failure:
@@ -1031,37 +1124,60 @@ class _SetTypeSheet extends StatelessWidget {
     }
   }
 
+  /// Pre-blended halo color for each badge on the picker rows. Keeps the
+  /// W / D / F legible on the sheet's heavy-glass backdrop. Regular set
+  /// rows don't get a halo — the "1" is big white text and doesn't need
+  /// a color fill behind it.
+  static Color? _badgeGlow(SetType type) {
+    switch (type) {
+      case SetType.warmup:
+        return AppStyle.warmupGlowColor;
+      case SetType.regularSet:
+        return null;
+      case SetType.dropSet:
+        return AppStyle.dropSetGlowColor;
+      case SetType.failure:
+        return AppStyle.failureGlowColor;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      top: false,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          AppStyle.gapL,
-          AppStyle.gapL,
-          AppStyle.gapL,
-          AppStyle.gapL,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const Padding(
-              padding: EdgeInsets.only(bottom: AppStyle.gapL),
-              child: Text('Set type', style: AppStyle.sheetTitleStyle),
-            ),
-            for (final type in _displayOrder)
-              Padding(
-                padding: const EdgeInsets.only(bottom: AppStyle.gapS),
-                child: _SetTypeSheetRow(
-                  badgeText: _badgeText(type),
-                  badgeStyle: _badgeStyle(type),
-                  label: _label(type),
-                  isCurrent: type == currentType,
-                  onTap: () => Navigator.of(context).pop(type),
-                ),
+    return GlassSurface(
+      borderRadius: AppStyle.glassSheetRadius,
+      blurSigma: AppStyle.glassBlurSigmaHeavy,
+      tint: AppStyle.glassTintHeavy,
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(
+            AppStyle.gapL,
+            AppStyle.gapL,
+            AppStyle.gapL,
+            AppStyle.gapL,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Padding(
+                padding: EdgeInsets.only(bottom: AppStyle.gapL),
+                child: Text('Set type', style: AppStyle.glassSheetTitleStyle),
               ),
-          ],
+              for (final type in _displayOrder)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: AppStyle.gapS),
+                  child: _SetTypeSheetRow(
+                    badgeText: _badgeText(type),
+                    badgeStyle: _badgeStyle(type),
+                    badgeGlow: _badgeGlow(type),
+                    label: _label(type),
+                    isCurrent: type == currentType,
+                    onTap: () => Navigator.of(context).pop(type),
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );
@@ -1072,6 +1188,7 @@ class _SetTypeSheetRow extends StatelessWidget {
   const _SetTypeSheetRow({
     required this.badgeText,
     required this.badgeStyle,
+    required this.badgeGlow,
     required this.label,
     required this.isCurrent,
     required this.onTap,
@@ -1079,14 +1196,17 @@ class _SetTypeSheetRow extends StatelessWidget {
 
   final String badgeText;
   final TextStyle badgeStyle;
+  final Color? badgeGlow;
   final String label;
   final bool isCurrent;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
+    // Current row gets the translucent blue wash; other rows are
+    // transparent so the glass sheet shows through.
     return Material(
-      color: isCurrent ? AppStyle.accentBlueTint : AppStyle.cardBackground,
+      color: isCurrent ? AppStyle.glassAccentBlueTint : Colors.transparent,
       borderRadius: AppStyle.pillRadius,
       child: InkWell(
         borderRadius: AppStyle.pillRadius,
@@ -1100,22 +1220,35 @@ class _SetTypeSheetRow extends StatelessWidget {
             children: [
               SizedBox(
                 width: AppStyle.checkCircleSize,
-                child: Center(child: Text(badgeText, style: badgeStyle)),
+                child: Center(child: _badge()),
               ),
               const SizedBox(width: AppStyle.gapM),
               Expanded(
-                child: Text(label, style: AppStyle.sheetVariantNameStyle),
+                child: Text(label, style: AppStyle.glassSheetVariantNameStyle),
               ),
               if (isCurrent)
                 const Icon(
                   Icons.check,
                   size: AppStyle.smallIconSize,
-                  color: AppStyle.primaryBlue,
+                  color: AppStyle.glassAccentBlue,
                 ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _badge() {
+    final text = Text(badgeText, style: badgeStyle);
+    final glow = badgeGlow;
+    if (glow == null) return text;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        boxShadow: AppStyle.glassBadgeGlow(glow),
+      ),
+      child: text,
     );
   }
 }

@@ -47,6 +47,100 @@ class AppStyle {
   /// Completed-row tint — a soft green flood over a completed set row.
   static const Color completedRowTint = Color(0x1F2ECC71); // 12% finishGreen
 
+  // ---------- Liquid Glass (experimental reskin, task #14) ----------
+  //
+  // This is an approximation of Apple's Liquid Glass language. Real iOS 26
+  // Liquid Glass is backed by `UIGlassEffect` / SwiftUI `.glassEffect()`
+  // with native GPU refraction that Flutter can't call into; we fake the
+  // look with `BackdropFilter(ImageFilter.blur)` + a translucent tint +
+  // a rim-light gradient border. All glass tokens are gathered here so
+  // they can be tuned via hot reload from one place.
+
+  /// Standard backdrop-blur sigma for a glass pane (top bar, cards).
+  static const double glassBlurSigma = 24.0;
+
+  /// Stronger blur sigma for bottom sheets — the sheet sits closer to
+  /// the camera and uses a higher sigma to feel more substantial.
+  static const double glassBlurSigmaHeavy = 32.0;
+
+  /// ~12% white fill painted over the blur on a glass pane. Low enough
+  /// that the gradient background still reads through.
+  static const Color glassTint = Color(0x1FFFFFFF);
+
+  /// ~20% white fill for heavier glass (bottom sheets).
+  static const Color glassTintHeavy = Color(0x33FFFFFF);
+
+  /// Corner radius for glass panes — heavier roundness than the flat
+  /// card radius (16 → 22) so the glass feels pillowy.
+  static const BorderRadius glassRadius = BorderRadius.all(Radius.circular(22.0));
+
+  /// Corner radius for the glass bottom sheet. Only the top corners are
+  /// rounded since it anchors to the screen bottom.
+  static const BorderRadius glassSheetRadius = BorderRadius.only(
+    topLeft: Radius.circular(28.0),
+    topRight: Radius.circular(28.0),
+  );
+
+  /// Rim-light gradient painted as a 1px border around glass panes —
+  /// brightest at the top-left, fading to transparent at the bottom-right.
+  /// This is the "specular edge" trick from the Liquid Glass look.
+  static const Gradient glassRimGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [Color(0x66FFFFFF), Color(0x11FFFFFF), Color(0x00FFFFFF)],
+    stops: [0.0, 0.4, 1.0],
+  );
+
+  /// Deep indigo → near-black wash painted behind every glass pane.
+  /// Without something underneath to refract, glass just looks like a
+  /// tinted rectangle — this gradient is the "thing to refract through."
+  static const Gradient backgroundGradient = LinearGradient(
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    colors: [Color(0xFF1A1033), Color(0xFF0A0519)],
+  );
+
+  /// Near-white primary text on glass — darker `textPrimary` has no
+  /// contrast against the blurred indigo background.
+  static const Color glassTextPrimary = Color(0xFFF2F2F7);
+
+  /// Light grey for secondary text (column headers, meta rows, previous
+  /// column). Dimmer than glassTextPrimary but still readable.
+  static const Color glassTextSecondary = Color(0xFFB0B0BC);
+
+  /// Brighter blue accent used for exercise names and "+ Add Set" on
+  /// glass. The flat `primaryBlue` is too dim over the indigo wash.
+  static const Color glassAccentBlue = Color(0xFF7FB8FF);
+
+  /// Translucent blue tint for glass chips (swap pill, more-options pill).
+  static const Color glassAccentBlueTint = Color(0x337FB8FF);
+
+  /// Dark translucent fill behind kg / reps input cells — dark enough
+  /// that the white numeric input reads clearly, but still slightly
+  /// translucent so the card's glass character shows through.
+  static const Color glassInputPillBackground = Color(0x33000000);
+
+  /// Luminous green fill for the ✓ cell when a set is completed.
+  static const Color glassCompletedFill = Color(0x8032D74B);
+
+  /// Slightly stronger green for the completed-row background tint.
+  static const Color glassCompletedRowTint = Color(0x222ECC71);
+
+  /// Shadow/glow shared by the W/D/F badges — puts a soft color halo
+  /// behind the letter so it pops off the desaturated glass surface.
+  /// Takes a pre-blended color (use the `*GlowColor` constants below)
+  /// so the helper stays const-friendly across Flutter versions.
+  static List<BoxShadow> glassBadgeGlow(Color glow) => [
+        BoxShadow(color: glow, blurRadius: 10.0, spreadRadius: 1.0),
+      ];
+
+  /// Pre-blended glow fills for the three set-type badges. Alpha ~55%
+  /// (0x8C) of the badge color — bright enough to halo, dim enough to
+  /// not bleed into neighboring rows.
+  static const Color warmupGlowColor = Color(0x8CF28C18);
+  static const Color dropSetGlowColor = Color(0x8C8E44AD);
+  static const Color failureGlowColor = Color(0x8CE74C3C);
+
   // ---------- Spacing ----------
 
   static const double gapXS = 4.0;
@@ -181,6 +275,86 @@ class AppStyle {
   /// Blue "+ Add Set" action at the bottom of each card.
   static const TextStyle addSetButtonStyle = TextStyle(color: primaryBlue, fontSize: 14.0, fontWeight: FontWeight.w700);
 
+  // ---------- Glass text styles ----------
+  //
+  // Near-white / light-grey variants of the text styles above, tuned for
+  // the Liquid Glass reskin. Structure mirrors the flat styles so the
+  // screen widgets can swap in-place with a single import change.
+
+  static const TextStyle glassTopBarTimeStyle = TextStyle(
+    color: glassTextPrimary,
+    fontSize: 15.0,
+    fontWeight: FontWeight.w500,
+  );
+
+  static const TextStyle glassWorkoutTitleStyle = TextStyle(
+    color: glassTextPrimary,
+    fontSize: 28.0,
+    fontWeight: FontWeight.w800,
+    height: 1.1,
+  );
+
+  static const TextStyle glassHeaderMetaStyle = TextStyle(
+    color: glassTextSecondary,
+    fontSize: 13.0,
+    fontWeight: FontWeight.w500,
+  );
+
+  static const TextStyle glassExerciseNameStyle = TextStyle(
+    color: glassAccentBlue,
+    fontSize: 17.0,
+    fontWeight: FontWeight.w700,
+  );
+
+  static const TextStyle glassCaptionStyle = TextStyle(
+    color: glassTextSecondary,
+    fontSize: 13.0,
+    fontWeight: FontWeight.w500,
+  );
+
+  static const TextStyle glassSheetTitleStyle = TextStyle(
+    color: glassTextPrimary,
+    fontSize: 18.0,
+    fontWeight: FontWeight.w700,
+  );
+
+  static const TextStyle glassSheetVariantNameStyle = TextStyle(
+    color: glassTextPrimary,
+    fontSize: 16.0,
+    fontWeight: FontWeight.w600,
+  );
+
+  static const TextStyle glassSetTableHeaderStyle = TextStyle(
+    color: glassTextSecondary,
+    fontSize: 12.0,
+    fontWeight: FontWeight.w600,
+    letterSpacing: 0.3,
+  );
+
+  static const TextStyle glassSetNumberStyle = TextStyle(
+    color: glassTextPrimary,
+    fontSize: 15.0,
+    fontWeight: FontWeight.w700,
+  );
+
+  static const TextStyle glassPreviousColumnStyle = TextStyle(
+    color: glassTextSecondary,
+    fontSize: 13.0,
+    fontWeight: FontWeight.w500,
+  );
+
+  static const TextStyle glassInputPillStyle = TextStyle(
+    color: glassTextPrimary,
+    fontSize: 15.0,
+    fontWeight: FontWeight.w600,
+  );
+
+  static const TextStyle glassAddSetButtonStyle = TextStyle(
+    color: glassAccentBlue,
+    fontSize: 14.0,
+    fontWeight: FontWeight.w700,
+  );
+
   // ---------- Formatters ----------
 
   /// Sign-aware weight display formatter for the "Previous" column and any
@@ -211,10 +385,19 @@ class AppStyle {
   // ---------- Theme ----------
 
   static ThemeData theme() {
-    final base = ThemeData.light(useMaterial3: true);
+    // Liquid Glass reskin (task #14): switch to a dark base so the
+    // gradient background + glass panes render without a blown-out
+    // white scaffold leaking through during loading. The actual
+    // gradient is painted by the screen body; the scaffold is
+    // transparent beneath it.
+    final base = ThemeData.dark(useMaterial3: true);
     return base.copyWith(
-      scaffoldBackgroundColor: scaffoldBackground,
-      colorScheme: base.colorScheme.copyWith(primary: primaryBlue, surface: scaffoldBackground),
+      scaffoldBackgroundColor: Colors.transparent,
+      canvasColor: Colors.transparent,
+      colorScheme: base.colorScheme.copyWith(
+        primary: glassAccentBlue,
+        surface: Colors.transparent,
+      ),
       splashFactory: NoSplash.splashFactory,
       highlightColor: Colors.transparent,
     );
