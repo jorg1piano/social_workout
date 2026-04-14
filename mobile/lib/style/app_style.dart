@@ -125,6 +125,21 @@ class AppStyle {
   /// Green CTA specific to paywall (uses finishGreen but we alias for clarity).
   static const Color paywallCta = finishGreen;
 
+  // ---------- Coach community colors ----------
+
+  /// Teal accent for coach/subscription-related elements.
+  static const Color coachTeal = Color(0xFF0D9488);
+  static const Color coachTealTint = Color(0x1A0D9488); // 10% coachTeal
+
+  /// Lighter teal used for progress bars and secondary fills.
+  static const Color coachTealLight = Color(0xFF5EEAD4);
+
+  /// Dark surface for premium membership cards.
+  static const Color coachCardDark = Color(0xFF1A1A2E);
+
+  /// Subtle white used for text on dark coach cards.
+  static const Color coachCardTextMuted = Color(0xBBFFFFFF); // 73% white
+
   // ---------- Spacing ----------
 
   static const double gapXS = 4.0;
@@ -517,6 +532,38 @@ class AppStyle {
     color: textPrimary,
     fontSize: 14.0,
     fontWeight: FontWeight.w500,
+  );
+
+  // ---------- Coach community text styles ----------
+
+  static const TextStyle coachNameStyle = TextStyle(
+    color: textPrimary,
+    fontSize: 18.0,
+    fontWeight: FontWeight.w700,
+  );
+
+  static const TextStyle coachTitleStyle = TextStyle(
+    color: textSecondary,
+    fontSize: 13.0,
+    fontWeight: FontWeight.w500,
+  );
+
+  static const TextStyle coachSectionTitleStyle = TextStyle(
+    color: textPrimary,
+    fontSize: 16.0,
+    fontWeight: FontWeight.w700,
+  );
+
+  static const TextStyle coachFeatureStyle = TextStyle(
+    color: textPrimary,
+    fontSize: 14.0,
+    fontWeight: FontWeight.w500,
+  );
+
+  static const TextStyle coachBadgeStyle = TextStyle(
+    color: Colors.white,
+    fontSize: 12.0,
+    fontWeight: FontWeight.w600,
   );
 
   // ---------- Formatters ----------

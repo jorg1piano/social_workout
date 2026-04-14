@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'data/db/database.dart';
 import 'features/active_workout/active_workout_screen.dart';
+import 'features/coach_community/coach_community_screen.dart';
+import 'features/coach_community/coach_dashboard_screen.dart';
 import 'features/body_measurements/body_measurements_screen.dart';
 import 'features/competition/competition_list_screen.dart';
 import 'features/home/home_screen.dart';
@@ -142,6 +144,29 @@ class FeatureListScreen extends StatelessWidget {
               context,
               MaterialPageRoute(
                 builder: (_) => BodyMeasurementsScreen(database: database),
+              ),
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.sports, color: AppStyle.coachTeal),
+            title: const Text('Coach · Client View'),
+            subtitle: const Text('What the athlete sees'),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const CoachCommunityScreen(),
+              ),
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.dashboard_customize_rounded,
+                color: AppStyle.coachTeal),
+            title: const Text('Coach · Dashboard'),
+            subtitle: const Text('What the coach sees'),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const CoachDashboardScreen(),
               ),
             ),
           ),
