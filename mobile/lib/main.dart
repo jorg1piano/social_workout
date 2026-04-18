@@ -13,6 +13,7 @@ import 'features/home/home_variant_b.dart';
 import 'features/home/home_variant_c.dart';
 import 'features/home/home_variant_multiselect.dart';
 import 'features/paywall/paywall_flow_screen.dart';
+import 'features/persistent_sheet/persistent_sheet_demo.dart';
 import 'features/social_feed/social_feed_screen.dart';
 import 'features/streak/streak_screen.dart';
 import 'features/workout_planner/program_list_screen.dart';
@@ -129,6 +130,16 @@ class FeatureListScreen extends StatelessWidget {
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const WorkoutSummaryScreen()),
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.vertical_align_bottom_rounded,
+                color: AppStyle.primaryBlue),
+            title: const Text('Persistent Sheet'),
+            subtitle: const Text('Mini-player-style workout sheet'),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const PersistentSheetDemo()),
             ),
           ),
           ListTile(
