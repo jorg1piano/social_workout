@@ -11,6 +11,7 @@ import 'features/home/home_screen.dart';
 import 'features/home/home_variant_a.dart';
 import 'features/home/home_variant_b.dart';
 import 'features/home/home_variant_c.dart';
+import 'features/home/home_variant_multiselect.dart';
 import 'features/paywall/paywall_flow_screen.dart';
 import 'features/social_feed/social_feed_screen.dart';
 import 'features/streak/streak_screen.dart';
@@ -100,6 +101,15 @@ class FeatureListScreen extends StatelessWidget {
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const HomeLastSession()),
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.checklist_rounded, color: AppStyle.primaryBlue),
+            title: const Text('Home · Multi-select start'),
+            subtitle: const Text('Pick which Push Day variant to run'),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const HomeVariantMultiselect()),
             ),
           ),
           ListTile(
