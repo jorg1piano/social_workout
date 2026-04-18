@@ -6,6 +6,7 @@ import 'features/coach_community/coach_community_screen.dart';
 import 'features/coach_community/coach_dashboard_screen.dart';
 import 'features/body_measurements/body_measurements_screen.dart';
 import 'features/competition/competition_list_screen.dart';
+import 'features/home/home_last_session.dart';
 import 'features/home/home_screen.dart';
 import 'features/home/home_variant_a.dart';
 import 'features/home/home_variant_b.dart';
@@ -90,6 +91,15 @@ class FeatureListScreen extends StatelessWidget {
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const HomeVariantC()),
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.history_rounded, color: AppStyle.primaryBlue),
+            title: const Text('Home · Last Session'),
+            subtitle: const Text('Open to your previous workout'),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const HomeLastSession()),
             ),
           ),
           ListTile(
