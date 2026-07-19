@@ -2,6 +2,7 @@
 -- Drop tables with foreign keys first, then independent tables
 
 DROP TABLE IF EXISTS exercise_set;
+DROP TABLE IF EXISTS workout_exercise;
 DROP TABLE IF EXISTS exercise_set_template;
 DROP TABLE IF EXISTS exercise_for_workout_template;
 DROP TABLE IF EXISTS workout;

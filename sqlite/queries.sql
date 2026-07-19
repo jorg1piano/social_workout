@@ -4,17 +4,19 @@
 SELECT
     wt.name,
     wt.description,
-    COUNT(DISTINCT ewt.ordering) as exercise_slots,
+    COUNT(DISTINCT ewt.block_ordering || '-' || ewt.within_block_ordering) as exercise_slots,
     COUNT(ewt.id) as total_exercise_variants
 FROM workout_template wt
 LEFT JOIN exercise_for_workout_template ewt ON wt.id = ewt.workout_template_id
+WHERE ewt.archived_at IS NULL
 GROUP BY wt.id
 ORDER BY wt.name;
 
 -- 2. View a complete workout template with all exercise variants
 SELECT
     wt.name as template_name,
-    ewt.ordering,
+    ewt.block_ordering,
+    ewt.within_block_ordering,
     ewt.exercise_index,
     e.name as exercise_name,
     ewt.notes,
@@ -24,8 +26,9 @@ JOIN exercise_for_workout_template ewt ON wt.id = ewt.workout_template_id
 JOIN exercise e ON ewt.exercise_id = e.id
 LEFT JOIN exercise_set_template est ON ewt.id = est.exercise_for_workout_template_id
 WHERE wt.name = 'Push Day'
+  AND ewt.archived_at IS NULL
 GROUP BY ewt.id
-ORDER BY ewt.ordering, ewt.exercise_index;
+ORDER BY ewt.block_ordering, ewt.within_block_ordering, ewt.exercise_index;
 
 -- 3. Get planned sets for a specific exercise variant
 SELECT
@@ -59,10 +62,14 @@ LEFT JOIN workout_template wt ON w.template_id = wt.id
 ORDER BY w.start_time DESC;
 
 -- 5. Get completed sets for a specific workout
+-- Renders purely from the record side: workout -> workout_exercise -> exercise_set.
+-- No template join needed — exercise identity and order live on workout_exercise.
 -- Note: set_type lives directly on exercise_set, so warmup-vs-working status
 -- is readable without joining exercise_set_template.
 SELECT
     e.name as exercise,
+    we.block_ordering,
+    we.within_block_ordering,
     es.ordering as set_number,
     es.set_type,
     es.rep_count,
@@ -72,10 +79,11 @@ SELECT
     es.rpe,
     es.notes
 FROM exercise_set es
-JOIN exercise e ON es.exercise_id = e.id
-WHERE es.workout_id = 'app-01KE6BHGMXHSVYM0R5GAQW7FQD'  -- First Push Day workout
+JOIN workout_exercise we ON es.workout_exercise_id = we.id
+JOIN exercise e ON we.exercise_id = e.id
+WHERE we.workout_id = 'app-01KE6BHGMXHSVYM0R5GAQW7FQD'  -- First Push Day workout
   AND es.is_completed = 1
-ORDER BY es.ordering;
+ORDER BY we.block_ordering, we.within_block_ordering, es.ordering;
 
 -- 6. Track progression for a specific exercise variant over time
 SELECT
@@ -86,8 +94,9 @@ SELECT
     es.rir,
     es.rpe
 FROM exercise_set es
-JOIN workout w ON es.workout_id = w.id
-JOIN exercise e ON es.exercise_id = e.id
+JOIN workout_exercise we ON es.workout_exercise_id = we.id
+JOIN workout w ON we.workout_id = w.id
+JOIN exercise e ON we.exercise_id = e.id
 WHERE e.name = 'Bench Press'
   AND es.is_completed = 1
 ORDER BY w.start_time DESC, es.ordering;
@@ -96,7 +105,8 @@ ORDER BY w.start_time DESC, es.ordering;
 WITH template_sets AS (
     SELECT
         e.name,
-        ewt.ordering,
+        ewt.block_ordering,
+        ewt.within_block_ordering,
         est.ordering as set_num,
         est.weight as planned_weight,
         est.rep_count as planned_reps
@@ -113,8 +123,9 @@ actual_sets AS (
         es.weight as actual_weight,
         es.rep_count as actual_reps
     FROM exercise_set es
-    JOIN exercise e ON es.exercise_id = e.id
-    WHERE es.workout_id = 'app-01KE6BHGMXHSVYM0R5GAQW7FQD'
+    JOIN workout_exercise we ON es.workout_exercise_id = we.id
+    JOIN exercise e ON we.exercise_id = e.id
+    WHERE we.workout_id = 'app-01KE6BHGMXHSVYM0R5GAQW7FQD'
       AND es.is_completed = 1
 )
 SELECT
@@ -130,37 +141,41 @@ SELECT
     END as hit_target
 FROM template_sets t
 LEFT JOIN actual_sets a ON t.name = a.name AND t.set_num = a.set_num
-ORDER BY t.ordering, t.set_num;
+ORDER BY t.block_ordering, t.within_block_ordering, t.set_num;
 
 -- 8. Get workout volume (total weight lifted) for each session
 SELECT
     wt.name as template,
     datetime(w.start_time, 'unixepoch') as date,
     SUM(es.weight * es.rep_count) as total_volume,
-    COUNT(DISTINCT es.exercise_id) as exercises_performed,
+    COUNT(DISTINCT we.exercise_id) as exercises_performed,
     COUNT(es.id) as total_sets
 FROM workout w
 JOIN workout_template wt ON w.template_id = wt.id
-JOIN exercise_set es ON w.id = es.workout_id
+JOIN workout_exercise we ON w.id = we.workout_id
+JOIN exercise_set es ON we.id = es.workout_exercise_id
 WHERE es.is_completed = 1
   AND es.weight IS NOT NULL
 GROUP BY w.id
 ORDER BY w.start_time DESC;
 
 -- 9. Find which exercise variants were actually used in workouts
+-- Provenance now lives on workout_exercise.source_variant_id (nullable). Rows
+-- whose source template was hard-deleted have NULL provenance and drop out of
+-- this plan-oriented report — the record itself still stands on workout_exercise.
 SELECT
     wt.name as template,
     e.name as exercise,
     ewt.exercise_index as variant_index,
-    COUNT(DISTINCT w.id) as times_used
+    COUNT(DISTINCT we.workout_id) as times_used
 FROM exercise_set es
-JOIN workout w ON es.workout_id = w.id
-JOIN exercise_for_workout_template ewt ON es.exercise_for_workout_template_id = ewt.id
+JOIN workout_exercise we ON es.workout_exercise_id = we.id
+JOIN exercise_for_workout_template ewt ON we.source_variant_id = ewt.id
 JOIN workout_template wt ON ewt.workout_template_id = wt.id
-JOIN exercise e ON ewt.exercise_id = e.id
+JOIN exercise e ON we.exercise_id = e.id
 WHERE es.is_completed = 1
 GROUP BY ewt.id
-ORDER BY wt.name, ewt.ordering, ewt.exercise_index;
+ORDER BY wt.name, ewt.block_ordering, ewt.within_block_ordering, ewt.exercise_index;
 
 -- 10. Get current workout in progress with next recommended set
 SELECT
@@ -189,11 +204,12 @@ SELECT
     es.unit,
     datetime(w.start_time, 'unixepoch') as achieved_date
 FROM exercise_set es
-JOIN exercise e ON es.exercise_id = e.id
-JOIN workout w ON es.workout_id = w.id
+JOIN workout_exercise we ON es.workout_exercise_id = we.id
+JOIN exercise e ON we.exercise_id = e.id
+JOIN workout w ON we.workout_id = w.id
 WHERE es.is_completed = 1
   AND es.weight IS NOT NULL
-GROUP BY es.exercise_id
+GROUP BY we.exercise_id
 ORDER BY e.name;
 
 -- 12. Weekly workout summary
@@ -203,7 +219,8 @@ SELECT
     SUM(CASE WHEN w.stop_time IS NOT NULL THEN (w.stop_time - w.start_time) / 60.0 ELSE 0 END) as total_minutes,
     SUM(es.weight * es.rep_count) as total_volume
 FROM workout w
-LEFT JOIN exercise_set es ON w.id = es.workout_id AND es.is_completed = 1
+LEFT JOIN workout_exercise we ON w.id = we.workout_id
+LEFT JOIN exercise_set es ON we.id = es.workout_exercise_id AND es.is_completed = 1
 GROUP BY week
 ORDER BY week DESC;
 
@@ -343,8 +360,9 @@ SELECT
     up.display_name,
     SUM(es.weight * es.rep_count) as calculated_volume
 FROM exercise_set es
-JOIN workout w ON es.workout_id = w.id
-JOIN competition_exercise ce ON es.exercise_id = ce.exercise_id
+JOIN workout_exercise we ON es.workout_exercise_id = we.id
+JOIN workout w ON we.workout_id = w.id
+JOIN competition_exercise ce ON we.exercise_id = ce.exercise_id
 JOIN competition c ON ce.competition_id = c.id
 JOIN competition_participant cp ON c.id = cp.competition_id AND cp.user_id = 'app-01KP0CGRYVW31E28H1TV6A605D'
 JOIN user_profile up ON cp.user_id = up.id

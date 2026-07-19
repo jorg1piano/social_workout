@@ -23,6 +23,11 @@ test-data:
 gen-test-data:
     ./sqlite/generate-new-test-data.sh
 
+# Run the SQL-level model stress tests (plan-vs-record invariants).
+# Builds fresh DBs from schema.sql + tests/fixtures.sql, FK enforcement on.
+test-model:
+    ./sqlite/tests/run.sh
+
 # Open the dev DB in sqlite3
 shell:
     sqlite3 {{DB}}
