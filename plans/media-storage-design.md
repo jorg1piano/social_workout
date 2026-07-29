@@ -380,9 +380,11 @@ container-only.
 **(2) OS backup — real on iOS, do not rely on it on Android.**
 
 iCloud Backup covers the app container, so a full device restore brings
-`Application Support/media/` with it. Android Auto Backup caps at 25 MB per app,
-which is under two clips; Android device-to-device transfer is more complete but
-not something to promise. Treat this as a bonus, never as the plan.
+`Application Support/media/` with it — but **only during Setup Assistant**, and
+only if the app data fits the user's iCloud plan. "Set up as new" skips it
+permanently (§5.3). Android Auto Backup caps at 25 MB per app, under two clips;
+Android device-to-device transfer is more complete but not something to promise.
+Treat this as a bonus, never as the plan.
 
 **(3) Direct transfer — always works, costs us nothing.**
 
@@ -402,20 +404,51 @@ Partly yes — and the design already accommodates it, which is a useful check o
 `icloud_drive` or `gdrive_appdata` locator type is a one-line change, not a
 re-architecture.
 
-But "iCloud" is four different products that behave very differently, and the
+But "iCloud" is several different products that behave very differently, and the
 distinction decides whether this works:
 
 | Mechanism | What it is | New phone, restored | New phone, set up as new | Second device at the same time | Counts against |
 |---|---|---|---|---|---|
 | **iCloud Photos** | sync | ✅ | ✅ | ✅ | user's quota |
-| **iCloud Backup** | nightly whole-device backup | ✅ | ❌ | ❌ | user's quota |
+| **iCloud Backup** | nightly device snapshot | ✅ | ❌ | ❌ | user's quota |
+| **Quick Start direct transfer** | phone-to-phone copy | ✅ | ❌ | ❌ | nothing |
 | **iCloud Drive** (app ubiquity container) | sync | ✅ | ✅ | ✅ | user's quota |
 | **CloudKit private DB** (`CKAsset`) | sync | ✅ | ✅ | ✅ | user's quota |
 
-**The sync-versus-restore distinction is the whole answer.** iCloud *Backup*
-only helps on the one path where someone restores a new phone from a backup —
-set up as new, or add an iPad, and it does nothing. That is exactly why §5.2
-ranks the photo library first and treats iCloud Backup as a bonus.
+#### Why the app container behaves differently from the photo library
+
+Video is not the problem — iCloud Photos carries video perfectly well. The real
+rule is about *where the file lives*, not what kind of file it is:
+
+> **Photo-library files sync continuously and are account-scoped. App-container
+> files travel only at device-setup time.**
+
+Our private storage under `Application Support` (§4.1) leaves a device only
+inside an iCloud Backup or a Quick Start transfer, and **both are readable only
+by Setup Assistant.** Tap "Set Up as New iPhone" and the backup is never read —
+it stays in iCloud, intact and unreachable. There is no "restore my app's files
+now" option afterwards short of erasing the device and running setup again. That
+is an Apple constraint we cannot engineer around, and it is the entire reason
+§5.2 ranks the photo library first.
+
+iCloud Photos has no such coupling. It is an account-level sync service: sign in,
+toggle it on, and the library streams down whenever — new phone, fresh install,
+second iPad, three years later.
+
+Three further wrinkles worth knowing:
+
+- **Size makes iCloud Backup a poor vehicle for video anyway.** §8.1's reference
+  user generates ~20 GB/year. Against the free 5 GB tier, keeping that in the app
+  container means backups simply start failing. (Apple does grant unlimited
+  *temporary* iCloud storage for up to three weeks when migrating to a new
+  device, so the one-time move is covered — but ongoing backup is not.)
+- **iCloud Backup excludes the photo library when iCloud Photos is on**, since
+  it's already synced. So the two mechanisms don't double-charge — but it does
+  mean that with iCloud Photos *off*, the camera roll falls back into the backup
+  and inherits all of its setup-time-only limitations.
+- **"iCloud doesn't do video" is a true memory of the wrong product.** My Photo
+  Stream never carried video at all, and was discontinued in July 2023. Full
+  iCloud Photos always has.
 
 **The concrete flow, free tier, user with a paid iCloud plan:**
 
