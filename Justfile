@@ -108,3 +108,37 @@ mobile-analyze:
 # Widget + unit tests for the mobile app.
 mobile-test:
     cd mobile && flutter test
+
+# ---------- iOS (native SwiftUI) ----------
+#
+# The Xcode project references sqlite/*.sql directly as bundle resources, so
+# there is no copy step and no parity check to run — unlike `copy-schema` above,
+# which exists only because Flutter requires assets inside the package.
+
+IOS_SIM := "platform=iOS Simulator,name=iPhone 16 Pro"
+
+# Build the native iOS app for the simulator.
+ios-build:
+    cd ios && xcodebuild -scheme SocialWorkout -destination '{{IOS_SIM}}' build
+
+# Unit tests (model invariants) + UI tests (the plan -> session -> record flow).
+ios-test:
+    cd ios && xcodebuild -scheme SocialWorkout -destination '{{IOS_SIM}}' test
+
+# Build, install and launch on the booted simulator. Boots one if needed.
+ios-run:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd ios
+    if ! xcrun simctl list devices booted | grep -q iPhone; then
+        xcrun simctl boot 'iPhone 16 Pro'
+        open -a Simulator
+    fi
+    xcodebuild -scheme SocialWorkout -destination '{{IOS_SIM}}' \
+        -derivedDataPath build build
+    xcrun simctl install booted build/Build/Products/Debug-iphonesimulator/SocialWorkout.app
+    xcrun simctl launch booted no.devda.socialworkout
+
+# Open the iOS project in Xcode.
+ios-open:
+    open ios/SocialWorkout.xcodeproj
