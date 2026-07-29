@@ -20,7 +20,7 @@
 
 ### During & After Workout
 
-6. **Exercise Video Recording** - record yourself performing a set (e.g. film your dips for form check), attach clips to specific exercises/sets
+6. **Exercise Video Recording** - record yourself performing a set (e.g. film your dips for form check), attach clips to specific exercises/sets — storage/privacy design in [media-storage-design.md](media-storage-design.md)
 7. **Workout Summary Screen** - shown after finishing a workout: duration, volume, PRs hit, exercises completed, comparison to previous session
 8. **Workout History** - list of past workouts with details
 
