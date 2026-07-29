@@ -394,6 +394,69 @@ phone scans a QR containing address + one-time key, bytes stream over the LAN,
 This is worth building. It's the feature that makes the free tier feel generous
 rather than crippled, and it costs zero infrastructure.
 
+### 5.3 Riding the user's own iCloud / Google One subscription
+
+Most users already pay someone for cloud storage. Can we just use theirs?
+Partly yes — and the design already accommodates it, which is a useful check on
+§1: `media_location` is device-local and open-ended, so adding an
+`icloud_drive` or `gdrive_appdata` locator type is a one-line change, not a
+re-architecture.
+
+But "iCloud" is four different products that behave very differently, and the
+distinction decides whether this works:
+
+| Mechanism | What it is | New phone, restored | New phone, set up as new | Second device at the same time | Counts against |
+|---|---|---|---|---|---|
+| **iCloud Photos** | sync | ✅ | ✅ | ✅ | user's quota |
+| **iCloud Backup** | nightly whole-device backup | ✅ | ❌ | ❌ | user's quota |
+| **iCloud Drive** (app ubiquity container) | sync | ✅ | ✅ | ✅ | user's quota |
+| **CloudKit private DB** (`CKAsset`) | sync | ✅ | ✅ | ✅ | user's quota |
+
+**The sync-versus-restore distinction is the whole answer.** iCloud *Backup*
+only helps on the one path where someone restores a new phone from a backup —
+set up as new, or add an iPad, and it does nothing. That is exactly why §5.2
+ranks the photo library first and treats iCloud Backup as a bonus.
+
+**The concrete flow, free tier, user with a paid iCloud plan:**
+
+1. Clip captured, written to the photo library as `usr-<ULID>.mp4` (§5.2).
+2. iCloud Photos syncs it to iCloud, on the user's quota, at no cost to us.
+3. New phone: Photos syncs down (or, with "Optimize iPhone Storage," keeps a
+   placeholder and fetches full quality on demand — handle the async
+   `PHImageManager` fetch and the no-network case).
+4. Our app signs in; `media_item` rows arrive over the normal metadata sync.
+5. Re-link scan matches filenames → writes `media_location` rows.
+6. Library fully restored. **We stored zero bytes.**
+
+So for this user, the free tier already behaves like a paid backup tier, funded
+by a subscription they were paying for anyway.
+
+**Should we go further and make BYO-cloud the *premium* backup backend?**
+(CloudKit private DB on iOS, Google Drive `appDataFolder` on Android — both put
+the bytes on the user's quota, both sync across their devices, both cost us
+nothing.) Recommendation: **no.** Reasons, in order:
+
+- **Sharing forces a server bucket anyway.** You cannot serve a friend's video
+  out of my private iCloud container, so §6.5 needs our own storage regardless.
+- **It breaks the exact scenario it's meant to solve, across platforms.** iPhone
+  → Pixel migration moves nothing. We'd be shipping a backup feature that
+  silently fails on the migration people most need help with.
+- **Two backends, two failure modes, for a small team** — and the failures are
+  Apple's and Google's to fix, not ours, while the support ticket is ours.
+- **The 5 GB free tier is usually full.** Our app fails, the user blames us.
+- **It no longer buys much.** At §3's 1080p/60 the cost being avoided is
+  $3.70/user-year. That was worth restructuring around at $36; it isn't at $3.70.
+
+The last point is the real one, and it only became true after the §3 capture
+decision. Use the user's iCloud where it's free to us *and* free to build — the
+photo library path, which we want anyway — and keep our own bucket for the
+premium tier, sharing, and cross-platform.
+
+**One practical detail either way:** set `isExcludedFromBackup = true` on the
+local cache in `Application Support` for any clip already backed up to *our*
+bucket. Otherwise iCloud Backup silently duplicates it onto the user's quota,
+and users who notice respond by turning our app's backup off entirely.
+
 ---
 
 ## 6. Security
