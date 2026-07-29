@@ -2,3 +2,8 @@ test-db.db
 .DS_Store
 .sdf-worktrees.json
 .env.worktree
+
+# backend model-explorer runtime artifacts
+backend/app.db
+backend/app.db-*
+backend/backend

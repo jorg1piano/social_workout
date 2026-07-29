@@ -59,6 +59,25 @@ db-clean:
 # Nuke the dev DB and rebuild from scratch with seed data
 db-reset: db-clean db
 
+# ---------- Backend (model explorer web app) — PROTOTYPE ----------
+#
+# Throwaway localhost-only tool for exploring the data model. No auth, no
+# validation, not deployable. See backend/README.md.
+
+# Run the Go web app that explores the plan-vs-record model. Bootstraps its own
+# app.db from sqlite/schema.sql + exercises_complete.sql on first run, then
+# serves a UI on http://localhost:8080 to build plans and run/record sessions.
+web:
+    cd backend && go run . -sqlite-dir ../sqlite
+
+# Build the backend binary.
+backend-build:
+    cd backend && go build -o backend .
+
+# Wipe the explorer's local DB so it re-bootstraps fresh from sqlite/.
+web-reset:
+    rm -f backend/app.db backend/app.db-*
+
 # ---------- Mobile ----------
 
 # Copy canonical SQL into mobile/assets/sqlite/ so the Flutter app boots
