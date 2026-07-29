@@ -231,9 +231,11 @@ permission.
 
 ### 4.2 Tier B — encrypted cloud backup (premium)
 
-Ciphertext goes to an object store. **Use Cloudflare R2 over S3**: video playback
-is egress-dominated and R2 has zero egress fees, which for this workload is the
-difference between a viable and a non-viable unit economic.
+Ciphertext goes to an object store. **The selection criterion is zero egress
+fees, not cheap storage** — video playback is egress-dominated, and §8.2 shows
+this rules out both S3 Standard and, more surprisingly, every Glacier tier.
+That leaves R2, Backblaze B2, or Wasabi; R2 is the working assumption here and
+B2 is the live alternative (open question 6).
 
 Object key (`media_item.object_key`) is a **fresh random 128-bit value, not the
 media ULID.** A ULID leaked in a log or a screenshot must not be a bucket path.
@@ -528,6 +530,66 @@ pinned or attached to a PR").
 assuming each clip is watched 3× per year: R2 $36/yr versus S3 **$110/yr**, of
 which $54 is pure egress. Video is an egress-dominated workload.
 
+### 8.2 Why not cold storage
+
+The obvious reaction to $36/yr is "put it in Glacier." That is the wrong axis,
+and the arithmetic says so clearly. Full res, 201 GB/yr, steady state, each clip
+retrieved ~1×/yr:
+
+| Provider | Storage/yr | Retrieval + egress | **Total/yr** | Min. duration | Latency |
+|---|---|---|---|---|---|
+| Backblaze B2 | $14.48 | $0 | **$14.48** | — | ms |
+| Wasabi | $16.65 | $0 | $16.65 | 90 d | ms |
+| S3 Glacier Deep Archive | $2.39 | **$18.60** | $20.99 | 180 d | 12–48 h |
+| R2 Infrequent Access | $24.13 | $2.01 | $26.14 | 30 d | ms |
+| S3 Glacier Flexible (bulk) | $8.69 | $18.10 | $26.79 | 90 d | 5–12 h |
+| S3 Glacier Instant Retrieval | $9.65 | $24.13 | $33.78 | 90 d | ms |
+| R2 | $36.20 | $0 | $36.20 | — | ms |
+| S3 Standard | $55.50 | $18.10 | $73.60 | — | ms |
+
+Deep Archive cuts storage 15× and then **returns the entire saving as retrieval
+and egress fees** — landing above plain Backblaze while making the user wait up
+to two days. Break-even against B2 is **0.65 retrievals per clip per year**;
+below that cold wins, above it egress-free hot wins. Since "pull up an old clip
+and compare" is the entire product, we will be above that line.
+
+Cold storage optimizes GB-months. This workload's cost is GB-transferred.
+
+Two further traps if anyone revisits this:
+
+- **Minimum storage duration** (90 d Glacier, 180 d Deep Archive) — a user
+  deleting a bad take after a day is still billed for six months, and this
+  feature will produce many deleted takes.
+- **Minimum billable object size** — Glacier IR bills 128 KB per object, so the
+  20 KB posters of §4.3 would bill at 6.4× actual. Posters must never go cold.
+
+**Ranked levers**, from the $36.20 baseline:
+
+| Lever | Cost/yr | vs baseline |
+|---|---|---|
+| Baseline: 4K/60 on R2 | $36.20 | — |
+| **Transcode to 720p (§3), stay on R2** | **$1.55** | **23×** |
+| Keep 4K/60, move to Deep Archive | $20.99 | 1.7× |
+| Transcode + Backblaze B2 | $0.62 | 58× |
+
+Transcoding beats every storage-tier choice by an order of magnitude, at zero
+latency cost. After it we are at ~$1.55/user-year and the question is closed —
+do not build a lifecycle pipeline to save $1/user/year.
+
+If more is wanted, the next move is **evaluating B2 against R2** (2.5× cheaper,
+also egress-free, and in Cloudflare's Bandwidth Alliance so free egress into a
+CDN survives). R2's counter-advantages are uncapped egress with no fair-use
+ratio and native Workers integration for edge auth and signed URLs.
+
+Cold storage *does* fit exactly one thing: an explicit "archive my untouched 4K
+originals" add-on, where restores are genuinely rare and a "we're restoring your
+originals, we'll notify you" flow makes 12–48 h acceptable. That is cold by
+design, not cold as a cost fix for the working set.
+
+The lever that beats every infrastructure choice, though, is a **product** one:
+back up only clips the user *pins*, not everything. At ~15% pinned that is
+another 6.7× on top of all of the above. See open question 5.
+
 Caveats: figures are HEVC — a user shooting "Most Compatible" (H.264) roughly
 doubles them. Excludes operations (~$0.01/user-year) and AEAD overhead (16 bytes
 per 1 MiB chunk, 0.0015%), both noise. Prices are list as of writing; re-check
@@ -576,3 +638,13 @@ separate feed-post copy.
    fall back to exercise leg.
 4. **Retention past the quota** — hard stop, or evict oldest-unpinned? Hard stop
    is honest; eviction is friendlier. Needs a product call, not a technical one.
+5. **Back up everything, or only pinned clips?** §8.2 shows this is a bigger cost
+   lever than any provider or tier choice (~6.7× at 15% pinned), and it may also
+   be the better *product*: most clips are watched once and never again, and a
+   curated "these are my reference lifts" set is arguably more useful than an
+   undifferentiated archive. Against that, "pin before it's safe" is a footgun
+   that loses user data. Possible middle: auto-pin PRs and anything the user
+   replays more than once.
+6. **B2 versus R2** (§8.2) — 2.5× on storage against uncapped egress and Workers
+   integration. Only worth resolving once cloud backup is real; the transcode
+   decision dwarfs it either way.
