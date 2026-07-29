@@ -207,8 +207,10 @@ Also at capture time:
 - **Compute the content hash** over the transcoded plaintext.
 
 At 3 clips/workout × 4 workouts/week, this single decision moves per-user annual
-storage from **~206 GB to ~8.7 GB** — a 24× cut. It is what makes a cloud tier
-possible at a normal subscription price.
+storage from **~201 GB to ~8.6 GB** — a 23× cut. Costed out in §8.1, that is the
+difference between a premium tier that goes cash-negative in year three and one
+still comfortable in year ten. It is the highest-leverage decision in this
+document.
 
 ---
 
@@ -482,10 +484,54 @@ same lift six months ago is the thing people will actually pay for; it's also
 the thing that's genuinely easier when the bytes are in the cloud, so the gate
 is natural rather than artificial.
 
-On quota: 14 MB/clip × 3 clips/workout × 4 workouts/week × 52 ≈ **8.7 GB/year**.
-A 25 GB quota is roughly three years of heavy use, costs ~$0.38/month on R2, and
-gives room for a retention policy later ("clips older than 18 months are kept
-only if pinned or attached to a PR").
+### 8.1 The arithmetic behind the quota
+
+Reference user: 3 clips/workout × 4 workouts/week × 45 s = 624 clips ≈ **7.8 h of
+video per year**. Sizes are Apple's documented HEVC capture rates (Settings >
+Camera > Record Video). Costs are Cloudflare R2 list, $0.015/GB-month, zero egress.
+
+| Capture setting | MB/min | GB/year | Year 1 (accumulating) | $/yr to *retain* |
+|---|---|---|---|---|
+| 4K/60 | 440 | 201 | $18.10 | **$36.20** |
+| 4K/30 | 170 | 78 | $6.99 | **$13.99** |
+| 1080p/30 | 65 | 30 | $2.67 | **$5.35** |
+| 720p/30 @ 2.5 Mbps (§3 target) | 18.8 | 8.6 | $0.77 | **$1.54** |
+
+Two columns because storage **accumulates**: during year one you hold the average,
+roughly half the final total. The right column is what that year's footage costs
+every year thereafter. Unit rate for re-deriving with other assumptions: one
+minute of 4K/60 stored for a year costs **$0.077**; at 720p/30, **$0.0033**.
+
+**Storage compounds; subscription revenue does not.** Against $8/month premium —
+$96/yr, or **$81.60 net** after Apple's 15% cut:
+
+| Cost that year | Y1 | Y3 | Y5 | Y10 |
+|---|---|---|---|---|
+| 4K/60 full resolution | $18 | **$90** ⚠️ | $163 | $344 |
+| 4K/30 full resolution | $7 | $35 | $63 | **$133** ⚠️ |
+| 720p transcode | $0.77 | $3.86 | $6.94 | $14.65 |
+
+Retaining full-resolution 4K/60 goes **cash-negative in year 3 on storage alone**,
+before compute, egress, or support. 4K/30 lasts until roughly year 7. The
+transcoded tier is still at 18% of net revenue in year *ten*. This is the
+quantitative case for §3, and it is not close.
+
+And that's a moderate user. Someone filming every set (15 clips × 5 workouts/week)
+at 4K/60 generates **1.26 TB/year** — $226/yr to retain, underwater in year one.
+Hence a hard quota, not merely a retention policy.
+
+A 25 GB quota is ~3 years of the transcoded moderate user, costs $0.38/month, and
+leaves room for retention rules later ("clips older than 18 months kept only if
+pinned or attached to a PR").
+
+**Egress, not storage, is what makes S3 wrong here.** Same moderate user at 4K/60,
+assuming each clip is watched 3× per year: R2 $36/yr versus S3 **$110/yr**, of
+which $54 is pure egress. Video is an egress-dominated workload.
+
+Caveats: figures are HEVC — a user shooting "Most Compatible" (H.264) roughly
+doubles them. Excludes operations (~$0.01/user-year) and AEAD overhead (16 bytes
+per 1 MiB chunk, 0.0015%), both noise. Prices are list as of writing; re-check
+before committing to a subscription price.
 
 ---
 
