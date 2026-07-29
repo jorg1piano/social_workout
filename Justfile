@@ -23,6 +23,11 @@ test-data:
 gen-test-data:
     ./sqlite/generate-new-test-data.sh
 
+# Run the SQL-level model stress tests (plan-vs-record invariants).
+# Builds fresh DBs from schema.sql + tests/fixtures.sql, FK enforcement on.
+test-model:
+    ./sqlite/tests/run.sh
+
 # Open the dev DB in sqlite3
 shell:
     sqlite3 {{DB}}
@@ -54,10 +59,26 @@ db-clean:
 # Nuke the dev DB and rebuild from scratch with seed data
 db-reset: db-clean db
 
+# ---------- Prototype: model explorer web app ----------
+
+# Run the Go web app that explores the plan-vs-record model. Bootstraps its own
+# app.db from sqlite/schema.sql + exercises_complete.sql on first run, then
+# serves a UI on http://localhost:8080 to build plans and run/record sessions.
+web:
+    cd prototypes/model-explorer && go run . -sqlite-dir ../../sqlite
+
+# Build the model-explorer binary.
+web-build:
+    cd prototypes/model-explorer && go build -o model-explorer .
+
+# Wipe the explorer's local DB so it re-bootstraps fresh from sqlite/.
+web-reset:
+    rm -f prototypes/model-explorer/app.db prototypes/model-explorer/app.db-*
+
 # ---------- Mobile ----------
 
 # Copy canonical SQL into mobile/assets/sqlite/ so the Flutter app boots
-# from the same schema + seed data as the backend. Run this any time
+# from the same schema + seed data as the model explorer. Run this any time
 # sqlite/schema.sql, exercises_complete.sql, or new-test-data.sql changes.
 copy-schema:
     @mkdir -p mobile/assets/sqlite
@@ -87,3 +108,37 @@ mobile-analyze:
 # Widget + unit tests for the mobile app.
 mobile-test:
     cd mobile && flutter test
+
+# ---------- iOS (native SwiftUI) ----------
+#
+# The Xcode project references sqlite/*.sql directly as bundle resources, so
+# there is no copy step and no parity check to run — unlike `copy-schema` above,
+# which exists only because Flutter requires assets inside the package.
+
+IOS_SIM := "platform=iOS Simulator,name=iPhone 16 Pro"
+
+# Build the native iOS app for the simulator.
+ios-build:
+    cd ios && xcodebuild -scheme SocialWorkout -destination '{{IOS_SIM}}' build
+
+# Unit tests (model invariants) + UI tests (the plan -> session -> record flow).
+ios-test:
+    cd ios && xcodebuild -scheme SocialWorkout -destination '{{IOS_SIM}}' test
+
+# Build, install and launch on the booted simulator. Boots one if needed.
+ios-run:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd ios
+    if ! xcrun simctl list devices booted | grep -q iPhone; then
+        xcrun simctl boot 'iPhone 16 Pro'
+        open -a Simulator
+    fi
+    xcodebuild -scheme SocialWorkout -destination '{{IOS_SIM}}' \
+        -derivedDataPath build build
+    xcrun simctl install booted build/Build/Products/Debug-iphonesimulator/SocialWorkout.app
+    xcrun simctl launch booted no.devda.socialworkout
+
+# Open the iOS project in Xcode.
+ios-open:
+    open ios/SocialWorkout.xcodeproj

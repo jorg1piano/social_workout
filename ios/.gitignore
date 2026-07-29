@@ -1,0 +1,10 @@
+# Xcode build output. `just ios-run` writes here.
+build/
+DerivedData/
+
+# Per-user Xcode state — window layout, breakpoints, last selected scheme.
+# The shared scheme in xcshareddata/ is committed; this is not.
+xcuserdata/
+*.xcuserstate
+*.xcscmblueprint
+*.xccheckout

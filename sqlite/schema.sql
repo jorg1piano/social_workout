@@ -30,6 +30,12 @@ CREATE TABLE workout_template (
   name TEXT NOT NULL,
   description TEXT,
   notes TEXT,
+  -- archived_at: soft-delete marker. NULL = active. Non-NULL hides the plan
+  -- from pickers. Cosmetic only — history lives entirely on the record side
+  -- (workout / workout_exercise / exercise_set), so archiving carries no
+  -- historical weight and a template can even be hard-deleted with no effect
+  -- on past workouts.
+  archived_at INTEGER,
   created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
   updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now'))
 );
@@ -85,33 +91,48 @@ CREATE TABLE workout (
 );
 
 -- 8. exercise_for_workout_template - Depends on: workout_template, exercise
--- Links exercises to workout templates with ordering and swappable variants
+-- Links exercises to workout templates with two-level ordering and swappable variants.
+-- This is the PLAN side — a mutable suggestion that only matters at the moment
+-- the user presses Start. History never depends on it (see workout_exercise).
 --
--- Key concepts:
---   ordering: The sequence of exercise slots in the workout (1st exercise, 2nd exercise, etc.)
---   exercise_index: Variant number within the same slot (0=default, 1=alternate 1, 2=alternate 2, etc.)
+-- Three orthogonal ordering axes:
+--   block_ordering:        which block (superset / circuit) in the plan. A straight
+--                          exercise is just a block of one.
+--   within_block_ordering: which leg inside the block (1 for a straight exercise;
+--                          1,2,3… for the members of a superset that you alternate).
+--   exercise_index:        swap-variant number within a single (block, within) slot
+--                          (0=default, 1=alternate 1, 2=alternate 2, …).
 --
--- IMPORTANT: Multiple exercises can share the same exercise_index as long as they have different ordering values
---            The exercise_index is scoped to each ordering slot, not globally
+-- IMPORTANT: exercise_index is scoped to a (block, within) slot, not global. You
+--            can swap one leg of a superset without disturbing its partner.
 --
--- Example: A "Push Day" template might have:
---   - Slot 1 (ordering=1): Bench Press variants
---     - exercise_index=0: Barbell Bench Press (default)
---     - exercise_index=1: Dumbbell Bench Press (equipment substitution)
---     - exercise_index=2: Machine Chest Press (injury modification)
---   - Slot 2 (ordering=2): Overhead Press variants
---     - exercise_index=0: Standing Barbell OHP (same index as Barbell Bench, different slot)
---     - exercise_index=1: Seated Dumbbell OHP (same index as Dumbbell Bench, different slot)
+-- Example: A "Leg Day" template might have:
+--   - Block 1 = a superset:
+--     - (block=1, within=1, index=0): Leg Extension (default)
+--     - (block=1, within=1, index=1): Sissy Squat (swap alternate)
+--     - (block=1, within=2, index=0): Lying Leg Curl (superset partner)
+--     - (block=1, within=2, index=1): Seated Leg Curl (swap alternate)
+--   - Block 2 = a straight exercise:
+--     - (block=2, within=1, index=0): Back Squat
+--     - (block=2, within=1, index=1): Hack Squat (swap alternate)
 --
--- When starting a workout, the user selects one exercise_index per ordering slot
--- The composite (workout_template_id, ordering, exercise_index) must be unique
+-- When starting a workout, the user selects one exercise_index per (block, within)
+-- slot. The composite (workout_template_id, block_ordering, within_block_ordering,
+-- exercise_index) must be unique. A second axis of uniqueness — one row per
+-- exercise per slot — makes "swap back to a removed exercise" reactivate the
+-- existing (possibly archived) row rather than forking its history.
+--
+-- archived_at: soft-delete marker. NULL = active. Non-NULL hides the variant from
+-- pickers only; it is cosmetic and carries no historical weight.
 CREATE TABLE exercise_for_workout_template (
   id TEXT PRIMARY KEY NOT NULL CHECK((id LIKE 'app-%' OR id LIKE 'usr-%') AND length(id) = 30),
   workout_template_id TEXT NOT NULL,
   exercise_id TEXT NOT NULL,
   notes TEXT,
-  ordering INTEGER NOT NULL,
+  block_ordering INTEGER NOT NULL,
+  within_block_ordering INTEGER NOT NULL,
   exercise_index INTEGER DEFAULT 0 NOT NULL,
+  archived_at INTEGER,
   created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
   updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
   FOREIGN KEY(workout_template_id) REFERENCES workout_template(id) ON DELETE CASCADE,
@@ -155,18 +176,55 @@ CREATE TABLE exercise_set_template (
   FOREIGN KEY(exercise_for_workout_template_id) REFERENCES exercise_for_workout_template(id) ON DELETE CASCADE
 );
 
--- 10. exercise_set - Depends on: workout, exercise, exercise_for_workout_template
--- Records the actual sets performed during a workout session
--- Links to exercise_for_workout_template_id to track which variant was used
+-- 10. workout_exercise - Depends on: workout, exercise, exercise_for_workout_template
+-- The session's OWN list of what you did and in what order — the record side.
+-- This is the table that makes a logged workout self-contained: order and
+-- exercise identity live here, not in the template, so a workout renders
+-- entirely from record tables (workout -> workout_exercise -> exercise_set)
+-- with no dependency on the plan.
+--
+-- Fields:
+--   exercise_id:           the exercise you actually performed. Single source of
+--                          truth for this leg — sets no longer copy it.
+--   block_ordering:        which block (superset / circuit) in THIS session.
+--   within_block_ordering: which leg inside the block (1 for a straight exercise;
+--                          1,2,3… for the members of a superset).
+--   source_variant_id:     nullable provenance pointer back to the plan slot the
+--                          user picked. ON DELETE SET NULL — the only link from
+--                          plan to record, and it can be severed (template renamed,
+--                          reordered, archived, or hard-deleted) with zero effect
+--                          on the record.
+CREATE TABLE workout_exercise (
+  id TEXT PRIMARY KEY NOT NULL
+    CHECK((id LIKE 'app-%' OR id LIKE 'usr-%') AND length(id) = 30),
+  workout_id            TEXT NOT NULL,
+  exercise_id           TEXT NOT NULL,      -- what you actually did (single source of truth)
+  block_ordering        INTEGER NOT NULL,   -- which block in THIS session
+  within_block_ordering INTEGER NOT NULL,   -- leg inside the block (supersets/circuits)
+  notes                 TEXT,
+  source_variant_id     TEXT,               -- nullable provenance -> exercise_for_workout_template
+  created_at            INTEGER NOT NULL DEFAULT (strftime('%s','now')),
+  updated_at            INTEGER NOT NULL DEFAULT (strftime('%s','now')),
+  FOREIGN KEY(workout_id)        REFERENCES workout(id)                       ON DELETE CASCADE,
+  FOREIGN KEY(exercise_id)       REFERENCES exercise(id)                      ON DELETE RESTRICT,
+  FOREIGN KEY(source_variant_id) REFERENCES exercise_for_workout_template(id) ON DELETE SET NULL
+);
+
+-- 11. exercise_set - Depends on: workout_exercise
+-- Records the actual sets performed during a workout session.
+-- A set's identity is its parent: exercise, session, and block/leg order all
+-- come from workout_exercise — the set stores no redundant copy to drift out of
+-- sync. Deleting the parent workout_exercise (or its workout) cascades here.
 --
 -- Example: "User did 10 reps at 100kg for Set 1 of Barbell Bench Press"
 --          "User cycled for 20 minutes (1200 seconds)"
 --
--- This allows progression tracking by querying all sets for the same
--- exercise_for_workout_template_id across multiple workout sessions
+-- Progression tracking now queries all sets for an exercise by joining through
+-- workout_exercise (workout_exercise.exercise_id), across every workout.
 --
 -- Fields:
---   ordering: References the set number from the template (1st set, 2nd set, etc.)
+--   ordering: The set number within the exercise (1st set, 2nd set, …). For a
+--             superset, this doubles as the round number. Nullable.
 --             Can have gaps (user skips sets) or duplicates (multiple attempts)
 --             Not enforced to be sequential - user has full flexibility
 --   attempt_number: Tracks multiple attempts at the same set slot
@@ -183,6 +241,7 @@ CREATE TABLE exercise_set_template (
 --             template join just to read the set type.
 CREATE TABLE exercise_set (
   id TEXT PRIMARY KEY NOT NULL CHECK((id LIKE 'app-%' OR id LIKE 'usr-%') AND length(id) = 30),
+  workout_exercise_id TEXT NOT NULL,
   rep_count INTEGER,
   -- weight: DECIMAL(5,2). Sign convention:
   --   > 0  → external load added (e.g. barbell, dumbbell).
@@ -203,15 +262,10 @@ CREATE TABLE exercise_set (
     CHECK (set_type IN ('warmup','regularSet','dropSet','failure')),
   notes TEXT,
   rest_time INTEGER DEFAULT 0 NOT NULL,
-  workout_id TEXT NOT NULL,
-  exercise_id TEXT NOT NULL,
-  exercise_for_workout_template_id TEXT NOT NULL,
   is_completed INTEGER DEFAULT 0 NOT NULL,
   created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
   updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
-  FOREIGN KEY(workout_id) REFERENCES workout(id) ON DELETE CASCADE,
-  FOREIGN KEY(exercise_id) REFERENCES exercise(id) ON DELETE RESTRICT,
-  FOREIGN KEY(exercise_for_workout_template_id) REFERENCES exercise_for_workout_template(id) ON DELETE RESTRICT
+  FOREIGN KEY(workout_exercise_id) REFERENCES workout_exercise(id) ON DELETE CASCADE
 );
 
 -- Indexes for foreign keys to improve query performance
@@ -224,23 +278,39 @@ CREATE INDEX idx_exercise_for_workout_template_workout_template_id ON exercise_f
 CREATE INDEX idx_exercise_for_workout_template_exercise_id ON exercise_for_workout_template(exercise_id);
 CREATE INDEX idx_exercise_set_template_exercise_id ON exercise_set_template(exercise_id);
 CREATE INDEX idx_exercise_set_template_exercise_for_workout_template_id ON exercise_set_template(exercise_for_workout_template_id);
-CREATE INDEX idx_exercise_set_workout_id ON exercise_set(workout_id);
-CREATE INDEX idx_exercise_set_exercise_id ON exercise_set(exercise_id);
-CREATE INDEX idx_exercise_set_exercise_for_workout_template_id ON exercise_set(exercise_for_workout_template_id);
+CREATE INDEX idx_workout_exercise_workout_id        ON workout_exercise(workout_id);
+CREATE INDEX idx_workout_exercise_exercise_id       ON workout_exercise(exercise_id);
+CREATE INDEX idx_workout_exercise_source_variant_id ON workout_exercise(source_variant_id);
+CREATE INDEX idx_exercise_set_workout_exercise_id ON exercise_set(workout_exercise_id);
 
 -- Unique constraints to prevent duplicates
 CREATE UNIQUE INDEX idx_exercise_body_part_unique ON exercise_body_part(exercise_id, body_part_category_id);
 CREATE UNIQUE INDEX idx_exercise_equipment_unique ON exercise_equipment(exercise_id, equipment_category_id);
 
--- Unique constraint to enforce the exercise variant pattern
--- Ensures each (template, ordering, index) combination is unique
--- This prevents duplicate variants and enforces proper exercise slot structure
-CREATE UNIQUE INDEX idx_exercise_variant ON exercise_for_workout_template(workout_template_id, ordering, exercise_index);
+-- One leg per slot in a session: (workout, block, within) is unique. Same block /
+-- different within = a superset; different block / same within is fine.
+CREATE UNIQUE INDEX idx_workout_exercise_order
+  ON workout_exercise(workout_id, block_ordering, within_block_ordering);
 
--- Unique constraint to prevent accidental duplicate attempts
--- Ensures each (workout, exercise variant, set number, attempt) combination is unique
--- Allows multiple attempts at the same set but prevents logging the same attempt twice
-CREATE UNIQUE INDEX idx_exercise_set_attempt ON exercise_set(workout_id, exercise_for_workout_template_id, ordering, attempt_number);
+-- Slot / variant uniqueness across the three plan axes.
+-- Ensures each (template, block, within, index) combination is unique — prevents
+-- duplicate variants and enforces proper exercise slot structure.
+CREATE UNIQUE INDEX idx_variant
+  ON exercise_for_workout_template(workout_template_id, block_ordering, within_block_ordering, exercise_index);
+
+-- Swap dedup: one row per exercise per (template, block, within) slot, so
+-- swapping back to a removed exercise reactivates the existing (possibly archived)
+-- row rather than duplicating and forking its history. Full index — archived rows
+-- count too.
+CREATE UNIQUE INDEX idx_variant_exercise
+  ON exercise_for_workout_template(workout_template_id, block_ordering, within_block_ordering, exercise_id);
+
+-- Unique constraint to prevent accidental duplicate attempts.
+-- Ensures each (workout_exercise, set number, attempt) combination is unique.
+-- Allows multiple attempts at the same set (rest-pause, missed lifts) but prevents
+-- logging the same attempt twice.
+CREATE UNIQUE INDEX idx_exercise_set_attempt
+  ON exercise_set(workout_exercise_id, ordering, attempt_number);
 
 -- ============================================================================
 -- Social Feed Tables

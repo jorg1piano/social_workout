@@ -11,69 +11,80 @@ INSERT INTO workout_template (id, name, description, notes) VALUES
 
 -- Step 2: Link exercises to Push Day template with variants
 -- Exercise 1: Bench Press (with Incline variant)
-INSERT INTO exercise_for_workout_template (id, workout_template_id, exercise_id, notes, ordering, exercise_index) VALUES
-('app-01KE6BHGJQWAR3VA76ZZF5CSJG', 'app-01KE6BHGJAFFKEAQ7X760EBPHJ', 'app-01KE649R3DHD6HFEM69RKAA5BE', 'Main compound - flat bench', 1, 0),
-('app-01KE6BHGJWGFJFPW17WMVRVWE5', 'app-01KE6BHGJAFFKEAQ7X760EBPHJ', 'app-01KE649RTDT6F8FK63GNSJGNVQ', 'Variant - incline for upper chest', 1, 1);
+INSERT INTO exercise_for_workout_template (id, workout_template_id, exercise_id, notes, block_ordering, within_block_ordering, exercise_index) VALUES
+('app-01KE6BHGJQWAR3VA76ZZF5CSJG', 'app-01KE6BHGJAFFKEAQ7X760EBPHJ', 'app-01KE649R3DHD6HFEM69RKAA5BE', 'Main compound - flat bench', 1, 1, 0),
+('app-01KE6BHGJWGFJFPW17WMVRVWE5', 'app-01KE6BHGJAFFKEAQ7X760EBPHJ', 'app-01KE649RTDT6F8FK63GNSJGNVQ', 'Variant - incline for upper chest', 1, 1, 1);
 
 -- Exercise 2: Overhead Press
-INSERT INTO exercise_for_workout_template (id, workout_template_id, exercise_id, notes, ordering, exercise_index) VALUES
-('app-01KE6BHGK0KF9CCWHXDNQDCEPN', 'app-01KE6BHGJAFFKEAQ7X760EBPHJ', 'app-01KE649RYS8PJ2SP1BEPEEE4T9', 'Main shoulder press', 2, 0);
+INSERT INTO exercise_for_workout_template (id, workout_template_id, exercise_id, notes, block_ordering, within_block_ordering, exercise_index) VALUES
+('app-01KE6BHGK0KF9CCWHXDNQDCEPN', 'app-01KE6BHGJAFFKEAQ7X760EBPHJ', 'app-01KE649RYS8PJ2SP1BEPEEE4T9', 'Main shoulder press', 2, 1, 0);
 
 -- Exercise 3: Lateral Raise
-INSERT INTO exercise_for_workout_template (id, workout_template_id, exercise_id, notes, ordering, exercise_index) VALUES
-('app-01KE6BHGK45F06MDBZ7RV9F9DT', 'app-01KE6BHGJAFFKEAQ7X760EBPHJ', 'app-01KE649RWJPQJ2E9QWZP7DVC0H', 'Side delts isolation', 3, 0);
+INSERT INTO exercise_for_workout_template (id, workout_template_id, exercise_id, notes, block_ordering, within_block_ordering, exercise_index) VALUES
+('app-01KE6BHGK45F06MDBZ7RV9F9DT', 'app-01KE6BHGJAFFKEAQ7X760EBPHJ', 'app-01KE649RWJPQJ2E9QWZP7DVC0H', 'Side delts isolation', 3, 1, 0);
 
 -- Exercise 4: Triceps (Pushdown vs Dips)
-INSERT INTO exercise_for_workout_template (id, workout_template_id, exercise_id, notes, ordering, exercise_index) VALUES
-('app-01KE6BHGK8PHYAEMQAS05PNKJA', 'app-01KE6BHGJAFFKEAQ7X760EBPHJ', 'app-01KE649SA771M1GMGD0NV11SEC', 'Cable pushdown', 4, 0),
-('app-01KE6BHGKCYBNCM046HSHJR9JA', 'app-01KE6BHGJAFFKEAQ7X760EBPHJ', 'app-01KE649S9APQSR4XCJP6EBAZYN', 'Variant - bodyweight dips', 4, 1);
+INSERT INTO exercise_for_workout_template (id, workout_template_id, exercise_id, notes, block_ordering, within_block_ordering, exercise_index) VALUES
+('app-01KE6BHGK8PHYAEMQAS05PNKJA', 'app-01KE6BHGJAFFKEAQ7X760EBPHJ', 'app-01KE649SA771M1GMGD0NV11SEC', 'Cable pushdown', 4, 1, 0),
+('app-01KE6BHGKCYBNCM046HSHJR9JA', 'app-01KE6BHGJAFFKEAQ7X760EBPHJ', 'app-01KE649S9APQSR4XCJP6EBAZYN', 'Variant - bodyweight dips', 4, 1, 1);
 
 -- Step 3: Link exercises to Pull Day template
 -- Exercise 1: Deadlift
-INSERT INTO exercise_for_workout_template (id, workout_template_id, exercise_id, notes, ordering, exercise_index) VALUES
-('app-01KE6BHGKG285PXVJB83VV8MDR', 'app-01KE6BHGJFXP86HZR1XJBZHQS4', 'app-01KE649R9AJJEY97C4SQMPGK0P', 'Main compound - conventional deadlift', 1, 0);
+INSERT INTO exercise_for_workout_template (id, workout_template_id, exercise_id, notes, block_ordering, within_block_ordering, exercise_index) VALUES
+('app-01KE6BHGKG285PXVJB83VV8MDR', 'app-01KE6BHGJFXP86HZR1XJBZHQS4', 'app-01KE649R9AJJEY97C4SQMPGK0P', 'Main compound - conventional deadlift', 1, 1, 0);
 
 -- Exercise 2: Pull Ups
-INSERT INTO exercise_for_workout_template (id, workout_template_id, exercise_id, notes, ordering, exercise_index) VALUES
-('app-01KE6BHGKMBJVPEFP8Q7Y8RKFC', 'app-01KE6BHGJFXP86HZR1XJBZHQS4', 'app-01KE649S0K5B5Z08APDGVKJEA3', 'Bodyweight or weighted', 2, 0);
+INSERT INTO exercise_for_workout_template (id, workout_template_id, exercise_id, notes, block_ordering, within_block_ordering, exercise_index) VALUES
+('app-01KE6BHGKMBJVPEFP8Q7Y8RKFC', 'app-01KE6BHGJFXP86HZR1XJBZHQS4', 'app-01KE649S0K5B5Z08APDGVKJEA3', 'Bodyweight or weighted', 2, 1, 0);
 
 -- Exercise 3: Bent Over Row (vs Lat Pulldown)
-INSERT INTO exercise_for_workout_template (id, workout_template_id, exercise_id, notes, ordering, exercise_index) VALUES
-('app-01KE6BHGKQPHGCDYBESW4D0JWZ', 'app-01KE6BHGJFXP86HZR1XJBZHQS4', 'app-01KE649R3SGW1J64BZ3JQ1ADDY', 'Heavy barbell rows', 3, 0),
-('app-01KE6BHGKVRNSYXA6A5X4W8XGQ', 'app-01KE6BHGJFXP86HZR1XJBZHQS4', 'app-01KE649RWVB6FB8E3Z2RMBGXPJ', 'Variant - lat pulldown', 3, 1);
+INSERT INTO exercise_for_workout_template (id, workout_template_id, exercise_id, notes, block_ordering, within_block_ordering, exercise_index) VALUES
+('app-01KE6BHGKQPHGCDYBESW4D0JWZ', 'app-01KE6BHGJFXP86HZR1XJBZHQS4', 'app-01KE649R3SGW1J64BZ3JQ1ADDY', 'Heavy barbell rows', 3, 1, 0),
+('app-01KE6BHGKVRNSYXA6A5X4W8XGQ', 'app-01KE6BHGJFXP86HZR1XJBZHQS4', 'app-01KE649RWVB6FB8E3Z2RMBGXPJ', 'Variant - lat pulldown', 3, 1, 1);
 
 -- Exercise 4: Bicep Curl
-INSERT INTO exercise_for_workout_template (id, workout_template_id, exercise_id, notes, ordering, exercise_index) VALUES
-('app-01KE6BHGKZQZWXFT383AWPW061', 'app-01KE6BHGJFXP86HZR1XJBZHQS4', 'app-01KE649R4BVKJ25QRJMDTPJ23F', 'Barbell curls', 4, 0);
+INSERT INTO exercise_for_workout_template (id, workout_template_id, exercise_id, notes, block_ordering, within_block_ordering, exercise_index) VALUES
+('app-01KE6BHGKZQZWXFT383AWPW061', 'app-01KE6BHGJFXP86HZR1XJBZHQS4', 'app-01KE649R4BVKJ25QRJMDTPJ23F', 'Barbell curls', 4, 1, 0);
 
 -- Exercise 5: Hammer Curl
-INSERT INTO exercise_for_workout_template (id, workout_template_id, exercise_id, notes, ordering, exercise_index) VALUES
-('app-01KE6BHGM35H2N66ETNS7GEXBS', 'app-01KE6BHGJFXP86HZR1XJBZHQS4', 'app-01KE649RRFBV8CJ4DFTMZ5TTKH', 'Brachialis focus', 5, 0);
+INSERT INTO exercise_for_workout_template (id, workout_template_id, exercise_id, notes, block_ordering, within_block_ordering, exercise_index) VALUES
+('app-01KE6BHGM35H2N66ETNS7GEXBS', 'app-01KE6BHGJFXP86HZR1XJBZHQS4', 'app-01KE649RRFBV8CJ4DFTMZ5TTKH', 'Brachialis focus', 5, 1, 0);
 
 -- Step 4: Link exercises to Leg Day template
--- Exercise 1: Squat
-INSERT INTO exercise_for_workout_template (id, workout_template_id, exercise_id, notes, ordering, exercise_index) VALUES
-('app-01KE6BHGM74EZENC8XT1JEG60X', 'app-01KE6BHGJK7ST9KXA9FBBRW9X0', 'app-01KE649S6V1B1B5CBZAAFF2XPG', 'Main compound - barbell squat', 1, 0);
+-- Leg Day exercises the new two-level ordering:
+--   Block 1 = Back Squat (straight) with a Hack Squat swap alternate
+--   Block 2 = Romanian Deadlift (straight)
+--   Block 3 = Leg Press (straight)
+--   Block 4 = SUPERSET: within 1 = Leg Extension (+ Sissy Squat swap),
+--                       within 2 = Lying Leg Curl (+ Seated Leg Curl swap)
+--   Block 5 = Standing Calf Raise (straight)
+--
+-- Block 1: Squat, with Hack Squat as a swap alternate in the same slot
+INSERT INTO exercise_for_workout_template (id, workout_template_id, exercise_id, notes, block_ordering, within_block_ordering, exercise_index) VALUES
+('app-01KE6BHGM74EZENC8XT1JEG60X', 'app-01KE6BHGJK7ST9KXA9FBBRW9X0', 'app-01KE649S6V1B1B5CBZAAFF2XPG', 'Main compound - barbell squat', 1, 1, 0),
+('app-01KXVSFWXPE31JQ0RTM2B63YEJ', 'app-01KE6BHGJK7ST9KXA9FBBRW9X0', 'app-01KE649RR5VDFXKEABEK2YZ2AK', 'Variant - hack squat', 1, 1, 1);
 
--- Exercise 2: Romanian Deadlift
-INSERT INTO exercise_for_workout_template (id, workout_template_id, exercise_id, notes, ordering, exercise_index) VALUES
-('app-01KE6BHGMB9QA6B9GSNKVPNXM2', 'app-01KE6BHGJK7ST9KXA9FBBRW9X0', 'app-01KE649S2FQP180BFDNG1DWJJC', 'Hamstring focus', 2, 0);
+-- Block 2: Romanian Deadlift
+INSERT INTO exercise_for_workout_template (id, workout_template_id, exercise_id, notes, block_ordering, within_block_ordering, exercise_index) VALUES
+('app-01KE6BHGMB9QA6B9GSNKVPNXM2', 'app-01KE6BHGJK7ST9KXA9FBBRW9X0', 'app-01KE649S2FQP180BFDNG1DWJJC', 'Hamstring focus', 2, 1, 0);
 
--- Exercise 3: Leg Press
-INSERT INTO exercise_for_workout_template (id, workout_template_id, exercise_id, notes, ordering, exercise_index) VALUES
-('app-01KE6BHGMF984MN7WVGN7JS9H5', 'app-01KE6BHGJK7ST9KXA9FBBRW9X0', 'app-01KE649RXBXE2BP0SE9JRDWP3Q', 'Quad volume', 3, 0);
+-- Block 3: Leg Press
+INSERT INTO exercise_for_workout_template (id, workout_template_id, exercise_id, notes, block_ordering, within_block_ordering, exercise_index) VALUES
+('app-01KE6BHGMF984MN7WVGN7JS9H5', 'app-01KE6BHGJK7ST9KXA9FBBRW9X0', 'app-01KE649RXBXE2BP0SE9JRDWP3Q', 'Quad volume', 3, 1, 0);
 
--- Exercise 4: Leg Extension
-INSERT INTO exercise_for_workout_template (id, workout_template_id, exercise_id, notes, ordering, exercise_index) VALUES
-('app-01KE6BHGMKY14NQQ0WXK4JA70H', 'app-01KE6BHGJK7ST9KXA9FBBRW9X0', 'app-01KE649RX8CSNX00Z0YBY7B3HE', 'Quad isolation', 4, 0);
+-- Block 4, within 1: Leg Extension, with Sissy Squat as a swap alternate (superset leg 1)
+INSERT INTO exercise_for_workout_template (id, workout_template_id, exercise_id, notes, block_ordering, within_block_ordering, exercise_index) VALUES
+('app-01KE6BHGMKY14NQQ0WXK4JA70H', 'app-01KE6BHGJK7ST9KXA9FBBRW9X0', 'app-01KE649RX8CSNX00Z0YBY7B3HE', 'Quad isolation - superset leg 1', 4, 1, 0),
+('app-01KXVSFWXSYWDGG98MKMTAJVXX', 'app-01KE6BHGJK7ST9KXA9FBBRW9X0', 'app-01KE649S5989CZAE20316BV31F', 'Variant - sissy squat', 4, 1, 1);
 
--- Exercise 5: Lying Leg Curl
-INSERT INTO exercise_for_workout_template (id, workout_template_id, exercise_id, notes, ordering, exercise_index) VALUES
-('app-01KE6BHGMPHH8MCXRA29JW2KH2', 'app-01KE6BHGJK7ST9KXA9FBBRW9X0', 'app-01KE649RXQFR6VPGJ7WTFSPGX3', 'Hamstring isolation', 5, 0);
+-- Block 4, within 2: Lying Leg Curl, with Seated Leg Curl as a swap alternate (superset leg 2)
+INSERT INTO exercise_for_workout_template (id, workout_template_id, exercise_id, notes, block_ordering, within_block_ordering, exercise_index) VALUES
+('app-01KE6BHGMPHH8MCXRA29JW2KH2', 'app-01KE6BHGJK7ST9KXA9FBBRW9X0', 'app-01KE649RXQFR6VPGJ7WTFSPGX3', 'Hamstring isolation - superset leg 2', 4, 2, 0),
+('app-01KXVSFWXWWNT90SXTTX47Y53R', 'app-01KE6BHGJK7ST9KXA9FBBRW9X0', 'app-01KE649S37AZPK1G55Z5DDD5GA', 'Variant - seated leg curl', 4, 2, 1);
 
--- Exercise 6: Standing Calf Raise
-INSERT INTO exercise_for_workout_template (id, workout_template_id, exercise_id, notes, ordering, exercise_index) VALUES
-('app-01KE6BHGMT5F11T4X73NYMZHSY', 'app-01KE6BHGJK7ST9KXA9FBBRW9X0', 'app-01KE649S7BB142PVQVKB0865YW', 'Calf work', 6, 0);
+-- Block 5: Standing Calf Raise
+INSERT INTO exercise_for_workout_template (id, workout_template_id, exercise_id, notes, block_ordering, within_block_ordering, exercise_index) VALUES
+('app-01KE6BHGMT5F11T4X73NYMZHSY', 'app-01KE6BHGJK7ST9KXA9FBBRW9X0', 'app-01KE649S7BB142PVQVKB0865YW', 'Calf work', 5, 1, 0);
 
 -- Step 5: Create exercise set templates for Push Day
 -- Bench Press - 4 sets
@@ -132,21 +143,62 @@ INSERT INTO workout (id, template_id, start_time, stop_time) VALUES
 INSERT INTO workout (id, template_id, start_time, stop_time) VALUES
 ('app-01KE6BHGN8KZT7FNXFQM9ZAQJY', 'app-01KE6BHGJAFFKEAQ7X760EBPHJ', strftime('%s', 'now', '-30 minutes'), NULL);
 
--- Step 7: Create exercise sets for Workout 1 (Push Day - completed)
--- Bench Press - 4 sets (used exercise_index 0 - flat bench)
--- Set 1 is explicitly set_type='warmup' to match the template's warmup row;
--- the rest fall through to the 'regularSet' default.
-INSERT INTO exercise_set (id, rep_count, weight, duration, rir, rpe, unit, ordering, set_type, notes, rest_time, workout_id, exercise_id, exercise_for_workout_template_id, is_completed) VALUES
-('app-01KE6BHH1NT682RRXXBGBFSCYK', 10, 135, NULL, 3, 7, 'lbs', 1, 'warmup',     'Warmup felt good', 120, 'app-01KE6BHGMXHSVYM0R5GAQW7FQD', 'app-01KE649R3DHD6HFEM69RKAA5BE', 'app-01KE6BHGJQWAR3VA76ZZF5CSJG', 1),
-('app-01KE6BHH1S0AGSSC46M25YKRH9',  8, 185, NULL, 2, 8, 'lbs', 2, 'regularSet', NULL,                180, 'app-01KE6BHGMXHSVYM0R5GAQW7FQD', 'app-01KE649R3DHD6HFEM69RKAA5BE', 'app-01KE6BHGJQWAR3VA76ZZF5CSJG', 1),
-('app-01KE6BHH1WNV37CJ432PJPXHCS',  7, 205, NULL, 1, 9, 'lbs', 3, 'regularSet', 'One less rep than planned', 180, 'app-01KE6BHGMXHSVYM0R5GAQW7FQD', 'app-01KE649R3DHD6HFEM69RKAA5BE', 'app-01KE6BHGJQWAR3VA76ZZF5CSJG', 1),
-('app-01KE6BHH20ZGW9GQ88VGEX3P3J',  6, 205, NULL, 1, 9, 'lbs', 4, 'regularSet', NULL,                180, 'app-01KE6BHGMXHSVYM0R5GAQW7FQD', 'app-01KE649R3DHD6HFEM69RKAA5BE', 'app-01KE6BHGJQWAR3VA76ZZF5CSJG', 1);
+-- Step 7a: Create the record-side exercise list for Workout 1 (Push Day).
+-- Each workout_exercise carries what was actually done (exercise_id), this
+-- session's block/leg order, and a nullable provenance pointer back to the
+-- plan slot the user picked (source_variant_id).
+INSERT INTO workout_exercise (id, workout_id, exercise_id, block_ordering, within_block_ordering, notes, source_variant_id) VALUES
+('app-01KXVSFWY25G3Q3QXCH7YG8GTF', 'app-01KE6BHGMXHSVYM0R5GAQW7FQD', 'app-01KE649R3DHD6HFEM69RKAA5BE', 1, 1, 'Flat bench', 'app-01KE6BHGJQWAR3VA76ZZF5CSJG'),
+('app-01KXVSFWY514F6CXQ5WP18RPJC', 'app-01KE6BHGMXHSVYM0R5GAQW7FQD', 'app-01KE649RYS8PJ2SP1BEPEEE4T9', 2, 1, NULL,        'app-01KE6BHGK0KF9CCWHXDNQDCEPN');
+
+-- Step 7b: Create exercise sets for Workout 1, hanging off workout_exercise.
+-- Bench Press - 4 sets. Set 1 is explicitly set_type='warmup'; the rest fall
+-- through to the 'regularSet' default.
+INSERT INTO exercise_set (id, workout_exercise_id, rep_count, weight, duration, rir, rpe, unit, ordering, set_type, notes, rest_time, is_completed) VALUES
+('app-01KE6BHH1NT682RRXXBGBFSCYK', 'app-01KXVSFWY25G3Q3QXCH7YG8GTF', 10, 135, NULL, 3, 7, 'lbs', 1, 'warmup',     'Warmup felt good',          120, 1),
+('app-01KE6BHH1S0AGSSC46M25YKRH9', 'app-01KXVSFWY25G3Q3QXCH7YG8GTF',  8, 185, NULL, 2, 8, 'lbs', 2, 'regularSet', NULL,                        180, 1),
+('app-01KE6BHH1WNV37CJ432PJPXHCS', 'app-01KXVSFWY25G3Q3QXCH7YG8GTF',  7, 205, NULL, 1, 9, 'lbs', 3, 'regularSet', 'One less rep than planned', 180, 1),
+('app-01KE6BHH20ZGW9GQ88VGEX3P3J', 'app-01KXVSFWY25G3Q3QXCH7YG8GTF',  6, 205, NULL, 1, 9, 'lbs', 4, 'regularSet', NULL,                        180, 1);
 
 -- Overhead Press - 3 sets
-INSERT INTO exercise_set (id, rep_count, weight, duration, rir, rpe, unit, ordering, notes, rest_time, workout_id, exercise_id, exercise_for_workout_template_id, is_completed) VALUES
-('app-01KE6BHH24YY28KAVJQHG5GX8G', 10, 95, NULL, 2, 7, 'lbs', 1, NULL, 150, 'app-01KE6BHGMXHSVYM0R5GAQW7FQD', 'app-01KE649RYS8PJ2SP1BEPEEE4T9', 'app-01KE6BHGK0KF9CCWHXDNQDCEPN', 1),
-('app-01KE6BHH27WB0RQ4BRN014ZH7B', 8, 115, NULL, 1, 8, 'lbs', 2, NULL, 150, 'app-01KE6BHGMXHSVYM0R5GAQW7FQD', 'app-01KE649RYS8PJ2SP1BEPEEE4T9', 'app-01KE6BHGK0KF9CCWHXDNQDCEPN', 1),
-('app-01KE6BHH2BCRBT3SA26JMYGS7R', 6, 125, NULL, 0, 9, 'lbs', 3, 'Last rep was tough', 150, 'app-01KE6BHGMXHSVYM0R5GAQW7FQD', 'app-01KE649RYS8PJ2SP1BEPEEE4T9', 'app-01KE6BHGK0KF9CCWHXDNQDCEPN', 1);
+INSERT INTO exercise_set (id, workout_exercise_id, rep_count, weight, duration, rir, rpe, unit, ordering, notes, rest_time, is_completed) VALUES
+('app-01KE6BHH24YY28KAVJQHG5GX8G', 'app-01KXVSFWY514F6CXQ5WP18RPJC', 10, 95, NULL, 2, 7, 'lbs', 1, NULL, 150, 1),
+('app-01KE6BHH27WB0RQ4BRN014ZH7B', 'app-01KXVSFWY514F6CXQ5WP18RPJC', 8, 115, NULL, 1, 8, 'lbs', 2, NULL, 150, 1),
+('app-01KE6BHH2BCRBT3SA26JMYGS7R', 'app-01KXVSFWY514F6CXQ5WP18RPJC', 6, 125, NULL, 0, 9, 'lbs', 3, 'Last rep was tough', 150, 1);
+
+-- Step 7c: Workout 5 - a Leg Day that ran the block-4 superset with SWAPPED legs.
+-- The user picked Sissy Squat (over Leg Extension) and Seated Leg Curl (over
+-- Lying Leg Curl), and ran the pair for 3 rounds after a straight Back Squat.
+-- This exercises supersets (same block, different within) and swapped variants
+-- (workout_exercise.exercise_id differs from the slot default; source_variant_id
+-- points at the picked swap row).
+INSERT INTO workout (id, template_id, start_time, stop_time) VALUES
+('app-01KXVSFWXZG9HSH5TYPB4Q4A5D', 'app-01KE6BHGJK7ST9KXA9FBBRW9X0', strftime('%s', 'now', '-4 days', '+9 hours'), strftime('%s', 'now', '-4 days', '+10 hours', '+20 minutes'));
+
+-- Record-side exercise list: block 1 = Back Squat (straight); block 2 = superset
+-- of Sissy Squat (within 1) + Seated Leg Curl (within 2).
+INSERT INTO workout_exercise (id, workout_id, exercise_id, block_ordering, within_block_ordering, notes, source_variant_id) VALUES
+('app-01KXVSFWY8BA0FMR9Q3CQ8A5MW', 'app-01KXVSFWXZG9HSH5TYPB4Q4A5D', 'app-01KE649S6V1B1B5CBZAAFF2XPG', 1, 1, NULL,               'app-01KE6BHGM74EZENC8XT1JEG60X'),
+('app-01KXVSFWYA0YMN718KBG7AQ4FN', 'app-01KXVSFWXZG9HSH5TYPB4Q4A5D', 'app-01KE649S5989CZAE20316BV31F', 2, 1, 'Swapped in',       'app-01KXVSFWXSYWDGG98MKMTAJVXX'),
+('app-01KXVSFWYE47RQWYGD5MV5SB9Q', 'app-01KXVSFWXZG9HSH5TYPB4Q4A5D', 'app-01KE649S37AZPK1G55Z5DDD5GA', 2, 2, 'Superset partner', 'app-01KXVSFWXWWNT90SXTTX47Y53R');
+
+-- Back Squat - 3 straight sets
+INSERT INTO exercise_set (id, workout_exercise_id, rep_count, weight, duration, rir, rpe, unit, ordering, set_type, notes, rest_time, is_completed) VALUES
+('app-01KXVSFWYHC32G551MZ4ZT3NHW', 'app-01KXVSFWY8BA0FMR9Q3CQ8A5MW', 8, 100, NULL, 2, 8, 'kg', 1, 'regularSet', NULL, 180, 1),
+('app-01KXVSFWYM5ME0QRVR8KC5A0YM', 'app-01KXVSFWY8BA0FMR9Q3CQ8A5MW', 8, 100, NULL, 1, 8, 'kg', 2, 'regularSet', NULL, 180, 1),
+('app-01KXVSFWYQ0YFA63ZY9QRYKYQQ', 'app-01KXVSFWY8BA0FMR9Q3CQ8A5MW', 6, 105, NULL, 1, 9, 'kg', 3, 'regularSet', 'PR attempt', 180, 1);
+
+-- Sissy Squat - 3 rounds of the superset (ordering doubles as round number)
+INSERT INTO exercise_set (id, workout_exercise_id, rep_count, weight, duration, rir, rpe, unit, ordering, set_type, notes, rest_time, is_completed) VALUES
+('app-01KXVSFWYSKBH2VS7QH6HF8X94', 'app-01KXVSFWYA0YMN718KBG7AQ4FN', 12, 0, NULL, 2, 8, 'kg', 1, 'regularSet', NULL, 30, 1),
+('app-01KXVSFWYWM5XCAQ98JFAY3CP9', 'app-01KXVSFWYA0YMN718KBG7AQ4FN', 10, 0, NULL, 1, 9, 'kg', 2, 'regularSet', NULL, 30, 1),
+('app-01KXVSFWYZ8JZ53BCZCS7FDPAR', 'app-01KXVSFWYA0YMN718KBG7AQ4FN', 10, 0, NULL, 0, 9, 'kg', 3, 'regularSet', NULL, 30, 1);
+
+-- Seated Leg Curl - 3 rounds of the superset (same rounds as Sissy Squat)
+INSERT INTO exercise_set (id, workout_exercise_id, rep_count, weight, duration, rir, rpe, unit, ordering, set_type, notes, rest_time, is_completed) VALUES
+('app-01KXVSFWZ2A645MXH9JB2EM6FR', 'app-01KXVSFWYE47RQWYGD5MV5SB9Q', 12, 45, NULL, 2, 8, 'kg', 1, 'regularSet', NULL, 90, 1),
+('app-01KXVSFWZ4HJT0QZNQTTBHSXZX', 'app-01KXVSFWYE47RQWYGD5MV5SB9Q', 11, 45, NULL, 1, 8, 'kg', 2, 'regularSet', NULL, 90, 1),
+('app-01KXVSFWZ7KSSS4AWRA100WSK4', 'app-01KXVSFWYE47RQWYGD5MV5SB9Q', 10, 45, NULL, 1, 9, 'kg', 3, 'regularSet', NULL, 90, 1);
 
 -- Step 8: Body measurements — 30 daily weight entries trending 85.2 → 81.8 kg
 -- over 90 days, plus circumference snapshots every ~30 days.
