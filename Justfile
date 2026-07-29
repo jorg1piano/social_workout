@@ -59,10 +59,26 @@ db-clean:
 # Nuke the dev DB and rebuild from scratch with seed data
 db-reset: db-clean db
 
+# ---------- Prototype: model explorer web app ----------
+
+# Run the Go web app that explores the plan-vs-record model. Bootstraps its own
+# app.db from sqlite/schema.sql + exercises_complete.sql on first run, then
+# serves a UI on http://localhost:8080 to build plans and run/record sessions.
+web:
+    cd prototypes/model-explorer && go run . -sqlite-dir ../../sqlite
+
+# Build the model-explorer binary.
+web-build:
+    cd prototypes/model-explorer && go build -o model-explorer .
+
+# Wipe the explorer's local DB so it re-bootstraps fresh from sqlite/.
+web-reset:
+    rm -f prototypes/model-explorer/app.db prototypes/model-explorer/app.db-*
+
 # ---------- Mobile ----------
 
 # Copy canonical SQL into mobile/assets/sqlite/ so the Flutter app boots
-# from the same schema + seed data as the backend. Run this any time
+# from the same schema + seed data as the model explorer. Run this any time
 # sqlite/schema.sql, exercises_complete.sql, or new-test-data.sql changes.
 copy-schema:
     @mkdir -p mobile/assets/sqlite

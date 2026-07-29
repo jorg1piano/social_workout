@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Social Workout · model explorer</title>
+<style>
+  :root{
+    --bg:#0f1216; --surface:#191d23; --surface2:#20262e; --border:#2a313a;
+    --ink:#e7eaed; --muted:#9aa2aa; --plan:#e2975a; --record:#33bfae; --accent:#5b8cff;
+    --radius:9px; --mono:ui-monospace,Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif}
+  header{padding:1.1rem 1.4rem;border-bottom:1px solid var(--border);display:flex;align-items:baseline;gap:1rem;flex-wrap:wrap}
+  header h1{font-size:1.15rem;margin:0;font-weight:640}
+  header .sub{color:var(--muted);font-size:.85rem}
+  nav{display:flex;gap:.3rem;padding:.6rem 1rem;border-bottom:1px solid var(--border);flex-wrap:wrap}
+  nav button{background:none;border:1px solid transparent;color:var(--muted);padding:.4rem .8rem;border-radius:100px;cursor:pointer;font-size:.9rem}
+  nav button.active{background:var(--surface2);color:var(--ink);border-color:var(--border)}
+  main{max-width:1000px;margin:0 auto;padding:1.4rem}
+  .tab{display:none} .tab.active{display:block}
+  h2{font-size:1.05rem;margin:0 0 .8rem}
+  .row{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.1rem;margin-bottom:.9rem}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem}
+  @media(max-width:760px){.grid{grid-template-columns:1fr}}
+  label{display:block;font-size:.78rem;color:var(--muted);margin:.5rem 0 .15rem}
+  input,select,textarea{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--ink);border-radius:6px;padding:.45rem .55rem;font-size:.9rem}
+  input[type=checkbox]{width:auto}
+  button.act{background:var(--accent);border:none;color:#fff;padding:.5rem .9rem;border-radius:6px;cursor:pointer;font-size:.88rem}
+  button.ghost{background:var(--surface2);border:1px solid var(--border);color:var(--ink);padding:.35rem .7rem;border-radius:6px;cursor:pointer;font-size:.82rem}
+  button.mini{padding:.2rem .5rem;font-size:.78rem;border-radius:5px;background:var(--surface2);border:1px solid var(--border);color:var(--muted);cursor:pointer}
+  .list button{width:100%;text-align:left;background:var(--surface);border:1px solid var(--border);color:var(--ink);border-radius:7px;padding:.55rem .7rem;margin-bottom:.4rem;cursor:pointer}
+  .list button.sel{border-color:var(--accent)}
+  .pill{font:600 .68rem var(--mono);letter-spacing:.05em;padding:.15em .5em;border-radius:100px;text-transform:uppercase}
+  .pill.plan{background:#3a2a17;color:var(--plan)} .pill.record{background:#0f2f2b;color:var(--record)}
+  .muted{color:var(--muted)} .mono{font-family:var(--mono);font-size:.8rem}
+  .block{border:1px dashed var(--border);border-radius:8px;padding:.6rem .7rem;margin:.5rem 0}
+  .block h4{margin:.1rem 0 .5rem;font-size:.8rem;color:var(--muted);font-weight:600;letter-spacing:.04em}
+  .slot{background:var(--surface2);border-radius:6px;padding:.45rem .6rem;margin:.35rem 0}
+  .variant{display:flex;gap:.5rem;align-items:center;font-size:.88rem;padding:.15rem 0}
+  .variant.swap{color:var(--muted);padding-left:1rem}
+  table{width:100%;border-collapse:collapse;font-size:.85rem;margin-top:.4rem}
+  th,td{text-align:left;padding:.35rem .5rem;border-bottom:1px solid var(--border)}
+  th{color:var(--muted);font:600 .7rem/1 var(--mono);letter-spacing:.05em;text-transform:uppercase}
+  tr.done td{color:var(--record)}
+  .toast{position:fixed;bottom:1rem;left:50%;transform:translateX(-50%);background:var(--surface2);border:1px solid var(--border);padding:.5rem .9rem;border-radius:8px;font-size:.85rem;opacity:0;transition:.2s;pointer-events:none}
+  .toast.show{opacity:1}
+  .err{color:#ff8080}
+  small.hint{color:var(--muted);font-size:.78rem}
+</style>
+</head>
+<body>
+<header>
+  <h1>Social Workout <span class="muted">· model explorer</span></h1>
+  <span class="sub">Build the <span class="pill plan">plan</span>, run it, keep the <span class="pill record">record</span>.</span>
+</header>
+<nav>
+  <button data-tab="exercises" class="active">Exercises</button>
+  <button data-tab="plans">Plans</button>
+  <button data-tab="run">Run a session</button>
+  <button data-tab="history">History</button>
+</nav>
+<main>
+
+  <!-- EXERCISES -->
+  <section id="tab-exercises" class="tab active">
+    <div class="grid">
+      <div>
+        <h2>Exercise library</h2>
+        <div class="list" id="exList"></div>
+      </div>
+      <div>
+        <div class="card">
+          <h2>New exercise <span class="pill plan">definition</span></h2>
+          <label>Name</label><input id="exName" placeholder="e.g. Bulgarian Split Squat">
+          <label>Description</label><input id="exDesc" placeholder="optional">
+          <div class="row" style="margin-top:.8rem"><button class="act" onclick="createExercise()">Add exercise</button></div>
+          <p><small class="hint">Exercises are shared definitions. Renaming one propagates everywhere — including into past records, which is intentional.</small></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PLANS -->
+  <section id="tab-plans" class="tab">
+    <div class="grid">
+      <div>
+        <h2>Templates <span class="pill plan">plan</span></h2>
+        <div class="list" id="tplList"></div>
+        <div class="card">
+          <label>New template name</label><input id="tplName" placeholder="e.g. Leg Day">
+          <label>Description</label><input id="tplDesc" placeholder="optional">
+          <div class="row" style="margin-top:.7rem"><button class="act" onclick="createTemplate()">Create plan</button></div>
+        </div>
+      </div>
+      <div>
+        <h2 id="tplTitle">Select a template</h2>
+        <div id="tplDetail"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RUN -->
+  <section id="tab-run" class="tab">
+    <h2>Start from a plan</h2>
+    <div class="row">
+      <select id="runTpl" style="max-width:280px"></select>
+      <button class="ghost" onclick="loadPicker()">Load slots</button>
+    </div>
+    <div id="picker" style="margin-top:1rem"></div>
+    <div id="runner" style="margin-top:1.2rem"></div>
+  </section>
+
+  <!-- HISTORY -->
+  <section id="tab-history" class="tab">
+    <div class="grid">
+      <div>
+        <h2>Workouts <span class="pill record">record</span></h2>
+        <div class="list" id="woList"></div>
+      </div>
+      <div>
+        <h2 id="woTitle">Select a workout</h2>
+        <div id="woDetail"></div>
+        <p><small class="hint">This view renders purely from <span class="mono">workout → workout_exercise → exercise_set</span>. No template join — try deleting the source template and it still reads back identically.</small></p>
+      </div>
+    </div>
+  </section>
+
+</main>
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = s => document.querySelector(s);
+const api = async (m,u,b) => {
+  const r = await fetch(u,{method:m,headers:{'Content-Type':'application/json'},body:b?JSON.stringify(b):undefined});
+  const t = await r.text(); const j = t?JSON.parse(t):{};
+  if(!r.ok) throw new Error(j.error||('HTTP '+r.status));
+  return j;
+};
+const toast = (m,err) => { const e=$('#toast'); e.textContent=m; e.className='toast show'+(err?' err':''); setTimeout(()=>e.className='toast',1900); };
+const num = v => v===''||v==null?null:Number(v);
+
+// tabs
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x===b));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.id==='tab-'+b.dataset.tab));
+  if(b.dataset.tab==='exercises') loadExercises();
+  if(b.dataset.tab==='plans') loadTemplates();
+  if(b.dataset.tab==='run') loadRunTemplates();
+  if(b.dataset.tab==='history') loadWorkouts();
+});
+
+// ---- exercises ----
+let EXERCISES = [];
+async function loadExercises(){
+  EXERCISES = await api('GET','/api/exercises');
+  $('#exList').innerHTML = EXERCISES.map(e=>
+    `<button><b>${esc(e.name)}</b>${e.description?` <span class="muted">— ${esc(e.description)}</span>`:''}<div class="mono muted">${e.id}</div></button>`).join('')
+    || '<p class="muted">No exercises yet.</p>';
+}
+async function createExercise(){
+  const name=$('#exName').value.trim(); if(!name) return toast('name required',true);
+  try{ await api('POST','/api/exercises',{name,description:$('#exDesc').value.trim()||null});
+    $('#exName').value='';$('#exDesc').value=''; toast('exercise added'); loadExercises();
+  }catch(e){toast(e.message,true)}
+}
+
+// ---- templates / plan tree ----
+let TEMPLATES=[], CUR_TPL=null;
+async function loadTemplates(){
+  TEMPLATES = await api('GET','/api/templates');
+  if(!EXERCISES.length) await loadExercises();
+  $('#tplList').innerHTML = TEMPLATES.map(t=>
+    `<button class="${CUR_TPL===t.id?'sel':''}" onclick="openTemplate('${t.id}')"><b>${esc(t.name)}</b>${t.archived_at?' <span class="pill plan">archived</span>':''}</button>`).join('')
+    || '<p class="muted">No templates yet.</p>';
+}
+async function createTemplate(){
+  const name=$('#tplName').value.trim(); if(!name) return toast('name required',true);
+  const t=await api('POST','/api/templates',{name,description:$('#tplDesc').value.trim()||null});
+  $('#tplName').value='';$('#tplDesc').value=''; toast('plan created'); await loadTemplates(); openTemplate(t.id);
+}
+async function openTemplate(id){
+  CUR_TPL=id; loadTemplates();
+  const t=await api('GET','/api/templates/'+id);
+  $('#tplTitle').textContent=t.name+' — plan tree';
+  // group variants by block, then within
+  const blocks={};
+  t.variants.forEach(v=>{ (blocks[v.block_ordering] ??= {})[v.within_block_ordering] ??= []; blocks[v.block_ordering][v.within_block_ordering].push(v); });
+  let html='';
+  Object.keys(blocks).sort((a,b)=>a-b).forEach(bk=>{
+    const slots=blocks[bk], withins=Object.keys(slots).sort((a,b)=>a-b);
+    const isSuperset=withins.length>1;
+    html+=`<div class="block"><h4>Block ${bk} ${isSuperset?'· superset':''}</h4>`;
+    withins.forEach(wn=>{
+      html+=`<div class="slot"><div class="muted mono">slot ${bk}.${wn}</div>`;
+      slots[wn].sort((a,b)=>a.exercise_index-b.exercise_index).forEach(v=>{
+        html+=`<div class="variant ${v.exercise_index>0?'swap':''}">${v.exercise_index>0?'↳ ':''}<b>${esc(v.exercise_name)}</b>
+          <span class="muted mono">idx ${v.exercise_index}</span>
+          <span class="muted">· ${v.planned_sets.length} planned set(s)</span>
+          <button class="mini" onclick="promptSet('${v.id}')">+ set</button></div>`;
+      });
+      html+=`</div>`;
+    });
+    html+=`</div>`;
+  });
+  // add-variant form
+  html+=`<div class="card"><h4 style="margin-top:0">Add exercise to a slot</h4>
+    <div class="row">
+      <div style="flex:2"><label>Exercise</label><select id="avEx">${EXERCISES.map(e=>`<option value="${e.id}">${esc(e.name)}</option>`).join('')}</select></div>
+      <div><label>Block</label><input id="avBlock" type="number" value="1" min="1" style="width:70px"></div>
+      <div><label>Within</label><input id="avWithin" type="number" value="1" min="1" style="width:70px"></div>
+      <div><label>Variant idx</label><input id="avIdx" type="number" value="0" min="0" style="width:80px"></div>
+    </div>
+    <div class="row" style="margin-top:.6rem"><button class="act" onclick="addVariant('${id}')">Add to plan</button>
+    <small class="hint">within&gt;1 in the same block = superset · idx&gt;0 = swap alternate for that slot</small></div></div>`;
+  $('#tplDetail').innerHTML=html;
+}
+async function addVariant(tplId){
+  try{
+    await api('POST','/api/templates/'+tplId+'/variants',{
+      exercise_id:$('#avEx').value, block_ordering:num($('#avBlock').value),
+      within_block_ordering:num($('#avWithin').value), exercise_index:num($('#avIdx').value)});
+    toast('variant added'); openTemplate(tplId);
+  }catch(e){ toast(e.message.includes('UNIQUE')?'slot/exercise already taken (swap-back reactivates instead)':e.message,true); }
+}
+async function promptSet(variantId){
+  const reps=prompt('Planned reps?','8'); if(reps===null) return;
+  const weight=prompt('Planned weight? (blank = bodyweight/none)','');
+  const ord=prompt('Set number (ordering)?','1');
+  try{
+    await api('POST','/api/variants/'+variantId+'/set-templates',
+      {rep_count:num(reps),weight:num(weight),unit:'kg',ordering:num(ord)||1,set_type:'regularSet',rest_time:90});
+    toast('planned set added'); if(CUR_TPL) openTemplate(CUR_TPL);
+  }catch(e){toast(e.message,true)}
+}
+
+// ---- run a session ----
+async function loadRunTemplates(){
+  const ts=await api('GET','/api/templates');
+  $('#runTpl').innerHTML=ts.filter(t=>!t.archived_at).map(t=>`<option value="${t.id}">${esc(t.name)}</option>`).join('');
+}
+async function loadPicker(){
+  const id=$('#runTpl').value; if(!id) return;
+  const t=await api('GET','/api/templates/'+id);
+  const blocks={};
+  t.variants.filter(v=>!v.archived_at).forEach(v=>{ (blocks[v.block_ordering] ??= {})[v.within_block_ordering] ??= []; blocks[v.block_ordering][v.within_block_ordering].push(v); });
+  let html=`<div class="card"><h2>Pick one exercise per slot</h2><small class="hint">Each choice resolves the plan's swap variants into a concrete record row.</small>`;
+  Object.keys(blocks).sort((a,b)=>a-b).forEach(bk=>{
+    const withins=Object.keys(blocks[bk]).sort((a,b)=>a-b);
+    html+=`<div class="block"><h4>Block ${bk} ${withins.length>1?'· superset':''}</h4>`;
+    withins.forEach(wn=>{
+      html+=`<div class="slot"><div class="muted mono">slot ${bk}.${wn}</div>`;
+      blocks[bk][wn].sort((a,b)=>a.exercise_index-b.exercise_index).forEach((v,i)=>{
+        html+=`<label class="variant" style="cursor:pointer"><input type="radio" name="slot-${bk}-${wn}" value="${v.id}" ${i===0?'checked':''}> ${esc(v.exercise_name)} <span class="muted mono">idx ${v.exercise_index}</span></label>`;
+      });
+      html+=`</div>`;
+    });
+    html+=`</div>`;
+  });
+  html+=`<button class="act" onclick="startWorkout('${id}')">Start session →</button></div>`;
+  $('#picker').innerHTML=html; $('#runner').innerHTML='';
+}
+async function startWorkout(tplId){
+  const picks=[...document.querySelectorAll('#picker input[type=radio]:checked')].map(r=>r.value);
+  if(!picks.length) return toast('add slots to the plan first',true);
+  try{
+    const w=await api('POST','/api/workouts/start',{template_id:tplId,picks});
+    $('#picker').innerHTML=''; toast('session started'); renderRunner(w.id);
+  }catch(e){toast(e.message,true)}
+}
+async function renderRunner(wid){
+  const w=await api('GET','/api/workouts/'+wid);
+  let html=`<div class="card"><div class="row" style="justify-content:space-between">
+    <h2 style="margin:0">Running: ${esc(w.template_name||'(no template)')} <span class="pill record">record</span></h2>
+    <button class="ghost" onclick="finishWorkout('${wid}')">Finish session</button></div>`;
+  html+=renderExercises(w,true);
+  html+=`</div>`;
+  $('#runner').innerHTML=html;
+}
+function renderExercises(w, editable){
+  let html='';
+  let lastBlock=null;
+  w.exercises.forEach(ex=>{
+    if(ex.block_ordering!==lastBlock){ if(lastBlock!==null) html+='</div>'; html+=`<div class="block"><h4>Block ${ex.block_ordering}</h4>`; lastBlock=ex.block_ordering; }
+    html+=`<div class="slot"><div class="row" style="justify-content:space-between">
+      <b>${esc(ex.exercise_name)}</b>
+      <span class="muted mono">${ex.block_ordering}.${ex.within_block_ordering} ${ex.source_variant_id?'· from plan':'· ad-hoc (no provenance)'}</span></div>`;
+    html+=`<table><thead><tr><th>set</th><th>reps</th><th>kg</th><th>done</th>${editable?'<th></th>':''}</tr></thead><tbody>`;
+    ex.sets.forEach(st=>{
+      html+=`<tr class="${st.is_completed?'done':''}">
+        <td class="mono">${st.ordering??''}${st.attempt_number>1?'·a'+st.attempt_number:''}</td>
+        <td>${editable?`<input value="${st.rep_count??''}" style="width:60px" onchange="patchSet('${st.id}','${w.id}',{rep_count:num(this.value)})">`:(st.rep_count??'')}</td>
+        <td>${editable?`<input value="${st.weight??''}" style="width:64px" onchange="patchSet('${st.id}','${w.id}',{weight:num(this.value)})">`:(st.weight??'')}</td>
+        <td>${editable?`<input type="checkbox" ${st.is_completed?'checked':''} onchange="patchSet('${st.id}','${w.id}',{is_completed:this.checked})">`:(st.is_completed?'✓':'')}</td>
+        ${editable?`<td><button class="mini" onclick="delSet('${st.id}','${w.id}')">✕</button></td>`:''}</tr>`;
+    });
+    html+=`</tbody></table>`;
+    if(editable) html+=`<button class="mini" style="margin-top:.4rem" onclick="addSet('${ex.id}','${w.id}',${ex.sets.length+1})">+ add set (ad-hoc)</button>`;
+    html+=`</div>`;
+  });
+  if(lastBlock!==null) html+='</div>';
+  return html||'<p class="muted">No exercises.</p>';
+}
+async function patchSet(id,wid,body){ try{ await api('PATCH','/api/sets/'+id,body); }catch(e){toast(e.message,true)} }
+async function addSet(weId,wid,ord){ try{ await api('POST','/api/workout-exercises/'+weId+'/sets',{ordering:ord,set_type:'regularSet',unit:'kg'}); renderRunner(wid); }catch(e){toast(e.message,true)} }
+async function delSet(id,wid){ try{ await api('DELETE','/api/sets/'+id); renderRunner(wid); }catch(e){toast(e.message,true)} }
+async function finishWorkout(wid){ await api('POST','/api/workouts/'+wid+'/finish'); toast('session finished'); $('#runner').innerHTML=''; }
+
+// ---- history ----
+async function loadWorkouts(){
+  const ws=await api('GET','/api/workouts');
+  $('#woList').innerHTML=ws.map(w=>{
+    const when=w.start_time?new Date(w.start_time*1000).toLocaleString():'—';
+    const status=w.stop_time?'done':(w.start_time?'in progress':'');
+    return `<button onclick="openWorkout('${w.id}')"><b>${esc(w.template_name||'(no template)')}</b> <span class="muted">· ${w.exercise_count} ex · ${status}</span><div class="mono muted">${when}</div></button>`;
+  }).join('')||'<p class="muted">No workouts yet — run a session.</p>';
+}
+async function openWorkout(id){
+  const w=await api('GET','/api/workouts/'+id);
+  $('#woTitle').textContent=(w.template_name||'(no template)')+' — record render';
+  $('#woDetail').innerHTML=`<div class="card">${renderExercises(w,false)}</div>`;
+}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+loadExercises();
+</script>
+</body>
+</html>
