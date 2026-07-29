@@ -65,7 +65,7 @@ CREATE TABLE media_item (
   duration_ms   INTEGER,            -- NULL for images
   width         INTEGER,
   height        INTEGER,
-  byte_size     INTEGER,            -- of the plaintext, post-transcode
+  byte_size     INTEGER,            -- of the plaintext, as encoded
   content_hash  TEXT,               -- keyed BLAKE3 of plaintext, hex (see §6.4)
 
   -- Subject. Attach to the finest thing known; denormalize exercise_id upward
@@ -189,14 +189,82 @@ Straight off a modern phone, video is enormous:
 |---|---|---|
 | iPhone 4K/60 HEVC (~440 MB/min per Apple) | ~59 Mbps | **~330 MB** |
 | iPhone 1080p/30 HEVC (~65 MB/min) | ~8.7 Mbps | ~49 MB |
-| Our target: 720p/30, H.264 High | ~2.5 Mbps | **~14 MB** |
+| Our target: 1080p/60 HEVC @ ~6 Mbps | 6 Mbps | **~34 MB** |
 
-**Transcode on device, at capture, before anything else touches the file.**
-720p/30 at ~2.5 Mbps is more than enough to see whether someone's back is
-rounding. Keep the camera original only until the transcode verifies, then
-delete it.
+### 3.1 Capture at the target format — do not transcode
 
-Also at capture time:
+The instinct is "record, then transcode down." Don't. **Set the capture session
+to the target format and encode once, straight from the sensor.**
+
+- iOS: `AVCaptureSession.sessionPreset = .hd1920x1080`, plus an `activeFormat`
+  with a 60 fps range; HEVC via `AVAssetWriter` output settings.
+- Android: CameraX `QualitySelector.from(Quality.FHD)` and
+  `Recorder.Builder().setTargetVideoEncodingBitRate(6_000_000)`.
+
+This matters because **re-encoding already-encoded video compounds artifacts** —
+generational loss is worse than the bitrate alone predicts, since the second
+encoder faithfully reproduces the first one's blocking and mosquito noise. Encode
+once and there is no generational loss to argue about. It also skips a transcode
+pass that costs battery and several seconds of the user's time between sets.
+
+Transcoding remains the fallback for clips *imported* from the system camera
+roll, where we don't control capture.
+
+### 3.2 Why 1080p/60 rather than 4K — or 720p
+
+The video exists to answer gross-motor questions: is the back rounding, did the
+hip crease pass below the knee, is the bar path drifting, is there knee valgus.
+At 1080p a lifter filling most of the frame is ~900 px tall. Spinal curvature
+and joint angles are not resolution-bound at that scale.
+
+**Temporal resolution matters more than spatial here, and this is the part that
+is easy to get backwards.** Judging a sticking point, bar speed, or a valgus
+collapse that lasts three frames is a frame-rate problem. For form work,
+**1080p/60 beats 4K/30** — more frames, on the axis the analysis actually uses.
+
+The genuine binding constraints on gym video are camera angle, gym lighting, and
+motion blur from a slow shutter in a dim room. None of the three is improved by
+resolution. Spending 9× the storage on 4K to fix a problem that isn't
+resolution-bound is misallocated.
+
+Where 4K genuinely does help: heavy crop/reframe when the phone was propped
+badly, and fine detail like grip or finger position. Both are real, and both are
+handled per-clip by "keep original" (§3.4) rather than by paying 4K on
+everything.
+
+Also: **record SDR explicitly.** Newer iPhones default to Dolby Vision HDR,
+which tone-maps unpredictably on other devices and looks washed out on SDR
+screens. For form check it adds nothing and costs bytes and bugs.
+
+### 3.3 What the quality tier actually costs
+
+Per user-year at the §8.1 reference volume (624 clips, 7.8 h):
+
+| Tier | MB/min | GB/yr | R2 $/yr | vs 4K/60 | % of $81.60 net rev |
+|---|---|---|---|---|---|
+| 4K/60 HEVC (no transcode) | 440 | 201 | $36.20 | 1.0× | 44% |
+| 4K/30 HEVC | 170 | 78 | $13.99 | 2.6× | 17% |
+| **1080p/60 HEVC @ 6 Mbps** | **45** | **20.6** | **$3.70** | **9.8×** | **4.5%** |
+| 1080p/30 HEVC @ 4 Mbps | 30 | 13.7 | $2.47 | 14.7× | 3.0% |
+| 720p/30 H.264 @ 2.5 Mbps | 19 | 8.6 | $1.54 | 23.5× | 1.9% |
+
+**Note the shape of this curve.** Nearly all the saving is in the first step off
+4K — dropping to 1080p/60 already captures 9.8× of the available 23.5×. Grinding
+down to 720p/30 buys $2.16/user-year more and pays for it in visible quality.
+That is a bad trade: the cost problem is solved at 1080p/60, and 4.5% of net
+revenue is not worth optimizing against the flagship feature's fidelity.
+
+### 3.4 Keep-originals is a per-clip choice, not a global one
+
+Transcoding is irreversible, so don't force the decision globally. Let the user
+mark a clip "keep original" — a genuinely rare event (a PR attempt, a lift they
+want a coach to review). Originals go to the cold archive add-on described in
+§8.2, which is the one workload where Glacier-class storage is the right answer.
+
+Default: keep the camera original on device until the encode is verified, then
+delete it unless the clip is marked.
+
+### 3.5 Everything else at capture time
 
 - **Hard-cap duration** at 60 s. A set is a set.
 - **Strip all container metadata.** Especially GPS. A fitness app holding
@@ -204,13 +272,14 @@ Also at capture time:
   stalking vector, and there is no feature that needs the coordinates.
   Strip unconditionally, not as a setting.
 - **Generate the poster frame** (§4.3).
-- **Compute the content hash** over the transcoded plaintext.
+- **Compute the content hash** over the encoded plaintext.
 
-At 3 clips/workout × 4 workouts/week, this single decision moves per-user annual
-storage from **~201 GB to ~8.6 GB** — a 23× cut. Costed out in §8.1, that is the
+At 3 clips/workout × 4 workouts/week, capturing at 1080p/60 rather than the
+phone's 4K/60 default moves per-user annual storage from **~201 GB to ~21 GB** —
+a 9.8× cut for no loss of diagnostic value. Costed out in §8.1, that is the
 difference between a premium tier that goes cash-negative in year three and one
-still comfortable in year ten. It is the highest-leverage decision in this
-document.
+sitting at 4.5% of net revenue indefinitely. It is the highest-leverage decision
+in this document.
 
 ---
 
@@ -281,7 +350,7 @@ default-on.
 
 **(1) Write into the user's own photo library — the best free-tier answer.**
 
-Opt-in at capture (default on for free tier): save the transcoded clip into a
+Opt-in at capture (default on for free tier): save the encoded clip into a
 dedicated "Social Workout" album. iCloud Photos / Google Photos then does the
 carrying, on storage the user is often already paying for.
 
@@ -389,7 +458,7 @@ fly. Standard pattern, works with both players' range requests.
 
 **Why E2EE is nearly free here, and therefore worth doing.** The usual cost of
 E2EE is losing server-side processing — no transcoding, no thumbnailing, no
-moderation. But §3 already transcodes on device and §4.3 already makes the
+moderation. But §3 already encodes to final form on device and §4.3 already makes the
 poster on device, because that's where the camera is. There is no server-side
 processing to lose. The server is a dumb byte store either way. The *only* real
 cost is key recovery, and the platform keychains absorb most of that.
@@ -476,7 +545,7 @@ churn, and bad reviews, and the free tier already has honest durability paths
 | Local storage, unlimited (device-bound) | ✅ | ✅ |
 | Save to photo library + re-link on new phone | ✅ | ✅ |
 | Direct device-to-device transfer / export | ✅ | ✅ |
-| Encrypted cloud backup | — | ✅ (quota, e.g. 25 GB) |
+| Encrypted cloud backup | — | ✅ (quota, e.g. 100 GB) |
 | Instant access on every device, no transfer dance | — | ✅ |
 | **Side-by-side compare against any historical clip** | last 30 days | ✅ full history |
 | Longer clips (60 s → 3 min) | — | ✅ |
@@ -497,34 +566,36 @@ Camera > Record Video). Costs are Cloudflare R2 list, $0.015/GB-month, zero egre
 | 4K/60 | 440 | 201 | $18.10 | **$36.20** |
 | 4K/30 | 170 | 78 | $6.99 | **$13.99** |
 | 1080p/30 | 65 | 30 | $2.67 | **$5.35** |
-| 720p/30 @ 2.5 Mbps (§3 target) | 18.8 | 8.6 | $0.77 | **$1.54** |
+| **1080p/60 @ 6 Mbps (§3 target)** | **45** | **20.6** | **$1.85** | **$3.70** |
 
 Two columns because storage **accumulates**: during year one you hold the average,
 roughly half the final total. The right column is what that year's footage costs
 every year thereafter. Unit rate for re-deriving with other assumptions: one
-minute of 4K/60 stored for a year costs **$0.077**; at 720p/30, **$0.0033**.
+minute of 4K/60 stored for a year costs **$0.077**; at 1080p/60, **$0.0079**.
 
 **Storage compounds; subscription revenue does not.** Against $8/month premium —
 $96/yr, or **$81.60 net** after Apple's 15% cut:
 
-| Cost that year | Y1 | Y3 | Y5 | Y10 |
-|---|---|---|---|---|
-| 4K/60 full resolution | $18 | **$90** ⚠️ | $163 | $344 |
-| 4K/30 full resolution | $7 | $35 | $63 | **$133** ⚠️ |
-| 720p transcode | $0.77 | $3.86 | $6.94 | $14.65 |
+| Cost that year | Y1 | Y3 | Y5 | Y10 | Crosses net revenue |
+|---|---|---|---|---|---|
+| 4K/60 full resolution | $18 | **$90** ⚠️ | $163 | $344 | **year 3** |
+| 4K/30 full resolution | $7 | $35 | $63 | **$133** ⚠️ | year 6 |
+| 1080p/60 (§3 target) | $1.85 | $9.25 | $16.66 | $35.17 | year 23 |
 
 Retaining full-resolution 4K/60 goes **cash-negative in year 3 on storage alone**,
-before compute, egress, or support. 4K/30 lasts until roughly year 7. The
-transcoded tier is still at 18% of net revenue in year *ten*. This is the
-quantitative case for §3, and it is not close.
+before compute, egress, or support. 4K/30 lasts until roughly year 6. Capturing
+at 1080p/60 is at 2% of net revenue in year one and 43% in year *ten* — and a
+retention rule long before then makes it a non-issue. This is the quantitative
+case for §3, and it is not close.
 
 And that's a moderate user. Someone filming every set (15 clips × 5 workouts/week)
 at 4K/60 generates **1.26 TB/year** — $226/yr to retain, underwater in year one.
 Hence a hard quota, not merely a retention policy.
 
-A 25 GB quota is ~3 years of the transcoded moderate user, costs $0.38/month, and
-leaves room for retention rules later ("clips older than 18 months kept only if
-pinned or attached to a PR").
+A 100 GB quota is ~5 years of the 1080p/60 moderate user. It costs $1.50/month
+only for someone who actually maxes it — the *expected* cost is $0.31/month —
+and it leaves room for retention rules later ("clips older than 18 months kept
+only if pinned or attached to a PR").
 
 **Egress, not storage, is what makes S3 wrong here.** Same moderate user at 4K/60,
 assuming each clip is watched 3× per year: R2 $36/yr versus S3 **$110/yr**, of
@@ -568,13 +639,14 @@ Two further traps if anyone revisits this:
 | Lever | Cost/yr | vs baseline |
 |---|---|---|
 | Baseline: 4K/60 on R2 | $36.20 | — |
-| **Transcode to 720p (§3), stay on R2** | **$1.55** | **23×** |
+| **Capture at 1080p/60 (§3), stay on R2** | **$3.70** | **9.8×** |
 | Keep 4K/60, move to Deep Archive | $20.99 | 1.7× |
-| Transcode + Backblaze B2 | $0.62 | 58× |
+| 1080p/60 + Backblaze B2 | $1.48 | 24× |
 
-Transcoding beats every storage-tier choice by an order of magnitude, at zero
-latency cost. After it we are at ~$1.55/user-year and the question is closed —
-do not build a lifecycle pipeline to save $1/user/year.
+The capture-format decision beats every storage-tier choice by roughly 6×, at
+zero latency cost and without the minimum-duration and minimum-object-size traps
+below. After it we are at ~$3.70/user-year and the question is closed — do not
+build a lifecycle pipeline to save $2/user/year.
 
 If more is wanted, the next move is **evaluating B2 against R2** (2.5× cheaper,
 also egress-free, and in Cloudflare's Bandwidth Alliance so free egress into a
@@ -606,7 +678,7 @@ requires migrating the previous one — which is precisely why `encryption`,
 migration even though stage 0 leaves them at their defaults.
 
 **Stage 0 — local, no server.** `media_item` + `media_location`, capture with
-transcode + metadata stripping + poster, attach to `exercise_set`, and the
+1080p/60 capture + metadata stripping + poster, attach to `exercise_set`, and the
 compare-over-time timeline. Proves the feature is wanted before a byte of
 infrastructure exists.
 
@@ -646,5 +718,5 @@ separate feed-post copy.
    that loses user data. Possible middle: auto-pin PRs and anything the user
    replays more than once.
 6. **B2 versus R2** (§8.2) — 2.5× on storage against uncapped egress and Workers
-   integration. Only worth resolving once cloud backup is real; the transcode
+   integration. Only worth resolving once cloud backup is real; the capture-format
    decision dwarfs it either way.
